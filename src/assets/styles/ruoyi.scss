@@ -52,11 +52,22 @@
 .mr20 {
 	margin-right: 20px;
 }
+.mr15 {
+	margin-right: 15px;
+}
 .mb20 {
 	margin-bottom: 20px;
 }
 .ml20 {
 	margin-left: 20px;
+}
+
+.mt25 {
+	margin-top: 25px;
+}
+
+.boright{
+	border-right: 1px solid #979797;
 }
 
 .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
@@ -284,4 +295,7 @@
 .bornone .el-card__header{
 	border: none;
 	padding-bottom: 5px;
+}
+.flex-card .el-card__body{
+	display: flex;
 }

@@ -33,6 +33,8 @@ import DictTag from '@/components/DictTag'
 import VueMeta from 'vue-meta'
 // 字典数据组件
 import DictData from '@/components/DictData'
+// 头像组件
+import UserAvatar from "./views/components/avatar";
 
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
@@ -51,6 +53,7 @@ Vue.component('Pagination', Pagination)
 Vue.component('FileUpload', FileUpload)
 Vue.component('ImageUpload', ImageUpload)
 Vue.component('ImagePreview', ImagePreview)
+Vue.component('UserAvatar',UserAvatar);
 
 Vue.use(plugins)
 Vue.use(VueMeta)
