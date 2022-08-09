@@ -100,12 +100,12 @@
       <el-table-column label="用户身份" align="center" prop="ident" />
       <el-table-column label="客户电话" align="center" prop="phone" />
       <el-table-column label="邮箱地址" align="center" prop="email" />
-        <el-table-column label="状态" align="center" key="status">
+        <el-table-column label="账号状态" align="center" key="status">
             <template slot-scope="scope">
               <el-switch
                 v-model="scope.row.status"
-                active-value="0"
-                inactive-value="1"
+                :active-value="true"
+                :inactive-value="false"
                 :disabled="true"
               ></el-switch>
             </template>
@@ -233,7 +233,7 @@ export default {
         email:"12312@163.com",
         sort:"desc",
         ident:"boss",
-        status:false,
+        status:true,
         createTime:"2022-02-20 12:33:00"
     }]
     this.loading=false;
