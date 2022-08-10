@@ -4,7 +4,9 @@
 
     <breadcrumb id="breadcrumb-container" class="breadcrumb-container" v-if="!topNav"/>
     <top-nav id="topmenu-container" class="topmenu-container" v-if="topNav"/>
-
+    <!-- 标语 -->
+    <homepage-slogan/>
+    <!--  -->
     <div class="right-menu">
       <template v-if="device!=='mobile'">
         <search id="header-search" class="right-menu-item" />
@@ -49,6 +51,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
+import HomepageSlogan from "../components/HomepageSlogan";
 import TopNav from '@/components/TopNav'
 import Hamburger from '@/components/Hamburger'
 import Screenfull from '@/components/Screenfull'
@@ -59,6 +62,7 @@ import RuoYiDoc from '@/components/RuoYi/Doc'
 
 export default {
   components: {
+    HomepageSlogan,
     Breadcrumb,
     TopNav,
     Hamburger,

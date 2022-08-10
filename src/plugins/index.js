@@ -3,6 +3,7 @@ import auth from './auth'
 import cache from './cache'
 import modal from './modal'
 import download from './download'
+import thinking from './thinking'
 
 export default {
   install(Vue) {
@@ -16,5 +17,7 @@ export default {
     Vue.prototype.$modal = modal
     // 下载文件
     Vue.prototype.$download = download
+    // 自定义页面逻辑方法
+    Vue.prototype.$thinking = thinking
   }
 }

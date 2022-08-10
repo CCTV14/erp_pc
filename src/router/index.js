@@ -94,13 +94,33 @@ export const constantRoutes = [
     component: Layout,
     hidden: false,
     redirect: 'noredirect',
+    meta: { title: '测试菜单', icon: 'job' },
     children: [
       {
         path: 'user',
         component: () => import('@/views/vehicle-monitoring/user/index'),
         name: 'user',
-        meta: { title: '用户管理', icon: 'user' }
-      }
+        meta: { title: '用户管理' }
+      },
+      {
+        path: 'sale',
+        component: () => import('@/views/vehicle-monitoring/sale/index'),
+        name: 'sale',
+        meta: { title: '销售单管理' }
+      },
+      {
+        path: 'sale-detail',
+        hidden:true,
+        component: () => import('@/views/vehicle-monitoring/sale/detail'),
+        name: 'sale-detail',
+        meta: { title: '销售单详情' }
+      },
+      {
+        path: 'purchase',
+        component: () => import('@/views/vehicle-monitoring/purchase/index'),
+        name: 'purchase',
+        meta: { title: '采购单管理' }
+      },
     ]
   }
 ]

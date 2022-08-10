@@ -8,11 +8,8 @@
             <span>最近使用</span>
           </div>
           <div class="cont">
-            <div v-for="(item,index) in historyList" :key="index">
-              <el-image
-                style="width: 70px; height: 70px"
-                :src="item.imgUrl"
-              ></el-image>
+            <div v-for="(item, index) in historyList" :key="index">
+              <el-image style="width: 70px; height: 70px" :src="item.imgUrl"></el-image>
               <div class="mt15">销售单</div>
             </div>
           </div>
@@ -26,14 +23,11 @@
           <div slot="header" class="title">
             <span>我的待办</span>
           </div>
-          <div class="agency" v-for="(item,index) in agencyList" :key="index">
-            <el-image
-              style="width: 80px; height: 85px"
-              :src="item.imgUrl"
-            ></el-image>
+          <div class="agency" v-for="(item, index) in agencyList" :key="index">
+            <el-image style="width: 80px; height: 85px" :src="item.imgUrl"></el-image>
             <div class="descriptions">
-              <div class="num">{{item.num}}</div>
-              <div class="desc mt5">{{item.name}}</div>
+              <div class="num">{{ item.num }}</div>
+              <div class="desc mt5">{{ item.name }}</div>
             </div>
           </div>
         </el-card>
@@ -71,63 +65,63 @@ export default {
       // 版本号
       version: "3.8.3",
       // 我的待办
-      agencyList:[{
-        num:8,
-        name:"待审单据",
-        imgUrl:require("../assets/images/home/pending_order.png")
+      agencyList: [{
+        num: 8,
+        name: "待审单据",
+        imgUrl: require("../assets/images/home/pending_order.png")
       },
       {
-        num:0,
-        name:"待出入库",
-        imgUrl:require("../assets/images/home/commodity_inout.png")
+        num: 0,
+        name: "待出入库",
+        imgUrl: require("../assets/images/home/commodity_inout.png")
       },
       {
-        num:23,
-        name:"客户跟进",
-        imgUrl:require("../assets/images/home/customer_floow.png")
+        num: 23,
+        name: "客户跟进",
+        imgUrl: require("../assets/images/home/customer_floow.png")
       },
       {
-        num:12,
-        name:"库存预警",
-        imgUrl:require("../assets/images/home/inventory_warning.png")
+        num: 12,
+        name: "库存预警",
+        imgUrl: require("../assets/images/home/inventory_warning.png")
       }
       ],
       // 历史使用
-      historyList:[{
-        name:"销售单",
-        imgUrl:require('../assets/images/home/history/sale_order.png')
+      historyList: [{
+        name: "销售单",
+        imgUrl: require('../assets/images/home/history/sale_order.png')
       },
       {
-        name:"采购单",
-        imgUrl:require('../assets/images/home/history/purchase_order.png')
+        name: "采购单",
+        imgUrl: require('../assets/images/home/history/purchase_order.png')
       },
       {
-        name:"跟进记录",
-        imgUrl:require('../assets/images/home/history/floow_record.png')
+        name: "跟进记录",
+        imgUrl: require('../assets/images/home/history/floow_record.png')
       },
-        {
-        name:"入库单",
-        imgUrl:require('../assets/images/home/history/commodity_inputOrder.png')
+      {
+        name: "入库单",
+        imgUrl: require('../assets/images/home/history/commodity_inputOrder.png')
       },
-         {
-        name:"供应商",
-        imgUrl:require('../assets/images/home/history/supplier_manager.png')
+      {
+        name: "供应商",
+        imgUrl: require('../assets/images/home/history/supplier_manager.png')
       },
-        {
-        name:"商品管理",
-        imgUrl:require('../assets/images/home/history/commodity_manager.png')
+      {
+        name: "商品管理",
+        imgUrl: require('../assets/images/home/history/commodity_manager.png')
       },
-       {
-        name:"客户公海池",
-        imgUrl:require('../assets/images/home/history/customer_pool.png')
+      {
+        name: "客户公海池",
+        imgUrl: require('../assets/images/home/history/customer_pool.png')
       },
-       {
-        name:"其他收入",
-        imgUrl:require('../assets/images/home/history/other_income.png')
+      {
+        name: "其他收入",
+        imgUrl: require('../assets/images/home/history/other_income.png')
       },
-       {
-        name:"商品分类",
-        imgUrl:require('../assets/images/home/history/commodity_cagetory.png')
+      {
+        name: "商品分类",
+        imgUrl: require('../assets/images/home/history/commodity_cagetory.png')
       }
       ]
     };
@@ -148,14 +142,6 @@ export default {
 <style lang="scss" scoped>
 .home {
   background: #fafafa;
-
-  blockquote {
-    padding: 10px 20px;
-    margin: 0 0 20px;
-    font-size: 17.5px;
-    border-left: 5px solid #eee;
-  }
-
   .card {
     .title {
       font-family: PingFangSC-Semibold;
@@ -165,6 +151,7 @@ export default {
       justify-content: space-between;
       align-items: center;
     }
+
     //   最近使用
     .cont {
       display: flex;
