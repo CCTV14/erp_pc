@@ -1,41 +1,27 @@
 <template>
     <div class="app-container">
         <el-form :model="params" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-            <el-form-item label="单号" prop="orderNo">
-                <el-input v-model="params.orderNo" placeholder="请输入销售单单号" clearable @keyup.enter.native="handleQuery" />
+            <el-form-item label="名称" prop="name">
+                <el-input v-model="params.name" placeholder="请输入资金账户名称" clearable @keyup.enter.native="handleQuery" />
             </el-form-item>
-            <el-form-item label="审批状态" prop="orderApprovalStatusEnumList">
-                <el-select v-model="params.orderApprovalStatusEnumList" collapse-tags multiple style="width:160px;"
-                    placeholder="请选择审批状态" clearable>
-                    <el-option label="审批中" value="1"></el-option>
-                    <el-option label="审批通过" value="0"></el-option>
-                    <el-option label="审批拒绝" value="1"></el-option>
+            <el-form-item label="账户" prop="account">
+                <el-input v-model="params.account" placeholder="请输入账户名称" clearable @keyup.enter.native="handleQuery" />
+            </el-form-item>
+            <el-form-item label="类型" prop="fundAccountTypeEnum">
+                <el-select v-model="params.fundAccountTypeEnum" collapse-tags placeholder="请选择类型" clearable>
+                    <el-option label="银行账户" value="1"></el-option>
+                    <el-option label="微信钱包" value="0"></el-option>
+                    <el-option label="支付宝账户" value="1"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="出库进度" prop="commodityOutputProgressEnumList">
-                <el-select v-model="params.commodityOutputProgressEnumList" collapse-tags multiple style="width:160px;"
-                    placeholder="请选择出库进度" clearable>
-                    <el-option label="全部出库" value="2"></el-option>
+            <el-form-item label="冻结状态" prop="frozen">
+                <el-select v-model="params.frozen" collapse-tags placeholder="请选择冻结状态" clearable>
+                    <el-option label="全部" value=""></el-option>
+                    <el-option label="已冻结" :value="true"></el-option>
+                    <el-option label="未冻结" :value="false"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="收款进度" prop="fundCollectProgressEnumList">
-                <el-select v-model="params.fundCollectProgressEnumList" collapse-tags multiple style="width:160px;"
-                    placeholder="请选择收款进度" clearable>
-                    <el-option label="不限" value=""></el-option>
-                    <el-option label="无需收款" value="1"></el-option>
-                    <el-option label="未收款" value="0"></el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item label="单据金额">
-                <div style="display: flex;">
-                    <el-input style="width:140px;" v-model="params.minOrderAmount" placeholder="不限" clearable
-                        @keyup.enter.native="handleQuery" />
-                    <div class="ml10 mr10">-</div>
-                    <el-input style="width:140px;" v-model="params.maxOrderAmount" placeholder="不限" clearable
-                        @keyup.enter.native="handleQuery" />
-                </div>
-            </el-form-item>
-            <el-form-item label="制单日期">
+            <el-form-item label="日期">
                 <el-date-picker v-model="dateRange" style="width:240px;" value-format="yyyy-MM-dd" type="daterange"
                     range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" @change="selectQueryDate">
                 </el-date-picker>
@@ -43,48 +29,50 @@
             <el-form-item>
                 <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
                 <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-                <el-radio class="ml10" v-model="radio" label="1">仅我的单据</el-radio>
             </el-form-item>
         </el-form>
 
         <el-row :gutter="10" class="mb8">
             <el-col :span="1.5">
                 <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
-                    v-hasPermi="['system:sale:add']">新增</el-button>
+                    v-hasPermi="['system:account:add']">新增</el-button>
             </el-col>
             <el-col :span="1.5">
                 <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
-                    v-hasPermi="['system:sale:edit']">修改</el-button>
+                    v-hasPermi="['system:account:edit']">修改</el-button>
             </el-col>
             <el-col :span="1.5">
                 <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple"
-                    @click="handleDelete" v-hasPermi="['system:sale:remove']">删除</el-button>
+                    @click="handleDelete" v-hasPermi="['system:account:remove']">删除</el-button>
             </el-col>
             <!-- <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar> -->
         </el-row>
 
-        <el-table v-loading="loading" :data="tableData" :cell-style="$thinking.getCellFontColor"
-            @selection-change="handleSelectionChange">
+        <el-table v-loading="loading" :data="tableData" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55" align="center" />
-            <el-table-column label="单号" align="center" prop="orderNo" width="120" />
-            <el-table-column label="客户姓名" align="center" prop="customerName" />
-            <el-table-column label="客户电话" align="center" prop="phone" width="120" />
-            <el-table-column label="客户地址" align="center" prop="address" width="200" />
-            <el-table-column label="单据金额" align="center" sortable width="100">
+            <el-table-column label="名称" align="center" prop="name" width="120" />
+            <el-table-column label="账户" align="center" prop="account" width="160" />
+            <el-table-column label="余额" align="center" sortable width="100">
                 <template slot-scope="scope">
-                    <span>￥{{ scope.row.orderPrice | thousandSymbol }}</span>
+                    <span>￥{{ scope.row.price | thousandSymbol }}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="制单信息" align="center" width="200">
+            <el-table-column label="类型" align="center" width="100">
                 <template slot-scope="scope">
-                    <span style="color:'$--color-primary'">{{ scope.row.createName + " " + scope.row.createTime
-                    }}</span>
+                    <span>{{ scope.row.fundAccountTypeEnum | getAccountType }}</span>
                 </template>
             </el-table-column>
-
-            <el-table-column label="收款进度" prop="fundCollectProgressEnum.Desc" align="center" />
-            <el-table-column label="出库进度" prop="commodityOutputProgressEnum.Desc" align="center" />
-            <el-table-column label="审批状态" prop="handleMessage" align="center" />
+            <el-table-column label="备注" align="center" prop="remark" />
+            <el-table-column label="账户累计流入" align="center" width="160">
+                <template slot-scope="scope">
+                    <span style="color:#378DF5">{{ scope.row.totalInflowAmount | thousandSymbol }}</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="账户累计流出" align="center" width="160">
+                <template slot-scope="scope">
+                    <span style="color:#FF964E">{{ scope.row.totalOutflowAmount | thousandSymbol }}</span>
+                </template>
+            </el-table-column>
             <el-table-column label="操作" fixed="right" align="center" width="120" class-name="small-padding fixed-width">
                 <template slot-scope="scope">
                     <!-- <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
@@ -104,13 +92,24 @@
         <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
             <el-form ref="form" :model="form" :rules="rules" label-width="80px">
                 <el-form-item label="用户姓名" prop="name">
-                    <el-input v-model="form.name" placeholder="请输入用户姓名" />
+                    <el-input v-model="form.name" placeholder="请输入名称" />
                 </el-form-item>
-                <el-form-item label="手机号码" prop="phone">
-                    <el-input v-model="form.phone" placeholder="请输入手机号码" />
+                <el-form-item label="账户" prop="account">
+                    <el-input v-model="form.account" placeholder="请输入账户" />
                 </el-form-item>
-                <el-form-item label="邮箱" prop="email">
-                    <el-input v-model="form.email" placeholder="请输入邮箱" />
+                <el-form-item label="类型" prop="fundAccountTypeEnum">
+                    <el-select v-model="form.fundAccountTypeEnum" style="width:100%" placeholder="请选择类型" clearable>
+                        <el-option label="银行账户" value="1"></el-option>
+                        <el-option label="微信钱包" value="0"></el-option>
+                        <el-option label="支付宝账户" value="1"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="冻结状态" prop="frozen" v-if="form.id">
+                    <el-switch v-model="form.frozen" :active-value="true" :inactive-value="false">
+                    </el-switch>
+                </el-form-item>
+                <el-form-item label="备注" prop="remark">
+                    <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -132,8 +131,15 @@ import {
 } from "@/api/system/dict/type";
 
 export default {
-    name: "Sale",
+    name: "Account",
     dicts: ["sys_normal_disable"],
+    filters: {
+        getAccountType(val) {
+            if (val == 'Cash') {
+                return "微信钱包";
+            }
+        }
+    },
     data() {
         return {
             // 遮罩层
@@ -161,12 +167,10 @@ export default {
             params: {
                 pageNum: 1,
                 pageSize: 10,
-                orderApprovalStatusEnumList: [],
-                commodityOutputProgressEnumList: [],
-                fundCollectProgressEnumList: [],
-                orderNo: "",
-                minOrderAmount: "",
-                maxOrderAmount: "",
+                name: "",
+                account: "",
+                frozen: "",
+                fundAccountTypeEnum: "",
                 minCreateDate: "",
                 maxCreateDate: ""
             },
@@ -194,45 +198,16 @@ export default {
     },
     created() {
         // this.getList(); 暂
+        // 假数据
         this.tableData = [{
             id: "1",
-            orderNo: "XS220715003",
-            customerName: "测试客户",
-            address: "北京市复兴区小区二号5号楼3单元202",
-            handleMessage: "审批通过",
-            phone: "13820002020",
-            email: "12312@163.com",
-            sort: "desc",
-            orderPrice: 1583,
-            status: true,
-            createName: "人员",
-            commodityOutputProgressEnum: {
-                Desc: "全部出库"
-            },
-            fundCollectProgressEnum: {
-                Desc: "全部收款"
-            },
-            createTime: "2022-02-20 12:33:00"
-        },
-        {
-            id: "2",
-            orderNo: "XS220624001",
-            customerName: "张伟丽",
-            address: "河北省邯郸市春风…",
-            handleMessage: "审批拒绝",
-            phone: "13739422980",
-            email: "88888@163.com",
-            sort: "desc",
-            orderPrice: 1358,
-            status: true,
-            createName: "管理员",
-            commodityOutputProgressEnum: {
-                Desc: "无需出库"
-            },
-            fundCollectProgressEnum: {
-                Desc: "部分收款"
-            },
-            createTime: "2022-06-14 14:22:00"
+            name: "沈阳大街xx3",
+            account: "6217****0000102210",
+            price: 123922,
+            fundAccountTypeEnum: "Cash",
+            remark: "暂无",
+            totalInflowAmount: 1203012,
+            totalOutflowAmount: 123980
         }
         ];
         this.total = 1;
@@ -260,8 +235,10 @@ export default {
             this.form = {
                 id: "",
                 name: "",
-                phone: "",
-                email: ""
+                account: "",
+                frozen: false,
+                fundAccountTypeEnum: "",
+                remark: ""
             };
             this.resetForm("form");
         },
@@ -287,12 +264,12 @@ export default {
         handleAdd() {
             this.reset();
             this.open = true;
-            this.title = "添加用户";
+            this.title = "添加账户";
         },
         /** 查看详情按钮操作 */
         handleDetail(row) {
             this.$router.push({
-                name: "sale-detail"
+                name: "account-detail"
             })
         },
         // 多选框选中数据
@@ -310,7 +287,7 @@ export default {
             getType(id).then(response => {
                 this.form = response.data;
                 this.open = true;
-                this.title = "修改用户";
+                this.title = "修改账户";
             });
         },
         /** 提交按钮 */

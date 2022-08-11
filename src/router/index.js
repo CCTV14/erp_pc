@@ -100,7 +100,7 @@ export const constantRoutes = [
         path: 'user',
         component: () => import('@/views/vehicle-monitoring/user/index'),
         name: 'user',
-        meta: { title: '用户管理' }
+        meta: { title: '用户管理',icon:'user' }
       },
       {
         path: 'sale',
@@ -120,6 +120,38 @@ export const constantRoutes = [
         component: () => import('@/views/vehicle-monitoring/purchase/index'),
         name: 'purchase',
         meta: { title: '采购单管理' }
+      },
+      {
+        path: 'account',
+        component: () => import('@/views/vehicle-monitoring/account/index'),
+        name: 'account',
+        meta: { title: '资金账户管理' }
+      },
+      {
+        path: 'account-detail',
+        hidden:true,
+        component: () => import('@/views/vehicle-monitoring/account/detail'),
+        name: 'account-detail',
+        meta: { title: '资金账户详情' }
+      },
+      {
+        path: 'customer',
+        component: () => import('@/views/vehicle-monitoring/customer/index'),
+        name: 'customer',
+        meta: { title: '客户管理' }
+      },
+      {
+        path: 'customer-detail',
+        hidden:true,
+        component: () => import('@/views/vehicle-monitoring/customer/detail'),
+        name: 'customer-detail',
+        meta: { title: '客户详情' }
+      },
+      {
+        path: 'cagetory',
+        component: () => import('@/views/vehicle-monitoring/cagetory/index'),
+        name: 'cagetory',
+        meta: { title: '商品分类' }
       },
     ]
   }

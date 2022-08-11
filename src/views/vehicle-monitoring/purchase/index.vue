@@ -4,37 +4,41 @@
             <el-form-item label="单号" prop="orderNo">
                 <el-input v-model="params.orderNo" placeholder="请输入销售单单号" clearable @keyup.enter.native="handleQuery" />
             </el-form-item>
-            <el-form-item label="审批状态" prop="ident">
-                <el-select v-model="params.ident" multiple style="width:160px;" placeholder="请选择审批状态" clearable>
+            <el-form-item label="审批状态" prop="orderApprovalStatusEnumList">
+                <el-select v-model="params.orderApprovalStatusEnumList" collapse-tags multiple style="width:160px;"
+                    placeholder="请选择审批状态" clearable>
                     <el-option label="审批中" value="1"></el-option>
                     <el-option label="审批通过" value="0"></el-option>
                     <el-option label="审批拒绝" value="1"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="入库进度" prop="ident">
-                <el-select v-model="params.ident" multiple style="width:160px;" placeholder="请选择入库进度" clearable>
-                    <el-option label="全部入库" value="2"></el-option>
+            <el-form-item label="入库进度" prop="commodityInputProgressEnumList">
+                <el-select v-model="params.commodityInputProgressEnumList" collapse-tags multiple style="width:160px;"
+                    placeholder="请选择出库进度" clearable>
+                    <el-option label="全部出库" value="2"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="付款进度" prop="ident">
-                <el-select v-model="params.ident" multiple style="width:160px;" placeholder="请选择付款进度" clearable>
+            <el-form-item label="付款进度" prop="fundPayProgressEnumList">
+                <el-select v-model="params.fundPayProgressEnumList" collapse-tags multiple style="width:160px;"
+                    placeholder="请选择付款进度" clearable>
                     <el-option label="不限" value=""></el-option>
                     <el-option label="无需付款" value="1"></el-option>
                     <el-option label="未付款" value="0"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="单据金额" prop="price">
+            <el-form-item label="单据金额">
                 <div style="display: flex;">
-                    <el-input style="width:140px;" v-model="params.email" placeholder="不限" clearable
+                    <el-input style="width:140px;" v-model="params.minOrderAmount" placeholder="不限" clearable
                         @keyup.enter.native="handleQuery" />
                     <div class="ml10 mr10">-</div>
-                    <el-input style="width:140px;" v-model="params.email" placeholder="不限" clearable
+                    <el-input style="width:140px;" v-model="params.maxOrderAmount" placeholder="不限" clearable
                         @keyup.enter.native="handleQuery" />
                 </div>
             </el-form-item>
-            <el-form-item label="创建时间">
+            <el-form-item label="制单日期">
                 <el-date-picker v-model="dateRange" style="width:240px;" value-format="yyyy-MM-dd" type="daterange"
-                    range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
+                    range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" @change="selectQueryDate">
+                </el-date-picker>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -46,15 +50,15 @@
         <el-row :gutter="10" class="mb8">
             <el-col :span="1.5">
                 <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
-                    v-hasPermi="['system:sale:add']">新增</el-button>
+                    v-hasPermi="['system:purchase:add']">新增</el-button>
             </el-col>
             <el-col :span="1.5">
                 <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
-                    v-hasPermi="['system:sale:edit']">修改</el-button>
+                    v-hasPermi="['system:purchase:edit']">修改</el-button>
             </el-col>
             <el-col :span="1.5">
                 <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple"
-                    @click="handleDelete" v-hasPermi="['system:sale:remove']">删除</el-button>
+                    @click="handleDelete" v-hasPermi="['system:purchase:remove']">删除</el-button>
             </el-col>
             <!-- <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar> -->
         </el-row>
@@ -62,11 +66,11 @@
         <el-table v-loading="loading" :data="tableData" :cell-style="$thinking.getCellFontColor"
             @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55" align="center" />
-            <el-table-column label="单号" align="center" prop="orderNo" width="180" />
-            <el-table-column label="供应商" align="center" prop="customerName" />
-            <el-table-column label="单据金额" align="center" sortable width="150">
+            <el-table-column label="单号" align="center" prop="orderNo" width="120" />
+            <el-table-column label="供应商" align="center" prop="supplierName" />
+            <el-table-column label="单据金额" align="center" sortable width="100">
                 <template slot-scope="scope">
-                    <span>￥{{ scope.row.orderPrice }}</span>
+                    <span>￥{{ scope.row.orderPrice | thousandSymbol }}</span>
                 </template>
             </el-table-column>
             <el-table-column label="制单信息" align="center" width="200">
@@ -79,10 +83,10 @@
             <el-table-column label="付款进度" prop="fundPayProgressEnum.Desc" align="center" />
             <el-table-column label="入库进度" prop="commodityInputProgressEnum.Desc" align="center" />
             <el-table-column label="审批状态" prop="handleMessage" align="center" />
-            <el-table-column label="操作" align="center" width="120" class-name="small-padding fixed-width">
+            <el-table-column label="操作" fixed="right" align="center" width="120" class-name="small-padding fixed-width">
                 <template slot-scope="scope">
-                    <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
-                        v-hasPermi="['system:dict:edit']">修改</el-button>
+                    <!-- <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
+                        v-hasPermi="['system:dict:edit']">修改</el-button> -->
                     <el-button size="mini" type="text" icon="el-icon-edit" @click="handleDetail(scope.row)"
                         v-hasPermi="['system:dict:detail']">查看</el-button>
                     <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
@@ -126,7 +130,7 @@ import {
 } from "@/api/system/dict/type";
 
 export default {
-    name: "Dict",
+    name: "Purchase",
     dicts: ["sys_normal_disable"],
     data() {
         return {
@@ -155,11 +159,14 @@ export default {
             params: {
                 pageNum: 1,
                 pageSize: 10,
-                name: "",
-                phone: "",
-                email: "",
-                sort: "",
-                ident: ""
+                orderApprovalStatusEnumList: [],
+                commodityInputProgressEnumList: [],
+                fundPayProgressEnumList: [],
+                orderNo: "",
+                minOrderAmount: "",
+                maxOrderAmount: "",
+                minCreateDate: "",
+                maxCreateDate: ""
             },
             // 表单参数
             form: {},
@@ -187,15 +194,11 @@ export default {
         // this.getList(); 暂
         this.tableData = [{
             id: "1",
-            orderNo: "X29329139192391293",
-            customerName: "测试客户",
-            address: "复兴区市场",
-            name: "测试用户",
+            orderNo: "XS220715003",
+            supplierName:"朝美家居",
             handleMessage: "审批通过",
-            phone: "审批通过",
-            email: "12312@163.com",
             sort: "desc",
-            orderPrice: 566.02,
+            orderPrice: 1583,
             status: true,
             createName: "人员",
             commodityInputProgressEnum: {
@@ -205,6 +208,23 @@ export default {
                 Desc: "全部付款"
             },
             createTime: "2022-02-20 12:33:00"
+        },
+        {
+            id: "2",
+            orderNo: "XS220624001",
+            supplierName:"一代娇子家居",
+            handleMessage: "审批拒绝",
+            sort: "desc",
+            orderPrice: 1358,
+            status: true,
+            createName: "管理员",
+            commodityInputProgressEnum: {
+                Desc: "无需入库"
+            },
+            fundPayProgressEnum: {
+                Desc: "部分付款"
+            },
+            createTime: "2022-06-14 14:22:00"
         }
         ];
         this.total = 1;
@@ -237,6 +257,11 @@ export default {
             };
             this.resetForm("form");
         },
+        // 选择查询日期
+        selectQueryDate(val) {
+            this.params.minCreateDate = val[0];
+            this.params.maxCreateDate = val[1];
+        },
         /** 搜索按钮操作 */
         handleQuery() {
             this.params.pageNum = 1;
@@ -246,6 +271,8 @@ export default {
         resetQuery() {
             this.dateRange = [];
             this.resetForm("queryForm");
+            this.params.minOrderAmount = "";
+            this.params.maxOrderAmount = "";
             this.handleQuery();
         },
         /** 新增按钮操作 */
