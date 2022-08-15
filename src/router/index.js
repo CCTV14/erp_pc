@@ -100,7 +100,7 @@ export const constantRoutes = [
         path: 'user',
         component: () => import('@/views/vehicle-monitoring/user/index'),
         name: 'user',
-        meta: { title: '用户管理',icon:'user' }
+        meta: { title: '用户管理', icon: 'user' }
       },
       {
         path: 'sale',
@@ -110,10 +110,16 @@ export const constantRoutes = [
       },
       {
         path: 'sale-detail',
-        hidden:true,
+        hidden: true,
         component: () => import('@/views/vehicle-monitoring/sale/detail'),
         name: 'sale-detail',
         meta: { title: '销售单详情' }
+      },
+      {
+        path: 'sale-return',
+        component: () => import('@/views/vehicle-monitoring/sale-return/index'),
+        name: 'sale-return',
+        meta: { title: '销售退货单管理' }
       },
       {
         path: 'purchase',
@@ -129,7 +135,7 @@ export const constantRoutes = [
       },
       {
         path: 'account-detail',
-        hidden:true,
+        hidden: true,
         component: () => import('@/views/vehicle-monitoring/account/detail'),
         name: 'account-detail',
         meta: { title: '资金账户详情' }
@@ -142,7 +148,7 @@ export const constantRoutes = [
       },
       {
         path: 'customer-detail',
-        hidden:true,
+        hidden: true,
         component: () => import('@/views/vehicle-monitoring/customer/detail'),
         name: 'customer-detail',
         meta: { title: '客户详情' }
@@ -152,6 +158,18 @@ export const constantRoutes = [
         component: () => import('@/views/vehicle-monitoring/cagetory/index'),
         name: 'cagetory',
         meta: { title: '商品分类' }
+      },
+      {
+        path: 'supplier',
+        component: () => import('@/views/vehicle-monitoring/supplier/index'),
+        name: 'supplier',
+        meta: { title: '供应商管理' }
+      },
+      {
+        path: 'set',
+        component: () => import('@/views/vehicle-monitoring/set/index'),
+        name: 'set',
+        meta: { title: '设置' }
       },
     ]
   }

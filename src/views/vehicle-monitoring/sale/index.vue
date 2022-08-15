@@ -43,7 +43,7 @@
             <el-form-item>
                 <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
                 <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-                <el-radio class="ml10" v-model="radio" label="1">仅我的单据</el-radio>
+                <el-checkbox class="ml10" v-model="params.onlyMyCreate" shape="cirle" @change="getList()">仅我的单据</el-checkbox>
             </el-form-item>
         </el-form>
 
@@ -77,7 +77,7 @@
             </el-table-column>
             <el-table-column label="制单信息" align="center" width="200">
                 <template slot-scope="scope">
-                    <span style="color:'$--color-primary'">{{ scope.row.createName + " " + scope.row.createTime
+                    <span>{{ scope.row.createName + " " + scope.row.createTime
                     }}</span>
                 </template>
             </el-table-column>
@@ -136,6 +136,8 @@ export default {
     dicts: ["sys_normal_disable"],
     data() {
         return {
+            // 是否选择仅我的单据
+            isMeOrder: false,
             // 遮罩层
             loading: true,
             // 选中数组
@@ -148,7 +150,6 @@ export default {
             showSearch: true,
             // 总条数
             total: 0,
-            radio: "",
             // 表格数据
             tableData: [],
             // 弹出层标题
@@ -161,6 +162,7 @@ export default {
             params: {
                 pageNum: 1,
                 pageSize: 10,
+                onlyMyCreate:false,
                 orderApprovalStatusEnumList: [],
                 commodityOutputProgressEnumList: [],
                 fundCollectProgressEnumList: [],
@@ -241,6 +243,7 @@ export default {
     methods: {
         /** 查询用户列表 */
         getList() {
+            console.log(this.params.onlyMyCreate);
             this.loading = true;
             listType(this.addDateRange(this.params, this.dateRange)).then(
                 response => {

@@ -14,8 +14,8 @@
             </el-form-item>
             <el-form-item label="入库进度" prop="commodityInputProgressEnumList">
                 <el-select v-model="params.commodityInputProgressEnumList" collapse-tags multiple style="width:160px;"
-                    placeholder="请选择出库进度" clearable>
-                    <el-option label="全部出库" value="2"></el-option>
+                    placeholder="请选择入库进度" clearable>
+                    <el-option label="全部入库" value="2"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="付款进度" prop="fundPayProgressEnumList">
@@ -43,23 +43,22 @@
             <el-form-item>
                 <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
                 <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-                <el-checkbox class="ml10" v-model="params.onlyMyCreate" shape="cirle" @change="getList()">仅我的单据
-                </el-checkbox>
+                <el-checkbox class="ml10" v-model="params.onlyMyCreate" shape="cirle" @change="getList()">仅我的单据</el-checkbox>
             </el-form-item>
         </el-form>
 
         <el-row :gutter="10" class="mb8">
             <el-col :span="1.5">
                 <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
-                    v-hasPermi="['system:purchase:add']">新增</el-button>
+                    v-hasPermi="['system:sale:add']">新增</el-button>
             </el-col>
             <el-col :span="1.5">
                 <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
-                    v-hasPermi="['system:purchase:edit']">修改</el-button>
+                    v-hasPermi="['system:sale:edit']">修改</el-button>
             </el-col>
             <el-col :span="1.5">
                 <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple"
-                    @click="handleDelete" v-hasPermi="['system:purchase:remove']">删除</el-button>
+                    @click="handleDelete" v-hasPermi="['system:sale:remove']">删除</el-button>
             </el-col>
             <!-- <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar> -->
         </el-row>
@@ -68,7 +67,9 @@
             @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55" align="center" />
             <el-table-column label="单号" align="center" prop="orderNo" width="120" />
-            <el-table-column label="供应商" align="center" prop="supplierName" />
+            <el-table-column label="客户姓名" align="center" prop="customerName" />
+            <el-table-column label="客户电话" align="center" prop="phone" width="120" />
+            <el-table-column label="客户地址" align="center" prop="address" width="200" />
             <el-table-column label="单据金额" align="center" sortable width="100">
                 <template slot-scope="scope">
                     <span>￥{{ scope.row.orderPrice | thousandSymbol }}</span>
@@ -76,7 +77,7 @@
             </el-table-column>
             <el-table-column label="制单信息" align="center" width="200">
                 <template slot-scope="scope">
-                    <span style="color:'$--color-primary'">{{ scope.row.createName + " " + scope.row.createTime
+                    <span>{{ scope.row.createName + " " + scope.row.createTime
                     }}</span>
                 </template>
             </el-table-column>
@@ -100,7 +101,7 @@
             @pagination="getList" />
 
         <!-- 添加或修改参数配置对话框 -->
-        <el-dialog :title="title" :visible.sync="open" width="60%" append-to-body>
+        <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
             <el-form ref="form" :model="form" :rules="rules" label-width="80px">
                 <el-form-item label="用户姓名" prop="name">
                     <el-input v-model="form.name" placeholder="请输入用户姓名" />
@@ -110,10 +111,6 @@
                 </el-form-item>
                 <el-form-item label="邮箱" prop="email">
                     <el-input v-model="form.email" placeholder="请输入邮箱" />
-                </el-form-item>
-                <!-- 选择业务员 -->
-                <el-form-item label="选择业务员">
-                    <el-transfer :titles="['业务员列表', '已选业务员']" v-model="value" :data="data"></el-transfer>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -133,25 +130,14 @@ import {
     updateType,
     refreshCache
 } from "@/api/system/dict/type";
-const generateData = _ => {
-    const data = [];
-    for (let i = 1; i <= 15; i++) {
-        data.push({
-            key: i,
-            label: `备选项 ${i}`,
-            disabled: i % 4 === 0
-        });
-    }
-    return data;
-};
+
 export default {
-    name: "Purchase",
+    name: "Sale",
     dicts: ["sys_normal_disable"],
     data() {
         return {
-            data: generateData(),
-            value: [1, 4],
-
+            // 是否选择仅我的单据
+            isMeOrder: false,
             // 遮罩层
             loading: true,
             // 选中数组
@@ -164,7 +150,6 @@ export default {
             showSearch: true,
             // 总条数
             total: 0,
-            radio: "",
             // 表格数据
             tableData: [],
             // 弹出层标题
@@ -177,7 +162,7 @@ export default {
             params: {
                 pageNum: 1,
                 pageSize: 10,
-                onlyMyCreate: false,
+                onlyMyCreate:false,
                 orderApprovalStatusEnumList: [],
                 commodityInputProgressEnumList: [],
                 fundPayProgressEnumList: [],
@@ -214,8 +199,11 @@ export default {
         this.tableData = [{
             id: "1",
             orderNo: "XS220715003",
-            supplierName: "朝美家居",
+            customerName: "测试客户",
+            address: "北京市复兴区小区二号5号楼3单元202",
             handleMessage: "审批通过",
+            phone: "13820002020",
+            email: "12312@163.com",
             sort: "desc",
             orderPrice: 1583,
             status: true,
@@ -231,8 +219,11 @@ export default {
         {
             id: "2",
             orderNo: "XS220624001",
-            supplierName: "一代娇子家居",
+            customerName: "张伟丽",
+            address: "河北省邯郸市春风…",
             handleMessage: "审批拒绝",
+            phone: "13739422980",
+            email: "88888@163.com",
             sort: "desc",
             orderPrice: 1358,
             status: true,
@@ -252,6 +243,7 @@ export default {
     methods: {
         /** 查询用户列表 */
         getList() {
+            console.log(this.params.onlyMyCreate);
             this.loading = true;
             listType(this.addDateRange(this.params, this.dateRange)).then(
                 response => {

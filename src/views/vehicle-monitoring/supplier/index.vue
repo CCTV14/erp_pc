@@ -1,50 +1,32 @@
 <template>
     <div class="app-container">
         <el-form :model="params" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-            <el-form-item label="单号" prop="orderNo">
-                <el-input v-model="params.orderNo" placeholder="请输入销售单单号" clearable @keyup.enter.native="handleQuery" />
+            <el-form-item label="名称" prop="supplierName">
+                <el-input v-model="params.supplierName" placeholder="请输入名称" clearable
+                    @keyup.enter.native="handleQuery" />
             </el-form-item>
-            <el-form-item label="审批状态" prop="orderApprovalStatusEnumList">
-                <el-select v-model="params.orderApprovalStatusEnumList" collapse-tags multiple style="width:160px;"
-                    placeholder="请选择审批状态" clearable>
-                    <el-option label="审批中" value="1"></el-option>
-                    <el-option label="审批通过" value="0"></el-option>
-                    <el-option label="审批拒绝" value="1"></el-option>
-                </el-select>
+            <el-form-item label="地址" prop="address">
+                <el-input v-model="params.address" placeholder="请输入地址" clearable @keyup.enter.native="handleQuery" />
             </el-form-item>
-            <el-form-item label="入库进度" prop="commodityInputProgressEnumList">
-                <el-select v-model="params.commodityInputProgressEnumList" collapse-tags multiple style="width:160px;"
-                    placeholder="请选择出库进度" clearable>
-                    <el-option label="全部出库" value="2"></el-option>
-                </el-select>
+            <el-form-item label="联系方式" prop="phoneNumber">
+                <el-input v-model="params.phoneNumber" placeholder="请输入联系方式" clearable
+                    @keyup.enter.native="handleQuery" />
             </el-form-item>
-            <el-form-item label="付款进度" prop="fundPayProgressEnumList">
-                <el-select v-model="params.fundPayProgressEnumList" collapse-tags multiple style="width:160px;"
-                    placeholder="请选择付款进度" clearable>
-                    <el-option label="不限" value=""></el-option>
-                    <el-option label="无需付款" value="1"></el-option>
-                    <el-option label="未付款" value="0"></el-option>
-                </el-select>
+            <el-form-item label="备注" prop="remark">
+                <el-input v-model="params.remark" placeholder="请输入客户编号" clearable @keyup.enter.native="handleQuery" />
             </el-form-item>
-            <el-form-item label="单据金额">
+            <el-form-item label="余额区间">
                 <div style="display: flex;">
-                    <el-input style="width:140px;" v-model="params.minOrderAmount" placeholder="不限" clearable
+                    <el-input style="width:140px;" v-model="params.minBalance" placeholder="不限" clearable
                         @keyup.enter.native="handleQuery" />
                     <div class="ml10 mr10">-</div>
-                    <el-input style="width:140px;" v-model="params.maxOrderAmount" placeholder="不限" clearable
+                    <el-input style="width:140px;" v-model="params.maxBalance" placeholder="不限" clearable
                         @keyup.enter.native="handleQuery" />
                 </div>
-            </el-form-item>
-            <el-form-item label="制单日期">
-                <el-date-picker v-model="dateRange" style="width:240px;" value-format="yyyy-MM-dd" type="daterange"
-                    range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" @change="selectQueryDate">
-                </el-date-picker>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
                 <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-                <el-checkbox class="ml10" v-model="params.onlyMyCreate" shape="cirle" @change="getList()">仅我的单据
-                </el-checkbox>
             </el-form-item>
         </el-form>
 
@@ -67,29 +49,27 @@
         <el-table v-loading="loading" :data="tableData" :cell-style="$thinking.getCellFontColor"
             @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55" align="center" />
-            <el-table-column label="单号" align="center" prop="orderNo" width="120" />
-            <el-table-column label="供应商" align="center" prop="supplierName" />
-            <el-table-column label="单据金额" align="center" sortable width="100">
+            <el-table-column label="名称" align="center" prop="supplierName" />
+            <el-table-column label="当前余额" align="center" sortable width="100">
                 <template slot-scope="scope">
-                    <span>￥{{ scope.row.orderPrice | thousandSymbol }}</span>
+                    <span>￥{{ scope.row.price | thousandSymbol }}</span>
                 </template>
             </el-table-column>
-            <el-table-column label="制单信息" align="center" width="200">
+            <el-table-column label="联系方式" align="center" prop="phoneNumber" />
+            <el-table-column label="地址" align="center" prop="address" />
+            <el-table-column label="备注" align="center" prop="remark" />
+            <el-table-column label="创建信息" align="center" width="200">
                 <template slot-scope="scope">
-                    <span style="color:'$--color-primary'">{{ scope.row.createName + " " + scope.row.createTime
+                    <span>{{ scope.row.createName + " " + scope.row.createTime
                     }}</span>
                 </template>
             </el-table-column>
-
-            <el-table-column label="付款进度" prop="fundPayProgressEnum.Desc" align="center" />
-            <el-table-column label="入库进度" prop="commodityInputProgressEnum.Desc" align="center" />
-            <el-table-column label="审批状态" prop="handleMessage" align="center" />
             <el-table-column label="操作" fixed="right" align="center" width="120" class-name="small-padding fixed-width">
                 <template slot-scope="scope">
-                    <!-- <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
-                        v-hasPermi="['system:dict:edit']">修改</el-button> -->
-                    <el-button size="mini" type="text" icon="el-icon-edit" @click="handleDetail(scope.row)"
-                        v-hasPermi="['system:dict:detail']">查看</el-button>
+                    <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
+                        v-hasPermi="['system:dict:edit']">修改</el-button>
+                    <!-- <el-button size="mini" type="text" icon="el-icon-edit" @click="handleDetail(scope.row)"
+                        v-hasPermi="['system:dict:detail']">查看</el-button> -->
                     <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
                         v-hasPermi="['system:dict:remove']">删除</el-button>
                 </template>
@@ -100,20 +80,30 @@
             @pagination="getList" />
 
         <!-- 添加或修改参数配置对话框 -->
-        <el-dialog :title="title" :visible.sync="open" width="60%" append-to-body>
+        <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
             <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-                <el-form-item label="用户姓名" prop="name">
-                    <el-input v-model="form.name" placeholder="请输入用户姓名" />
+                <el-form-item label="名称" prop="supplierName">
+                    <el-input v-model="form.supplierName" placeholder="请输入名称" />
                 </el-form-item>
-                <el-form-item label="手机号码" prop="phone">
-                    <el-input v-model="form.phone" placeholder="请输入手机号码" />
+                <el-form-item label="当前余额" v-if="form.id">
+                    <span>{{ form.balanceAmount }}</span>
                 </el-form-item>
-                <el-form-item label="邮箱" prop="email">
-                    <el-input v-model="form.email" placeholder="请输入邮箱" />
+                <el-form-item label="联系方式" prop="phoneNumber">
+                    <el-input v-model="form.phoneNumber" placeholder="请输入联系方式" />
                 </el-form-item>
-                <!-- 选择业务员 -->
-                <el-form-item label="选择业务员">
-                    <el-transfer :titles="['业务员列表', '已选业务员']" v-model="value" :data="data"></el-transfer>
+                <el-form-item label="地址" prop="address">
+                    <el-input v-model="form.address" placeholder="请输入地址"></el-input>
+                </el-form-item>
+                <el-form-item label="创建信息" v-if="form.id">
+                    <span>{{ form.createName + " " + form.createTime
+                    }}</span>
+                </el-form-item>
+                <el-form-item label="冻结状态" v-if="form.id">
+                    <el-switch v-model="form.status" :active-value="true" :inactive-value="false">
+                    </el-switch>
+                </el-form-item>
+                <el-form-item label="备注" prop="remark">
+                    <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -133,25 +123,12 @@ import {
     updateType,
     refreshCache
 } from "@/api/system/dict/type";
-const generateData = _ => {
-    const data = [];
-    for (let i = 1; i <= 15; i++) {
-        data.push({
-            key: i,
-            label: `备选项 ${i}`,
-            disabled: i % 4 === 0
-        });
-    }
-    return data;
-};
+
 export default {
     name: "Purchase",
     dicts: ["sys_normal_disable"],
     data() {
         return {
-            data: generateData(),
-            value: [1, 4],
-
             // 遮罩层
             loading: true,
             // 选中数组
@@ -164,7 +141,6 @@ export default {
             showSearch: true,
             // 总条数
             total: 0,
-            radio: "",
             // 表格数据
             tableData: [],
             // 弹出层标题
@@ -177,33 +153,36 @@ export default {
             params: {
                 pageNum: 1,
                 pageSize: 10,
-                onlyMyCreate: false,
-                orderApprovalStatusEnumList: [],
-                commodityInputProgressEnumList: [],
-                fundPayProgressEnumList: [],
-                orderNo: "",
-                minOrderAmount: "",
-                maxOrderAmount: "",
-                minCreateDate: "",
-                maxCreateDate: ""
+                supplierName: "",
+                sort: "",
+                phoneNumber: "",
+                address: "",
+                remark: "",
+                minBalance: "",
+                maxBalance: ""
             },
             // 表单参数
             form: {},
             // 表单校验
             rules: {
-                name: [{
+                supplierName: [{
                     required: true,
-                    message: "用户名称不能为空",
+                    message: "名称不能为空",
                     trigger: "blur"
                 }],
-                phone: [{
+                phoneNumber: [{
                     required: true,
-                    message: "手机号码不能为空",
+                    message: "联系方式不能为空",
                     trigger: "blur"
                 }],
-                email: [{
+                address: [{
                     required: true,
-                    message: "邮箱不能为空",
+                    message: "地址不能为空",
+                    trigger: "blur"
+                }],
+                remark: [{
+                    required: true,
+                    message: "备注不能为空",
                     trigger: "blur"
                 }]
             }
@@ -213,37 +192,13 @@ export default {
         // this.getList(); 暂
         this.tableData = [{
             id: "1",
-            orderNo: "XS220715003",
-            supplierName: "朝美家居",
-            handleMessage: "审批通过",
-            sort: "desc",
-            orderPrice: 1583,
-            status: true,
+            supplierName: "V8家居",
+            price: 13358.20,
+            phoneNumber: "13020308798",
+            address: "河北省保定市…",
+            remark: "测试备注",
             createName: "人员",
-            commodityInputProgressEnum: {
-                Desc: "全部入库"
-            },
-            fundPayProgressEnum: {
-                Desc: "全部付款"
-            },
             createTime: "2022-02-20 12:33:00"
-        },
-        {
-            id: "2",
-            orderNo: "XS220624001",
-            supplierName: "一代娇子家居",
-            handleMessage: "审批拒绝",
-            sort: "desc",
-            orderPrice: 1358,
-            status: true,
-            createName: "管理员",
-            commodityInputProgressEnum: {
-                Desc: "无需入库"
-            },
-            fundPayProgressEnum: {
-                Desc: "部分付款"
-            },
-            createTime: "2022-06-14 14:22:00"
         }
         ];
         this.total = 1;
@@ -270,9 +225,10 @@ export default {
         reset() {
             this.form = {
                 id: "",
-                name: "",
-                phone: "",
-                email: ""
+                supplierName: "",
+                phoneNumber: "",
+                address: "",
+                remark: ""
             };
             this.resetForm("form");
         },
@@ -290,20 +246,18 @@ export default {
         resetQuery() {
             this.dateRange = [];
             this.resetForm("queryForm");
-            this.params.minOrderAmount = "";
-            this.params.maxOrderAmount = "";
             this.handleQuery();
         },
         /** 新增按钮操作 */
         handleAdd() {
             this.reset();
             this.open = true;
-            this.title = "添加用户";
+            this.title = "添加客户";
         },
         /** 查看详情按钮操作 */
         handleDetail(row) {
             this.$router.push({
-                name: "sale-detail"
+                name: "customer-detail"
             })
         },
         // 多选框选中数据
@@ -321,7 +275,7 @@ export default {
             getType(id).then(response => {
                 this.form = response.data;
                 this.open = true;
-                this.title = "修改用户";
+                this.title = "修改客户";
             });
         },
         /** 提交按钮 */
@@ -348,7 +302,7 @@ export default {
         handleDelete(row) {
             const ids = row.id || this.ids;
             this.$modal
-                .confirm('是否确认删除用户id为"' + ids + '"的数据项？')
+                .confirm('是否确认删除客户id为"' + ids + '"的数据项？')
                 .then(function () {
                     return delType(ids);
                 })
