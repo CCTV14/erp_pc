@@ -93,8 +93,9 @@ export const constantRoutes = [
     path: '/vehicle',
     component: Layout,
     hidden: false,
-    redirect: 'noredirect',
-    meta: { title: '测试菜单', icon: 'job' },
+    alwaysShow: true,
+    redirect: 'noRedirect',
+    meta: { title: '测试菜单', icon: 'job', link: null, noCache: false },
     children: [
       {
         path: 'user',
@@ -116,16 +117,10 @@ export const constantRoutes = [
         meta: { title: '销售单详情' }
       },
       {
-        path: 'sale-return',
-        component: () => import('@/views/vehicle-monitoring/sale-return/index'),
-        name: 'sale-return',
-        meta: { title: '销售退货单管理' }
-      },
-      {
-        path: 'purchase',
-        component: () => import('@/views/vehicle-monitoring/purchase/index'),
-        name: 'purchase',
-        meta: { title: '采购单管理' }
+        path: 'sale-my',
+        component: () => import('@/views/vehicle-monitoring/sale-my/index'),
+        name: 'sale-my',
+        meta: { title: '我的销售退货单' }
       },
       {
         path: 'account',
@@ -152,6 +147,24 @@ export const constantRoutes = [
         component: () => import('@/views/vehicle-monitoring/customer/detail'),
         name: 'customer-detail',
         meta: { title: '客户详情' }
+      },
+      {
+        path: 'customer-pool',
+        component: () => import('@/views/vehicle-monitoring/customer-pool/index'),
+        name: 'customer-pool',
+        meta: { title: '客户公海池' }
+      },
+      {
+        path: 'customer-my',
+        component: () => import('@/views/vehicle-monitoring/customer-my/index'),
+        name: 'customer-my',
+        meta: { title: '我的客户' }
+      },
+      {
+        path: 'floow-record',
+        component: () => import('@/views/vehicle-monitoring/floow-record/index'),
+        name: 'floow-record',
+        meta: { title: '跟进记录' }
       },
       {
         path: 'cagetory',

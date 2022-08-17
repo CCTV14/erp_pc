@@ -1,35 +1,31 @@
 <template>
     <div class="app-container">
         <el-form :model="params" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-            <el-form-item label="名称" prop="supplierName">
-                <el-input v-model="params.supplierName" style="width: 240px" placeholder="请输入名称" clearable
+            <el-form-item label="客户编号" prop="customerNo">
+                <el-input v-model="params.customerNo" placeholder="请输入客户编号" clearable
                     @keyup.enter.native="handleQuery" />
             </el-form-item>
-            <el-form-item label="地址" prop="address">
-                <el-input v-model="params.address" style="width: 240px" placeholder="请输入地址" clearable @keyup.enter.native="handleQuery" />
-            </el-form-item>
-            <el-form-item label="联系方式" prop="phoneNumber">
-                <el-input v-model="params.phoneNumber" placeholder="请输入联系方式" clearable
+            <el-form-item label="客户姓名" prop="customerName">
+                <el-input v-model="params.customerName" placeholder="请输入客户姓名" clearable
                     @keyup.enter.native="handleQuery" />
             </el-form-item>
-            <el-form-item label="备注" prop="remark">
-                <el-input v-model="params.remark" style="width: 240px" placeholder="请输入客户编号" clearable @keyup.enter.native="handleQuery" />
+            <el-form-item label="跟进用户" prop="floowCustomer">
+                <el-input v-model="params.floowCustomer" placeholder="请输入跟进用户名称" clearable
+                    @keyup.enter.native="handleQuery" />
             </el-form-item>
-            <el-form-item label="余额区间">
-                <div style="display: flex;">
-                    <el-input style="width:140px;" v-model="params.minBalance" placeholder="不限" clearable
-                        @keyup.enter.native="handleQuery" />
-                    <div class="ml10 mr10">-</div>
-                    <el-input style="width:140px;" v-model="params.maxBalance" placeholder="不限" clearable
-                        @keyup.enter.native="handleQuery" />
-                </div>
+            <el-form-item label="跟进内容" prop="content">
+                <el-input v-model="params.content" placeholder="请输入跟进内容" clearable @keyup.enter.native="handleQuery" />
+            </el-form-item>
+            <el-form-item label="创建日期">
+                <el-date-picker v-model="dateRange" style="width:240px;" value-format="yyyy-MM-dd" type="daterange"
+                    range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期" @change="selectQueryDate">
+                </el-date-picker>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
                 <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
             </el-form-item>
         </el-form>
-
         <el-row :gutter="10" class="mb8">
             <el-col :span="1.5">
                 <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
@@ -49,27 +45,20 @@
         <el-table v-loading="loading" :data="tableData" :cell-style="$thinking.getCellFontColor"
             @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55" align="center" />
-            <el-table-column label="名称" align="center" prop="supplierName" />
-            <el-table-column label="当前余额" align="center" sortable width="100">
-                <template slot-scope="scope">
-                    <span>￥{{ scope.row.price | thousandSymbol }}</span>
-                </template>
-            </el-table-column>
-            <el-table-column label="联系方式" align="center" prop="phoneNumber" />
-            <el-table-column label="地址" align="center" prop="address" />
-            <el-table-column label="备注" align="center" prop="remark" />
-            <el-table-column label="创建信息" align="center" width="200">
-                <template slot-scope="scope">
-                    <span>{{ scope.row.createName + " " + scope.row.createTime
-                    }}</span>
-                </template>
-            </el-table-column>
+            <el-table-column label="编号" align="center" prop="customerNo" width="120" />
+            <el-table-column label="客户姓名" align="center" prop="customerName" />
+            <el-table-column label="客户分组" align="center" prop="customerGroupEnum" />
+            <el-table-column label="客户类型" align="center" prop="customerTypeEnum" />
+            <el-table-column label="跟进内容" align="center" prop="content" width="300" />
+            <el-table-column label="添加时间" align="center" prop="createTime" />
             <el-table-column label="操作" fixed="right" align="center" width="120" class-name="small-padding fixed-width">
                 <template slot-scope="scope">
                     <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
                         v-hasPermi="['system:dict:edit']">修改</el-button>
-                    <!-- <el-button size="mini" type="text" icon="el-icon-edit" @click="handleDetail(scope.row)"
-                        v-hasPermi="['system:dict:detail']">查看</el-button> -->
+                    <el-button size="mini" type="text" icon="el-icon-edit" @click="handleDetail(scope.row)"
+                        v-hasPermi="['system:dict:detail']">认领</el-button>
+                    <el-button size="mini" type="text" icon="el-icon-edit" @click="handleDetail(scope.row)"
+                        v-hasPermi="['system:dict:detail']">分配</el-button>
                     <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
                         v-hasPermi="['system:dict:remove']">删除</el-button>
                 </template>
@@ -82,8 +71,11 @@
         <!-- 添加或修改参数配置对话框 -->
         <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
             <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-                <el-form-item label="名称" prop="supplierName">
-                    <el-input v-model="form.supplierName" placeholder="请输入名称" />
+                <el-form-item label="客户编号" v-if="form.id">
+                    <span>{{ form.customerNo }}</span>
+                </el-form-item>
+                <el-form-item label="客户姓名" prop="name">
+                    <el-input v-model="form.name" placeholder="请输入客户姓名" />
                 </el-form-item>
                 <el-form-item label="当前余额" v-if="form.id">
                     <span>{{ form.balanceAmount }}</span>
@@ -92,15 +84,21 @@
                     <el-input v-model="form.phoneNumber" placeholder="请输入联系方式" />
                 </el-form-item>
                 <el-form-item label="地址" prop="address">
-                    <el-input v-model="form.address" placeholder="请输入地址"></el-input>
+                    <el-input v-model="form.address" type="textarea" placeholder="请输入内容"></el-input>
                 </el-form-item>
-                <el-form-item label="创建信息" v-if="form.id">
-                    <span>{{ form.createName + " " + form.createTime
-                    }}</span>
+                <el-form-item label="客户分组" prop="customerGroupEnum">
+                    <el-select v-model="form.customerGroupEnum" style="width:100%" placeholder="请选择类型" clearable>
+                        <el-option label="成交" value="1"></el-option>
+                        <el-option label="流失" value="0"></el-option>
+                        <el-option label="支付宝账户" value="1"></el-option>
+                    </el-select>
                 </el-form-item>
-                <el-form-item label="冻结状态" v-if="form.id">
-                    <el-switch v-model="form.status" :active-value="true" :inactive-value="false">
-                    </el-switch>
+                <el-form-item label="客户类型" prop="customerTypeEnum">
+                    <el-select v-model="form.customerTypeEnum" style="width:100%" placeholder="请选择类型" clearable>
+                        <el-option label="成交" value="1"></el-option>
+                        <el-option label="流失" value="0"></el-option>
+                        <el-option label="支付宝账户" value="1"></el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="备注" prop="remark">
                     <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"></el-input>
@@ -141,6 +139,7 @@ export default {
             showSearch: true,
             // 总条数
             total: 0,
+            radio: "",
             // 表格数据
             tableData: [],
             // 弹出层标题
@@ -153,36 +152,30 @@ export default {
             params: {
                 pageNum: 1,
                 pageSize: 10,
-                supplierName: "",
-                sort: "",
+                customerNo: "",
+                customerName: "",
+                content: "",
                 phoneNumber: "",
-                address: "",
-                remark: "",
-                minBalance: "",
-                maxBalance: ""
+                customerGroupEnum: "",
+                customerTypeEnum: ""
             },
             // 表单参数
             form: {},
             // 表单校验
             rules: {
-                supplierName: [{
+                name: [{
                     required: true,
-                    message: "名称不能为空",
+                    message: "用户名称不能为空",
                     trigger: "blur"
                 }],
-                phoneNumber: [{
+                phone: [{
                     required: true,
-                    message: "联系方式不能为空",
+                    message: "手机号码不能为空",
                     trigger: "blur"
                 }],
-                address: [{
+                email: [{
                     required: true,
-                    message: "地址不能为空",
-                    trigger: "blur"
-                }],
-                remark: [{
-                    required: true,
-                    message: "备注不能为空",
+                    message: "邮箱不能为空",
                     trigger: "blur"
                 }]
             }
@@ -192,12 +185,12 @@ export default {
         // this.getList(); 暂
         this.tableData = [{
             id: "1",
-            supplierName: "V8家居",
-            price: 13358.20,
+            customerNo: "KH-220419001",
+            customerName: "李小宝",
             phoneNumber: "13020308798",
-            address: "河北省保定市…",
-            remark: "测试备注",
-            createName: "人员",
+            customerGroupEnum: "成交",
+            customerTypeEnum: "定制",
+            content: "放弃跟进自动恢复至公海池，原跟进内容：新增客户自动跟进",
             createTime: "2022-02-20 12:33:00"
         }
         ];
@@ -225,10 +218,9 @@ export default {
         reset() {
             this.form = {
                 id: "",
-                supplierName: "",
-                phoneNumber: "",
-                address: "",
-                remark: ""
+                name: "",
+                phone: "",
+                email: ""
             };
             this.resetForm("form");
         },
@@ -246,6 +238,8 @@ export default {
         resetQuery() {
             this.dateRange = [];
             this.resetForm("queryForm");
+            this.params.minOrderAmount = "";
+            this.params.maxOrderAmount = "";
             this.handleQuery();
         },
         /** 新增按钮操作 */

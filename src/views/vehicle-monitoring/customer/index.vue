@@ -2,11 +2,25 @@
     <div class="app-container">
         <el-form :model="params" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
             <el-form-item label="编号" prop="customerNo">
-                <el-input v-model="params.customerNo" placeholder="请输入客户编号" clearable
+                <el-input v-model="params.customerNo" style="width: 240px" placeholder="请输入客户编号" clearable
                     @keyup.enter.native="handleQuery" />
             </el-form-item>
+            <el-form-item label="名称" prop="customerName">
+                <el-input v-model="params.customerName" style="width: 240px" placeholder="请输入客户名称" clearable
+                    @keyup.enter.native="handleQuery" />
+            </el-form-item>
+            <el-form-item label="联系方式" prop="phoneNumber">
+                <el-input v-model="params.phoneNumber"  style="width: 240px"  placeholder="请输入联系方式" clearable
+                    @keyup.enter.native="handleQuery" />
+            </el-form-item>
+            <el-form-item label="地址" prop="address">
+                <el-input v-model="params.address" style="width: 240px" placeholder="请输入地址" clearable @keyup.enter.native="handleQuery" />
+            </el-form-item>
+            <el-form-item label="备注" prop="remark">
+                <el-input v-model="params.remark" style="width: 240px" placeholder="请输入备注" clearable @keyup.enter.native="handleQuery" />
+            </el-form-item>
             <el-form-item label="客户类型" prop="customerTypeEnum">
-                <el-select v-model="params.customerTypeEnum" placeholder="请选择客户类型" clearable>
+                <el-select v-model="params.customerTypeEnum" style="width: 240px" placeholder="请选择客户类型" clearable>
                     <el-option label="毛坯" value="1"></el-option>
                     <el-option label="水电" value="0"></el-option>
                 </el-select>
@@ -21,7 +35,7 @@
                 </div>
             </el-form-item>
             <el-form-item label="客户分组" prop="customerGroupEnum">
-                <el-select v-model="params.customerGroupEnum" collapse-tags multiple placeholder="请选择分组" clearable>
+                <el-select v-model="params.customerGroupEnum" style="width: 240px" collapse-tags multiple placeholder="请选择分组" clearable>
                     <el-option label="全部分组" value=""></el-option>
                     <el-option label="已启用" value="0"></el-option>
                     <el-option label="未启用" value="1"></el-option>
@@ -32,7 +46,6 @@
             <el-form-item>
                 <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
                 <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
-                <el-radio class="ml10" v-model="radio" label="1">仅我的单据</el-radio>
             </el-form-item>
         </el-form>
 

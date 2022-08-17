@@ -2,20 +2,20 @@
     <div class="app-container">
         <el-form :model="params" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
             <el-form-item label="名称" prop="name">
-                <el-input v-model="params.name" placeholder="请输入资金账户名称" clearable @keyup.enter.native="handleQuery" />
+                <el-input v-model="params.name" style="width: 240px" placeholder="请输入资金账户名称" clearable @keyup.enter.native="handleQuery" />
             </el-form-item>
             <el-form-item label="账户" prop="account">
-                <el-input v-model="params.account" placeholder="请输入账户名称" clearable @keyup.enter.native="handleQuery" />
+                <el-input v-model="params.account" style="width: 240px" placeholder="请输入账户名称" clearable @keyup.enter.native="handleQuery" />
             </el-form-item>
             <el-form-item label="类型" prop="fundAccountTypeEnum">
-                <el-select v-model="params.fundAccountTypeEnum" collapse-tags placeholder="请选择类型" clearable>
+                <el-select v-model="params.fundAccountTypeEnum" style="width: 240px" collapse-tags placeholder="请选择类型" clearable>
                     <el-option label="银行账户" value="1"></el-option>
                     <el-option label="微信钱包" value="0"></el-option>
                     <el-option label="支付宝账户" value="1"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="冻结状态" prop="frozen">
-                <el-select v-model="params.frozen" collapse-tags placeholder="请选择冻结状态" clearable>
+                <el-select v-model="params.frozen" style="width: 240px" collapse-tags placeholder="请选择冻结状态" clearable>
                     <el-option label="全部" value=""></el-option>
                     <el-option label="已冻结" :value="true"></el-option>
                     <el-option label="未冻结" :value="false"></el-option>
