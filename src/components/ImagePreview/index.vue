@@ -1,4 +1,5 @@
 <template>
+<!-- 目前在项目中只用作于加载 商品图片 -->
   <el-image
     :src="`${realSrc}`"
     fit="cover"
@@ -36,7 +37,8 @@ export default {
       if (isExternal(real_src)) {
         return real_src;
       }
-      return process.env.VUE_APP_BASE_API + real_src;
+      console.log(process.env.VUE_APP_BASE_COMMODITY_IMG);
+      return process.env.VUE_APP_BASE_COMMODITY_IMG + real_src;
     },
     realSrcList() {
       let real_src_list = this.src.split(",");
@@ -45,7 +47,7 @@ export default {
         if (isExternal(item)) {
           return srcList.push(item);
         }
-        return srcList.push(process.env.VUE_APP_BASE_API + item);
+        return srcList.push(process.env.VUE_APP_BASE_COMMODITY_IMG + item);
       });
       return srcList;
     },

@@ -95,7 +95,7 @@ export const constantRoutes = [
     hidden: false,
     alwaysShow: true,
     redirect: 'noRedirect',
-    meta: { title: '测试菜单', icon: 'job', link: null, noCache: false },
+    meta: { title: '测试菜单', icon: 'job' },
     children: [
       {
         path: 'user',
@@ -165,6 +165,19 @@ export const constantRoutes = [
         component: () => import('@/views/vehicle-monitoring/floow-record/index'),
         name: 'floow-record',
         meta: { title: '跟进记录' }
+      },
+      {
+        path: 'floow-record-detail',
+        hidden: true,
+        component: () => import('@/views/vehicle-monitoring/floow-record/detail'),
+        name: 'floow-record-detail',
+        meta: { title: '跟进记录详情' }
+      },
+      {
+        path: 'commodity',
+        component: () => import('@/views/vehicle-monitoring/commodity/index'),
+        name: 'commodity',
+        meta: { title: '商品管理' }
       },
       {
         path: 'cagetory',

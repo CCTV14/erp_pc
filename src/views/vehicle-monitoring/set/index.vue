@@ -6,7 +6,7 @@
                     <el-row :gutter="20">
                         <el-col :span="8" :offset="0">
                             <el-form-item label="标语">
-                                <el-input v-model="sloganForm.title"></el-input>
+                                <el-input v-model="sloganForm.newTitle"></el-input>
                             </el-form-item>
                         </el-col>
                     </el-row>
@@ -103,7 +103,7 @@
                             </el-tooltip>
                             预警数量
                         </span>
-                        <el-input-number v-model="commodityForm.num" :min="1" :max="10"></el-input-number>
+                        <el-input-number v-model="commodityForm.number" :min="1" :max="10"></el-input-number>
                     </el-form-item>
                     <el-form-item label="商品页面显示设置">
                         <span slot="label">
@@ -112,7 +112,7 @@
                             </el-tooltip>
                             权限字符
                         </span>
-                        <el-select v-model="commodityForm.set" placeholder="请选择" clearable>
+                        <el-select v-model="commodityForm.type" placeholder="请选择" clearable>
                             <el-option label="纵向表格" value=""></el-option>
                             <el-option label="横向表格" value="0"></el-option>
                             <el-option label="清单" value="1"></el-option>
@@ -139,12 +139,12 @@ export default {
             },
             // 标语表单
             sloganForm: {
-                title: ""
+                newTitle: ""
             },
             // 商品设置表单
             commodityForm: {
-                num: 0,
-                set: ""
+                number: 0,
+                type: ""
             },
             rules: {
 
