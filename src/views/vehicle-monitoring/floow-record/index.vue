@@ -8,7 +8,10 @@
       v-show="showSearch"
       label-width="68px"
     >
-      <el-form-item label="客户编号">
+      <el-form-item
+        label="客户编号"
+        prop="quickSearchInfoList[1].quickSearchValue"
+      >
         <el-input
           v-model="params.quickSearchInfoList[1].quickSearchValue"
           placeholder="请输入客户编号"
@@ -16,7 +19,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="客户姓名">
+      <el-form-item
+        label="客户姓名"
+        prop="quickSearchInfoList[2].quickSearchValue"
+      >
         <el-input
           v-model="params.quickSearchInfoList[2].quickSearchValue"
           placeholder="请输入客户姓名"
@@ -24,7 +30,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="跟进用户">
+      <el-form-item
+        label="跟进用户"
+        prop="quickSearchInfoList[3].quickSearchValue"
+      >
         <el-input
           v-model="params.quickSearchInfoList[3].quickSearchValue"
           placeholder="请输入跟进用户名称"
@@ -32,7 +41,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="跟进内容">
+      <el-form-item
+        label="跟进内容"
+        prop="quickSearchInfoList[4].quickSearchValue"
+      >
         <el-input
           v-model="params.quickSearchInfoList[4].quickSearchValue"
           placeholder="请输入跟进内容"
@@ -40,7 +52,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="客户类型">
+      <el-form-item label="客户类型" prop="customerFollowUpDetailTypeEnum">
         <el-select
           v-model="params.customerFollowUpDetailTypeEnum"
           placeholder="请选择客户类型"
@@ -134,13 +146,9 @@
               row.customerFollowUp.customerFollowUpStatusEnum.Name ===
               'Following'
             "
-            style="color:#f56c6c;"
+            style="color: #f56c6c"
           >
-            {{
-              "预计下次跟进时间 : " +
-              row.nextFollowUpTime +
-              (timedOut(row) ? "[已超时]" : null)
-            }}
+            {{ row.nextFollowUpTime + (timedOut(row) ? "[已超时]" : null) }}
           </span>
           <span v-else> 暂无跟进 </span>
         </template>
@@ -249,7 +257,6 @@ import {
 
 export default {
   name: "Purchase",
-  dicts: ["sys_normal_disable"],
   data() {
     return {
       // 遮罩层
@@ -398,8 +405,12 @@ export default {
     resetQuery() {
       this.dateRange = [];
       this.resetForm("queryForm");
-      this.params.minOrderAmount = "";
-      this.params.maxOrderAmount = "";
+      for (const w in this.params) {
+        if (w.indexOf("min") != -1 || w.indexOf("max") != -1) {
+          this.params[w] = "";
+        }
+      }
+      this.sortName = "";
       this.handleQuery();
     },
     /** 新增按钮操作 */

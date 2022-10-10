@@ -3,6 +3,7 @@ import hasPermi from './permission/hasPermi'
 import dialogDrag from './dialog/drag'
 import dialogDragWidth from './dialog/dragWidth'
 import dialogDragHeight from './dialog/dragHeight'
+import select from "./select/index"
 import clipboard from './module/clipboard'
 
 const install = function(Vue) {
@@ -12,6 +13,7 @@ const install = function(Vue) {
   Vue.directive('dialogDrag', dialogDrag)
   Vue.directive('dialogDragWidth', dialogDragWidth)
   Vue.directive('dialogDragHeight', dialogDragHeight)
+  Vue.directive('el-select-loadmore', select)
 }
 
 if (window.Vue) {

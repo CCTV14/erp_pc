@@ -8,7 +8,7 @@
       v-show="showSearch"
       label-width="68px"
     >
-      <el-form-item label="编号">
+      <el-form-item label="编号" prop="quickSearchInfoList[1].quickSearchValue">
         <el-input
           v-model="params.quickSearchInfoList[1].quickSearchValue"
           style="width: 240px"
@@ -17,7 +17,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="名称">
+      <el-form-item label="名称" prop="quickSearchInfoList[2].quickSearchValue">
         <el-input
           v-model="params.quickSearchInfoList[2].quickSearchValue"
           style="width: 240px"
@@ -26,7 +26,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="联系方式">
+      <el-form-item
+        label="联系方式"
+        prop="quickSearchInfoList[3].quickSearchValue"
+      >
         <el-input
           v-model="params.quickSearchInfoList[3].quickSearchValue"
           style="width: 240px"
@@ -35,7 +38,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="地址">
+      <el-form-item label="地址" prop="quickSearchInfoList[4].quickSearchValue">
         <el-input
           v-model="params.quickSearchInfoList[4].quickSearchValue"
           style="width: 240px"
@@ -44,7 +47,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="备注">
+      <el-form-item label="备注" prop="quickSearchInfoList[5].quickSearchValue">
         <el-input
           v-model="params.quickSearchInfoList[5].quickSearchValue"
           style="width: 240px"
@@ -53,7 +56,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="跟进内容">
+      <el-form-item
+        label="跟进内容"
+        prop="quickSearchInfoList[6].quickSearchValue"
+      >
         <el-input
           v-model="params.quickSearchInfoList[6].quickSearchValue"
           style="width: 240px"
@@ -62,7 +68,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="客户分组">
+      <el-form-item label="客户分组" prop="customerGroupEnum">
         <el-select
           v-model="params.customerGroupEnum"
           style="width: 240px"
@@ -77,7 +83,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="客户类型">
+      <el-form-item label="客户类型" prop="customerTypeEnum">
         <el-select
           v-model="params.customerTypeEnum"
           style="width: 240px"
@@ -92,7 +98,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="跟进状态">
+      <el-form-item label="跟进状态" prop="customerFollowUpStatusEnum">
         <el-select
           v-model="params.customerFollowUpStatusEnum"
           style="width: 240px"
@@ -107,7 +113,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="排序方式">
+      <el-form-item label="排序方式" prop="sortInfo">
         <el-select
           v-model="sortName"
           style="width: 240px"
@@ -233,6 +239,7 @@
         label="跟进内容"
         align="center"
         prop="followUpContent"
+        width="200"
         show-overflow-tooltip
       />
       <el-table-column label="最近跟进时间" align="center" width="200">
@@ -563,6 +570,12 @@ export default {
     resetQuery() {
       this.dateRange = [];
       this.resetForm("queryForm");
+      for (const w in this.params) {
+        if (w.indexOf("min") != -1 || w.indexOf("max") != -1) {
+          this.params[w] = "";
+        }
+      }
+      this.sortName = "";
       this.handleQuery();
     },
     /** 新增按钮操作 */

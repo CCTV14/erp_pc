@@ -8,7 +8,7 @@
       v-show="showSearch"
       label-width="68px"
     >
-      <el-form-item label="名称">
+      <el-form-item label="名称" prop="quickSearchInfoList[1].quickSearchValue">
         <el-input
           v-model="params.quickSearchInfoList[1].quickSearchValue"
           style="width: 240px"
@@ -17,7 +17,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="颜色">
+      <el-form-item label="颜色" prop="quickSearchInfoList[2].quickSearchValue">
         <el-input
           v-model="params.quickSearchInfoList[2].quickSearchValue"
           style="width: 240px"
@@ -26,7 +26,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="单位">
+      <el-form-item label="单位" prop="quickSearchInfoList[3].quickSearchValue">
         <el-input
           v-model="params.quickSearchInfoList[3].quickSearchValue"
           style="width: 240px"
@@ -35,7 +35,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="供应商" prop="supplierName">
+      <el-form-item
+        label="供应商"
+        prop="quickSearchInfoList[4].quickSearchValue"
+      >
         <el-input
           v-model="params.quickSearchInfoList[4].quickSearchValue"
           style="width: 240px"
@@ -44,7 +47,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="商品分类">
+      <el-form-item label="商品分类" prop="commodityCategoryId">
         <el-select
           v-model="params.commodityCategoryId"
           style="width: 240px"
@@ -60,7 +63,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="在产状态">
+      <el-form-item label="在产状态" prop="productionStatusEnum">
         <el-select
           v-model="params.productionStatusEnum"
           style="width: 240px"
@@ -76,7 +79,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="冻结状态">
+      <el-form-item label="冻结状态" prop="frozen">
         <el-select
           v-model="params.frozen"
           style="width: 240px"
@@ -88,7 +91,7 @@
           <el-option label="未冻结" :value="false"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="排序方式">
+      <el-form-item label="排序方式" prop="sortInfo">
         <el-select
           v-model="sortName"
           style="width: 240px"
@@ -299,7 +302,6 @@ import {
 
 export default {
   name: "Purchase",
-  dicts: ["sys_normal_disable"],
   data() {
     return {
       // 排序名称
@@ -497,6 +499,11 @@ export default {
     resetQuery() {
       this.dateRange = [];
       this.resetForm("queryForm");
+      for (const w in this.params) {
+        if (w.indexOf("min") != -1 || w.indexOf("max") != -1) {
+          this.params[w] = "";
+        }
+      }
       this.sortName = "";
       this.handleQuery();
     },

@@ -38,4 +38,11 @@ export function getSupplierData(data) {
     data: data
   });
 }
-
+// 商品管理 编辑 可选择的供应商
+export function changeCanSupplier(data) {
+  return request({
+    url: "/supplier/findPageForManage",
+    method: "post",
+    data: data
+  });
+}

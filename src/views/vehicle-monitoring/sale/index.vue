@@ -8,7 +8,7 @@
       v-show="showSearch"
       label-width="68px"
     >
-      <el-form-item label="单号">
+      <el-form-item label="单号" prop="quickSearchInfoList[1].quickSearchValue">
         <el-input
           v-model="params.quickSearchInfoList[1].quickSearchValue"
           placeholder="请输入销售单单号"
@@ -16,7 +16,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="客户">
+      <el-form-item label="客户" prop="quickSearchInfoList[2].quickSearchValue">
         <el-input
           v-model="params.quickSearchInfoList[2].quickSearchValue"
           placeholder="请输入客户编号/收货人"
@@ -24,7 +24,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="制单人">
+      <el-form-item
+        label="制单人"
+        prop="quickSearchInfoList[3].quickSearchValue"
+      >
         <el-input
           v-model="params.quickSearchInfoList[3].quickSearchValue"
           placeholder="请输入制单人名称"
@@ -32,7 +35,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="审批状态">
+      <el-form-item label="审批状态" prop="orderApprovalStatusEnumList">
         <el-select
           v-model="params.orderApprovalStatusEnumList"
           collapse-tags
@@ -49,7 +52,7 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="出库进度">
+      <el-form-item label="出库进度" prop="commodityOutputProgressEnumList">
         <el-select
           v-model="params.commodityOutputProgressEnumList"
           collapse-tags
@@ -66,7 +69,7 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="收款进度">
+      <el-form-item label="收款进度" prop="fundCollectProgressEnumList">
         <el-select
           v-model="params.fundCollectProgressEnumList"
           collapse-tags
@@ -86,7 +89,7 @@
       <el-form-item label="单据金额">
         <div style="display: flex">
           <el-input
-            style="width: 140px"
+            style="width: 150px"
             v-model="params.minOrderAmount"
             placeholder="不限"
             clearable
@@ -94,7 +97,7 @@
           />
           <div class="ml10 mr10">-</div>
           <el-input
-            style="width: 140px"
+            style="width: 150px"
             v-model="params.maxOrderAmount"
             placeholder="不限"
             clearable
@@ -102,7 +105,7 @@
           />
         </div>
       </el-form-item>
-      <el-form-item label="排序方式">
+      <el-form-item label="排序方式" prop="sortInfo">
         <el-select
           v-model="sortName"
           placeholder="请选择排序方式"
@@ -151,7 +154,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:sale:add']"
+          v-hasPermi="['SaleOrder_AddNewOrder']"
           >新增</el-button
         >
       </el-col>
@@ -231,6 +234,7 @@
       />
       <el-table-column
         label="审批状态"
+        fixed="right"
         prop="orderApprovalStatusEnum.Desc"
         align="center"
       />
@@ -249,7 +253,6 @@
             type="text"
             icon="el-icon-edit"
             @click="handleDetail(scope.row)"
-            v-hasPermi="['system:dict:detail']"
             >查看</el-button
           >
           <el-button
@@ -299,7 +302,6 @@
       title="请选择商品"
       :visible.sync="selectCommodityVisble"
       direction="rtl"
-      :before-close="handleClose"
     >
       <span>我来啦!</span>
     </el-drawer>
@@ -316,7 +318,6 @@ import {
 
 export default {
   name: "Sale",
-  dicts: ["sys_normal_disable"],
   data() {
     return {
       // 排序方式名称
@@ -514,8 +515,12 @@ export default {
     resetQuery() {
       this.dateRange = [];
       this.resetForm("queryForm");
-      this.params.minOrderAmount = "";
-      this.params.maxOrderAmount = "";
+      for (const w in this.params) {
+        if (w.indexOf("min") != -1 || w.indexOf("max") != -1) {
+          this.params[w] = "";
+        }
+      }
+      this.sortName = "";
       this.handleQuery();
     },
     /** 新增按钮操作 */
@@ -528,6 +533,7 @@ export default {
     handleDetail(row) {
       this.$router.push({
         name: "sale-detail",
+        query: { orderId: row.id },
       });
     },
     // 多选框选中数据

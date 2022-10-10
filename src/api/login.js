@@ -1,18 +1,13 @@
 import request from '@/utils/request'
 
 // 登录方法
-export function login(username, password, code, uuid) {
+export function login(phoneNumber, password) {
   const data = {
-    username,
-    password,
-    code,
-    uuid
+    phoneNumber,
+    password
   }
   return request({
-    url: '/login',
-    headers: {
-      isToken: false
-    },
+    url: 'user/login',
     method: 'post',
     data: data
   })
@@ -33,8 +28,8 @@ export function register(data) {
 // 获取用户详细信息
 export function getInfo() {
   return request({
-    url: '/getInfo',
-    method: 'get'
+    url: '/user/getCurrentUserInfo',
+    method: 'post'
   })
 }
 

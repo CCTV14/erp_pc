@@ -8,7 +8,7 @@
       v-show="showSearch"
       label-width="68px"
     >
-      <el-form-item label="编号">
+      <el-form-item label="编号" prop="quickSearchInfoList[1].quickSearchValue">
         <el-input
           v-model="params.quickSearchInfoList[1].quickSearchValue"
           style="width: 240px"
@@ -17,7 +17,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="名称">
+      <el-form-item label="名称" prop="quickSearchInfoList[2].quickSearchValue">
         <el-input
           v-model="params.quickSearchInfoList[2].quickSearchValue"
           style="width: 240px"
@@ -26,7 +26,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="联系方式" prop="phoneNumber">
+      <el-form-item
+        label="联系方式"
+        prop="quickSearchInfoList[3].quickSearchValue"
+      >
         <el-input
           v-model="params.quickSearchInfoList[3].quickSearchValue"
           style="width: 240px"
@@ -35,7 +38,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="地址" prop="address">
+      <el-form-item label="地址" prop="quickSearchInfoList[4].quickSearchValue">
         <el-input
           v-model="params.quickSearchInfoList[4].quickSearchValue"
           style="width: 240px"
@@ -44,7 +47,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="备注" prop="remark">
+      <el-form-item label="备注" prop="quickSearchInfoList[5].quickSearchValue">
         <el-input
           v-model="params.quickSearchInfoList[5].quickSearchValue"
           style="width: 240px"
@@ -53,7 +56,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="客户类型">
+      <el-form-item label="客户类型" prop="customerTypeEnum">
         <el-select
           v-model="params.customerTypeEnum"
           style="width: 240px"
@@ -104,7 +107,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="排序方式">
+      <el-form-item label="排序方式" prop="sortInfo">
         <el-select
           v-model="sortName"
           style="width: 240px"
@@ -201,7 +204,13 @@
         prop="address"
         show-overflow-tooltip
       />
-      <el-table-column label="备注" align="center" prop="remark" />
+      <el-table-column
+        label="备注"
+        align="center"
+        prop="remark"
+        width="200"
+        show-overflow-tooltip
+      />
       <el-table-column label="状态" align="center" width="160">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.frozen" type="danger" disable-transitions
@@ -215,16 +224,21 @@
       <el-table-column label="当前跟进人" align="center" width="180">
         <template slot-scope="scope">
           <span style="color: red">{{
-            scope.row.customerFollowUpList[0].user.name +
-            " " +
-            (new Date(scope.row.customerFollowUpList[0].nextFollowUpTime) <
-            new Date()
-              ? "[已超时]"
-              : "")
+            scope.row.customerFollowUpList[0]
+              ? scope.row.customerFollowUpList[0].user.name
+              : "" +
+                " " +
+                (new Date(
+                  scope.row.customerFollowUpList[0]
+                    ? scope.row.customerFollowUpList[0].nextFollowUpTime
+                    : ""
+                ) < new Date()
+                  ? "[已超时]"
+                  : "")
           }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="创建信息" align="center" width="200">
+      <el-table-column label="创建信息" align="center" width="250">
         <template slot-scope="scope">
           <span>{{ scope.row.creator.name + " " + scope.row.createTime }}</span>
         </template>
@@ -336,7 +350,6 @@ import {
 
 export default {
   name: "Purchase",
-  dicts: ["sys_normal_disable"],
   data() {
     return {
       // 排序方式名称
@@ -536,8 +549,12 @@ export default {
     resetQuery() {
       this.dateRange = [];
       this.resetForm("queryForm");
-      this.params.minOrderAmount = "";
-      this.params.maxOrderAmount = "";
+      for (const w in this.params) {
+        if (w.indexOf("min") != -1 || w.indexOf("max") != -1) {
+          this.params[w] = "";
+        }
+      }
+      this.sortName = "";
       this.handleQuery();
     },
     /** 新增按钮操作 */

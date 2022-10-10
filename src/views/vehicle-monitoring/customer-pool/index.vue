@@ -8,7 +8,10 @@
       v-show="showSearch"
       label-width="68px"
     >
-      <el-form-item label="客户编号">
+      <el-form-item
+        label="客户编号"
+        prop="quickSearchInfoList[1].quickSearchValue"
+      >
         <el-input
           v-model="params.quickSearchInfoList[1].quickSearchValue"
           placeholder="请输入客户编号"
@@ -16,7 +19,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="客户姓名">
+      <el-form-item
+        label="客户姓名"
+        prop="quickSearchInfoList[2].quickSearchValue"
+      >
         <el-input
           v-model="params.quickSearchInfoList[2].quickSearchValue"
           placeholder="请输入客户姓名"
@@ -24,7 +30,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="联系方式">
+      <el-form-item
+        label="联系方式"
+        prop="quickSearchInfoList[3].quickSearchValue"
+      >
         <el-input
           v-model="params.quickSearchInfoList[3].quickSearchValue"
           placeholder="请输入联系方式"
@@ -32,7 +41,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="跟进内容">
+      <el-form-item
+        label="跟进内容"
+        prop="quickSearchInfoList[4].quickSearchValue"
+      >
         <el-input
           v-model="params.quickSearchInfoList[4].quickSearchValue"
           placeholder="请输入跟进内容"
@@ -40,7 +52,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="客户分组">
+      <el-form-item label="客户分组" prop="customerGroupEnum">
         <el-select
           v-model="params.customerGroupEnum"
           placeholder="请选择分组"
@@ -54,7 +66,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="客户类型">
+      <el-form-item label="客户类型" prop="customerTypeEnum">
         <el-select
           v-model="params.customerTypeEnum"
           placeholder="请选择客户类型"
@@ -68,7 +80,7 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="排序方式">
+      <el-form-item label="排序方式" prop="sortInfo">
         <el-select
           v-model="sortName"
           placeholder="请选择排序方式"
@@ -283,7 +295,6 @@ import customerList from "@/components/thinking/customerList";
 
 export default {
   name: "Purchase",
-  dicts: ["sys_normal_disable"],
   data() {
     return {
       // 排序方式名称
@@ -464,8 +475,12 @@ export default {
     resetQuery() {
       this.dateRange = [];
       this.resetForm("queryForm");
-      this.params.minOrderAmount = "";
-      this.params.maxOrderAmount = "";
+      for (const w in this.params) {
+        if (w.indexOf("min") != -1 || w.indexOf("max") != -1) {
+          this.params[w] = "";
+        }
+      }
+      this.sortName = "";
       this.handleQuery();
     },
     /** 新增按钮操作 */

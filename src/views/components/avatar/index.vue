@@ -1,12 +1,18 @@
 <template>
   <div>
-    <el-avatar :size="size" :src="src"></el-avatar>
+    <el-avatar :size="size" :src="srcs" v-if="this.src.avatarName"></el-avatar>
+    <el-avatar :size="size" v-else>{{ this.src.name }}</el-avatar>
   </div>
 </template>
 
 <script>
 export default {
   name: "avatar",
+  computed: {
+    srcs() {
+      return process.env.VUE_APP_BASE_USER_AVATAR + this.src.avatarName;
+    },
+  },
   // computed: {
   // 	subName() {
   // 		if (this.userInfo.name) {
@@ -36,23 +42,22 @@ export default {
   props: {
     userInfo: {
       type: Object,
-      default: null
+      default: null,
     },
     size: {
       type: [String, Number],
-      default: "medium"
+      default: "medium",
     },
     shape: {
       type: String,
-      default: "circle"
+      default: "circle",
     },
     src: {
-      type: String,
-      default: "circle"
-    }
-  }
+      type: Object,
+      default: () => {},
+    },
+  },
 };
 </script>
 
-<style>
-</style>
+<style></style>

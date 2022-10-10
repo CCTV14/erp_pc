@@ -8,7 +8,10 @@
       v-show="showSearch"
       label-width="68px"
     >
-      <el-form-item label="用户姓名">
+      <el-form-item
+        label="用户姓名"
+        prop="quickSearchInfoList[1].quickSearchValue"
+      >
         <el-input
           v-model="params.quickSearchInfoList[1].quickSearchValue"
           placeholder="请输入用户姓名"
@@ -16,7 +19,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="手机号码">
+      <el-form-item
+        label="手机号码"
+        prop="quickSearchInfoList[2].quickSearchValue"
+      >
         <el-input
           v-model="params.quickSearchInfoList[2].quickSearchValue"
           placeholder="请输入手机号码"
@@ -24,7 +30,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="邮箱">
+      <el-form-item label="邮箱" prop="quickSearchInfoList[3].quickSearchValue">
         <el-input
           v-model="params.quickSearchInfoList[3].quickSearchValue"
           placeholder="请输入邮箱"
@@ -32,7 +38,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="排序方式">
+      <el-form-item label="排序方式" prop="sortInfo">
         <el-select
           v-model="sortName"
           placeholder="请选择排序方式"
@@ -47,7 +53,7 @@
           <el-option label="最近创建" :value="5"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="用户身份">
+      <el-form-item label="用户身份" prop="userTypeEnum">
         <el-select
           v-model="params.userTypeEnum"
           placeholder="请选择用户身份"
@@ -61,7 +67,7 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="冻结状态">
+      <el-form-item label="冻结状态" prop="frozen">
         <el-select v-model="params.frozen" placeholder="请选择状态" clearable>
           <!-- <el-option label="全部" value=""></el-option> -->
           <el-option label="未冻结" :value="false"></el-option>
@@ -128,9 +134,18 @@
     >
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="姓名" align="center" prop="name" />
-      <el-table-column label="用户身份" align="center" prop="userTypeEnum.Desc" />
+      <el-table-column
+        label="用户身份"
+        align="center"
+        prop="userTypeEnum.Desc"
+      />
       <el-table-column label="手机号码" align="center" prop="phoneNumber" />
-      <el-table-column label="邮箱地址" align="center" prop="mailAddress" width="180"/>
+      <el-table-column
+        label="邮箱地址"
+        align="center"
+        prop="mailAddress"
+        width="180"
+      />
       <el-table-column label="账号状态" align="center">
         <template slot-scope="scope">
           <el-switch
@@ -445,6 +460,12 @@ export default {
     resetQuery() {
       this.dateRange = [];
       this.resetForm("queryForm");
+      for (const w in this.params) {
+        if (w.indexOf("min") != -1 || w.indexOf("max") != -1) {
+          this.params[w] = "";
+        }
+      }
+      this.sortName = "";
       this.handleQuery();
     },
     /** 新增按钮操作 */

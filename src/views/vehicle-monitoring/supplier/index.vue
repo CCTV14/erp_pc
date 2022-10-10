@@ -8,7 +8,7 @@
       v-show="showSearch"
       label-width="68px"
     >
-      <el-form-item label="名称">
+      <el-form-item label="名称" prop="quickSearchInfoList[1].quickSearchValue">
         <el-input
           v-model="params.quickSearchInfoList[1].quickSearchValue"
           style="width: 240px"
@@ -17,7 +17,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="地址">
+      <el-form-item label="地址" prop="quickSearchInfoList[3].quickSearchValue">
         <el-input
           v-model="params.quickSearchInfoList[3].quickSearchValue"
           style="width: 240px"
@@ -26,7 +26,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="联系方式">
+      <el-form-item
+        label="联系方式"
+        prop="quickSearchInfoList[2].quickSearchValue"
+      >
         <el-input
           v-model="params.quickSearchInfoList[2].quickSearchValue"
           placeholder="请输入联系方式"
@@ -35,7 +38,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="备注" prop="remark">
+      <el-form-item label="备注" prop="quickSearchInfoList[4].quickSearchValue">
         <el-input
           v-model="params.quickSearchInfoList[4].quickSearchValue"
           style="width: 240px"
@@ -65,7 +68,7 @@
           />
         </div>
       </el-form-item>
-      <el-form-item label="冻结状态">
+      <el-form-item label="冻结状态" prop="frozen">
         <el-select
           v-model="params.frozen"
           style="width: 240px"
@@ -77,7 +80,7 @@
           <el-option label="已冻结" :value="true"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="排序方式">
+      <el-form-item label="排序方式" prop="sortInfo">
         <el-select
           v-model="sortName"
           style="width: 240px"
@@ -253,7 +256,6 @@ import { getSupplierData } from "@/api/vehicle-monitoring/commodity";
 
 export default {
   name: "Purchase",
-  dicts: ["sys_normal_disable"],
   data() {
     return {
       // 排序方式名称
@@ -422,6 +424,12 @@ export default {
     resetQuery() {
       this.dateRange = [];
       this.resetForm("queryForm");
+      for (const w in this.params) {
+        if (w.indexOf("min") != -1 || w.indexOf("max") != -1) {
+          this.params[w] = "";
+        }
+      }
+      this.sortName = "";
       this.handleQuery();
     },
     /** 新增按钮操作 */

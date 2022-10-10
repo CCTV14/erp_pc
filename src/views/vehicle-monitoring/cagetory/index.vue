@@ -8,7 +8,10 @@
       v-show="showSearch"
       label-width="68px"
     >
-      <el-form-item label="分类名称" prop="name">
+      <el-form-item
+        label="分类名称"
+        prop="quickSearchInfoList[1].quickSearchValue"
+      >
         <el-input
           v-model="params.quickSearchInfoList[1].quickSearchValue"
           style="width: 240px"
@@ -17,7 +20,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="备注" prop="remark">
+      <el-form-item label="备注" prop="quickSearchInfoList[2].quickSearchValue">
         <el-input
           v-model="params.quickSearchInfoList[2].quickSearchValue"
           style="width: 240px"
@@ -26,7 +29,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="冻结状态">
+      <el-form-item label="冻结状态" prop="frozen">
         <el-select
           v-model="params.frozen"
           style="width: 240px"
@@ -38,7 +41,7 @@
           <el-option label="已冻结" :value="true"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="排序方式">
+      <el-form-item label="排序方式" prop="sortInfo">
         <el-select
           v-model="sortName"
           style="width: 240px"
@@ -201,7 +204,7 @@ import { getCategoryData } from "@/api/vehicle-monitoring/commodity.js";
 
 export default {
   name: "Cagetory",
-  dicts: ["sys_normal_disable"],
+  // dicts: ["sys_normal_disable"],
   filters: {
     getAccountType(val) {
       if (val == "Cash") {
@@ -347,8 +350,12 @@ export default {
     resetQuery() {
       this.dateRange = [];
       this.resetForm("queryForm");
-      this.params.minOrderAmount = "";
-      this.params.maxOrderAmount = "";
+      for (const w in this.params) {
+        if (w.indexOf("min") != -1 || w.indexOf("max") != -1) {
+          this.params[w] = "";
+        }
+      }
+      this.sortName = "";
       this.handleQuery();
     },
     /** 新增按钮操作 */

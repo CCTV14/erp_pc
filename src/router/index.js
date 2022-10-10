@@ -1,11 +1,10 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+import Vue from "vue";
+import Router from "vue-router";
 
-Vue.use(Router)
+Vue.use(Router);
 
 /* Layout */
-import Layout from '@/layout'
-
+import Layout from "@/layout";
 
 /**
  * Note: 路由配置项
@@ -32,186 +31,261 @@ import Layout from '@/layout'
 // 公共路由
 export const constantRoutes = [
   {
-    path: '/redirect',
+    path: "/redirect",
     component: Layout,
     hidden: true,
     children: [
       {
-        path: '/redirect/:path(.*)',
-        component: () => import('@/views/redirect')
-      }
-    ]
+        path: "/redirect/:path(.*)",
+        component: () => import("@/views/redirect"),
+      },
+    ],
   },
   {
-    path: '/login',
-    component: () => import('@/views/login'),
-    hidden: true
+    path: "/login",
+    component: () => import("@/views/login"),
+    hidden: true,
   },
   {
-    path: '/register',
-    component: () => import('@/views/register'),
-    hidden: true
+    path: "/register",
+    component: () => import("@/views/register"),
+    hidden: true,
   },
   {
-    path: '/404',
-    component: () => import('@/views/error/404'),
-    hidden: true
+    path: "/404",
+    component: () => import("@/views/error/404"),
+    hidden: true,
   },
   {
-    path: '/401',
-    component: () => import('@/views/error/401'),
-    hidden: true
+    path: "/401",
+    component: () => import("@/views/error/401"),
+    hidden: true,
   },
   {
-    path: '',
+    path: "",
     component: Layout,
-    redirect: 'index',
+    redirect: "index",
     children: [
       {
-        path: 'index',
-        component: () => import('@/views/index2'),
-        name: 'Index',
-        meta: { title: '首页', icon: 'dashboard', affix: true }
-      }
-    ]
+        path: "index",
+        component: () => import("@/views/index2"),
+        name: "Index",
+        meta: { title: "首页", icon: "dashboard", affix: true },
+      },
+    ],
   },
   {
-    path: '/user',
+    path: "/user",
     component: Layout,
     hidden: true,
-    redirect: 'noredirect',
+    redirect: "noredirect",
     children: [
       {
-        path: 'profile',
-        component: () => import('@/views/system/user/profile/index'),
-        name: 'Profile',
-        meta: { title: '个人中心', icon: 'user' }
-      }
-    ]
+        path: "profile",
+        component: () => import("@/views/system/user/profile/index"),
+        name: "Profile",
+        meta: { title: "个人中心", icon: "user" },
+      },
+    ],
   },
   {
-    path: '/vehicle',
+    path: "/vehicle",
     component: Layout,
     hidden: false,
     alwaysShow: true,
-    redirect: 'noRedirect',
-    meta: { title: '测试菜单', icon: 'job' },
+    redirect: "noRedirect",
+    meta: { title: "应用", icon: "job" },
     children: [
       {
-        path: 'user',
-        component: () => import('@/views/vehicle-monitoring/user/index'),
-        name: 'user',
-        meta: { title: '用户管理', icon: 'user' }
-      },
-      {
-        path: 'sale',
-        component: () => import('@/views/vehicle-monitoring/sale/index'),
-        name: 'sale',
-        meta: { title: '销售单管理' }
-      },
-      {
-        path: 'sale-detail',
+        path: "inventory_warning",
         hidden: true,
-        component: () => import('@/views/vehicle-monitoring/sale/detail'),
-        name: 'sale-detail',
-        meta: { title: '销售单详情' }
+        component: () =>
+          import("@/views/vehicle-monitoring/home/inventory_warning"),
+        name: "inventory_warning",
+        meta: { title: "库存预警" },
       },
       {
-        path: 'sale-my',
-        component: () => import('@/views/vehicle-monitoring/sale-my/index'),
-        name: 'sale-my',
-        meta: { title: '我的销售退货单' }
+        path: "sale",
+        component: () => import("@/views/vehicle-monitoring/sale/index"),
+        name: "sale",
+        meta: { title: "销售单管理" },
       },
       {
-        path: 'account',
-        component: () => import('@/views/vehicle-monitoring/account/index'),
-        name: 'account',
-        meta: { title: '资金账户管理' }
-      },
-      {
-        path: 'account-detail',
+        path: "sale-detail",
         hidden: true,
-        component: () => import('@/views/vehicle-monitoring/account/detail'),
-        name: 'account-detail',
-        meta: { title: '资金账户详情' }
+        component: () => import("@/views/vehicle-monitoring/sale/detail"),
+        name: "sale-detail",
+        meta: { title: "销售单详情" },
       },
       {
-        path: 'customer',
-        component: () => import('@/views/vehicle-monitoring/customer/index'),
-        name: 'customer',
-        meta: { title: '客户管理' }
+        path: "sale-my",
+        component: () => import("@/views/vehicle-monitoring/sale-my/index"),
+        name: "sale-my",
+        meta: { title: "我的销售退货单" },
       },
       {
-        path: 'customer-detail',
+        path: "account",
+        component: () => import("@/views/vehicle-monitoring/account/index"),
+        name: "account",
+        meta: { title: "资金账户管理" },
+      },
+      {
+        path: "account-detail",
         hidden: true,
-        component: () => import('@/views/vehicle-monitoring/customer/detail'),
-        name: 'customer-detail',
-        meta: { title: '客户详情' }
+        component: () => import("@/views/vehicle-monitoring/account/detail"),
+        name: "account-detail",
+        meta: { title: "资金账户详情" },
       },
       {
-        path: 'customer-pool',
-        component: () => import('@/views/vehicle-monitoring/customer-pool/index'),
-        name: 'customer-pool',
-        meta: { title: '客户公海池' }
+        path: "customer",
+        component: () => import("@/views/vehicle-monitoring/customer/index"),
+        name: "customer",
+        meta: { title: "客户管理" },
       },
       {
-        path: 'customer-my',
-        component: () => import('@/views/vehicle-monitoring/customer-my/index'),
-        name: 'customer-my',
-        meta: { title: '我的客户' }
-      },
-      {
-        path: 'floow-record',
-        component: () => import('@/views/vehicle-monitoring/floow-record/index'),
-        name: 'floow-record',
-        meta: { title: '跟进记录' }
-      },
-      {
-        path: 'floow-record-detail',
+        path: "customer-detail",
         hidden: true,
-        component: () => import('@/views/vehicle-monitoring/floow-record/detail'),
-        name: 'floow-record-detail',
-        meta: { title: '跟进记录详情' }
+        component: () => import("@/views/vehicle-monitoring/customer/detail"),
+        name: "customer-detail",
+        meta: { title: "客户详情" },
       },
       {
-        path: 'commodity',
-        component: () => import('@/views/vehicle-monitoring/commodity/index'),
-        name: 'commodity',
-        meta: { title: '商品管理' }
+        path: "customer-pool",
+        component: () =>
+          import("@/views/vehicle-monitoring/customer-pool/index"),
+        name: "customer-pool",
+        meta: { title: "客户公海池" },
       },
       {
-        path: 'cagetory',
-        component: () => import('@/views/vehicle-monitoring/cagetory/index'),
-        name: 'cagetory',
-        meta: { title: '商品分类' }
+        path: "customer-my",
+        component: () => import("@/views/vehicle-monitoring/customer-my/index"),
+        name: "customer-my",
+        meta: { title: "我的客户" },
       },
       {
-        path: 'supplier',
-        component: () => import('@/views/vehicle-monitoring/supplier/index'),
-        name: 'supplier',
-        meta: { title: '供应商管理' }
+        path: "floow-record",
+        component: () =>
+          import("@/views/vehicle-monitoring/floow-record/index"),
+        name: "floow-record",
+        meta: { title: "跟进记录" },
       },
       {
-        path: 'set',
-        component: () => import('@/views/vehicle-monitoring/set/index'),
-        name: 'set',
-        meta: { title: '设置' }
+        path: "floow-record-detail",
+        hidden: true,
+        component: () =>
+          import("@/views/vehicle-monitoring/floow-record/detail"),
+        name: "floow-record-detail",
+        meta: { title: "跟进记录详情" },
       },
-    ]
-  }
-]
+      {
+        path: "commodity",
+        component: () => import("@/views/vehicle-monitoring/commodity/index"),
+        name: "commodity",
+        meta: { title: "商品管理" },
+      },
+      {
+        path: "cagetory",
+        component: () => import("@/views/vehicle-monitoring/cagetory/index"),
+        name: "cagetory",
+        meta: { title: "商品分类" },
+      },
+      {
+        path: "supplier",
+        component: () => import("@/views/vehicle-monitoring/supplier/index"),
+        name: "supplier",
+        meta: { title: "供应商管理" },
+      },
+    ],
+  },
+  {
+    path: "/rank",
+    component: Layout,
+    hidden: false,
+    alwaysShow: true,
+    redirect: "noRedirect",
+    meta: { title: "报表", icon: "tab" },
+    children: [
+      {
+        path: "saleRank",
+        component: () =>
+          import("@/views/vehicle-monitoring/report/saleRank/index"),
+        name: "saleRank",
+        meta: { title: "销售业绩统计" },
+      },
+      {
+        path: "collectRank",
+        component: () =>
+          import("@/views/vehicle-monitoring/report/collectRank/index"),
+        name: "collectRank",
+        meta: { title: "回款业绩统计" },
+      },
+      {
+        path: "deliveryRank",
+        component: () =>
+          import("@/views/vehicle-monitoring/report/deliveryRank/index"),
+        name: "deliveryRank",
+        meta: { title: "配送费统计" },
+      },
+      {
+        path: "supplierRank",
+        component: () =>
+          import("@/views/vehicle-monitoring/report/supplierRank/index"),
+        name: "supplierRank",
+        meta: { title: "供应商采购统计" },
+      },
+      {
+        path: "commoditySaleRank",
+        component: () =>
+          import("@/views/vehicle-monitoring/report/commoditySaleRank/index"),
+        name: "commoditySaleRank",
+        meta: { title: "商品销售统计" },
+      },
+      {
+        path: "commodityPurchaseRank",
+        component: () =>
+          import(
+            "@/views/vehicle-monitoring/report/commodityPurchaseRank/index"
+          ),
+        name: "commodityPurchaseRank",
+        meta: { title: "商品采购统计" },
+      },
+    ],
+  },
+  {
+    path: "/setting",
+    component: Layout,
+    hidden: false,
+    alwaysShow: true,
+    redirect: "noRedirect",
+    meta: { title: "系统管理", icon: "system" },
+    children: [
+      {
+        path: "user",
+        component: () => import("@/views/vehicle-monitoring/user/index"),
+        name: "user",
+        meta: { title: "用户管理", icon: "user" },
+      },
+      {
+        path: "set",
+        component: () => import("@/views/vehicle-monitoring/set/index"),
+        name: "set",
+        meta: { title: "设置" },
+      },
+    ],
+  },
+];
 
 // 动态路由，基于用户权限动态去加载
-export const dynamicRoutes = []
+export const dynamicRoutes = [];
 
 // 防止连续点击多次路由报错
 let routerPush = Router.prototype.push;
 Router.prototype.push = function push(location) {
-  return routerPush.call(this, location).catch(err => err)
-}
+  return routerPush.call(this, location).catch((err) => err);
+};
 
 export default new Router({
-  mode: 'hash', // 去掉url中的#
+  mode: "hash", // 去掉url中的#
   scrollBehavior: () => ({ y: 0 }),
-  routes: constantRoutes
-})
+  routes: constantRoutes,
+});

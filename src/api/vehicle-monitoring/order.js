@@ -10,12 +10,20 @@ export function getCustomerMyData(data) {
 }
 // 销售单 - 管理页面分页查询 - 默认按最近创建排序
 export function getSaleOrderData(data) {
-    return request({
-      url: "/saleOrder/findPageForManage",
-      method: "post",
-      data: data,
-    });
-  }
+  return request({
+    url: "/saleOrder/findPageForManage",
+    method: "post",
+    data: data,
+  });
+}
+// 销售单 - 详情
+export function getSaleOrderDetailById(params) {
+  return request({
+    url: "/saleOrder/findVoById",
+    method: "get",
+    params: params,
+  });
+}
 // 枚举 收款进度
 export function getFundCollectProgressEnumList() {
   return request({

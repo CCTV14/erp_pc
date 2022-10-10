@@ -8,7 +8,7 @@
       v-show="showSearch"
       label-width="68px"
     >
-      <el-form-item label="名称">
+      <el-form-item label="名称" prop="quickSearchInfoList[1].quickSearchValue">
         <el-input
           v-model="params.quickSearchInfoList[1].quickSearchValue"
           placeholder="请输入客户编号"
@@ -16,7 +16,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="账户">
+      <el-form-item label="账户" prop="quickSearchInfoList[2].quickSearchValue">
         <el-input
           v-model="params.quickSearchInfoList[2].quickSearchValue"
           placeholder="请输入账户"
@@ -24,7 +24,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="备注">
+      <el-form-item label="备注" prop="quickSearchInfoList[3].quickSearchValue">
         <el-input
           v-model="params.quickSearchInfoList[3].quickSearchValue"
           placeholder="请输入备注"
@@ -32,7 +32,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="类型">
+      <el-form-item label="类型" prop="fundAccountTypeEnum">
         <el-select
           v-model="params.fundAccountTypeEnum"
           placeholder="请选择类型"
@@ -47,18 +47,14 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="冻结状态">
-        <el-select
-          v-model="params.frozen"
-          placeholder="请选择状态"
-          clearable
-        >
-          <!-- <el-option label="全部" value=""></el-option> -->
+      <el-form-item label="冻结状态" prop="frozen">
+        <el-select v-model="params.frozen" placeholder="请选择状态" clearable>
+          <el-option label="全部" value=""></el-option>
           <el-option label="未冻结" :value="false"></el-option>
           <el-option label="已冻结" :value="true"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="排序方式">
+      <el-form-item label="排序方式" prop="sortInfo">
         <el-select
           v-model="sortName"
           placeholder="请选择排序方式"
@@ -246,7 +242,6 @@ import {
 
 export default {
   name: "Purchase",
-  dicts: ["sys_normal_disable"],
   data() {
     return {
       // 排序方式名称
@@ -409,8 +404,12 @@ export default {
     resetQuery() {
       this.dateRange = [];
       this.resetForm("queryForm");
-      this.params.minOrderAmount = "";
-      this.params.maxOrderAmount = "";
+      for (const w in this.params) {
+        if (w.indexOf("min") != -1 || w.indexOf("max") != -1) {
+          this.params[w] = "";
+        }
+      }
+      this.sortName = "";
       this.handleQuery();
     },
     /** 新增按钮操作 */
