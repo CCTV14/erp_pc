@@ -57,7 +57,9 @@
           </div>
         </div>
         <div class="more">
-          <el-button type="text" class="mt10">查看更多</el-button>
+          <el-button type="text" class="mt10" @click="toReportData"
+            >查看更多</el-button
+          >
         </div>
         <!--  -->
       </div>
@@ -94,7 +96,10 @@ export default {
   },
   methods: {
     // 跳转
-    toReportData() {},
+    toReportData() {
+      let name = this.type == "pay" ? "saleRank" : "collectRank";
+      this.$router.push({ name: name });
+    },
     async getSaleData(args) {
       let todayDate = new Date();
       let startDate = null;

@@ -118,15 +118,15 @@
       <el-table-column
         label="商品分类"
         align="center"
-        prop="commodityCategory.name"
+        prop="commodity.commodityCategory.name"
       />
       <el-table-column label="颜色" align="center" prop="commodity.color" />
-      <el-table-column label="供应商" align="center" prop="supplier.name" />
       <el-table-column
-        label="规格"
+        label="供应商"
         align="center"
-        prop="commodityInfo.unit"
+        prop="commodity.supplier.name"
       />
+      <el-table-column label="规格" align="center" prop="commodity.unit" />
       <el-table-column prop="imgUrl" label="图片" align="center">
         <template slot-scope="scope">
           <ImagePreview
@@ -165,20 +165,25 @@
         </template>
       </el-table-column>
     </el-table>
+    <!-- 点击详情表格 -->
+    <el-dialog title="销售单清单" :visible.sync="listVisble" width="75%">
+      <list :commoditySaleList="commoditySaleList" />
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import * as dates from "@/utils/date.js";
-import { getCommoditySaleReport } from "@/api/vehicle-monitoring/report";
+import { getCommoditySaleReport,getCommodityCategoryFindAvailableList } from "@/api/vehicle-monitoring/report";
+import list from "./list.vue";
 import {
-  getCommodityCategoryFindAvailableList,
   changeCanSupplier,
 } from "@/api/vehicle-monitoring/commodity";
-import { validLowerCase } from "../../../../utils/validate";
 export default {
   data() {
     return {
+      listVisble: false,
+      commoditySaleList: [],
       // 遮罩层
       loading: true,
       // 日期单选框选择项
@@ -236,10 +241,13 @@ export default {
       },
     };
   },
+  components: {
+    list,
+  },
   mounted() {
     this.selectDate("本月");
     this.getCommodityCategoryFindAvailableList();
-    this.getSupplierList(true);
+    this.getSupplierList();
   },
   methods: {
     // 选择日期
@@ -309,8 +317,17 @@ export default {
         this.reportData = res.data;
       }
     },
+    handleDetail(row) {
+      this.commoditySaleList = row.saleOrderHeadList;
+      this.listVisble = true;
+    },
     // 选择查询日期
     selectQueryDate(val) {
+      if (!val) {
+        this.postForm.startDate = "";
+        this.postForm.endDate = "";
+        return;
+      }
       this.postForm.startDate = val[0];
       this.postForm.endDate = val[1];
       this.handleQuery();

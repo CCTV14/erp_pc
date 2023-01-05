@@ -52,7 +52,7 @@
       ></el-empty>
     </el-card>
     <!-- 列表 -->
-    <el-table v-loading="loading" :data="params.data.showList">
+    <el-table v-loading="loading" :data="params.data.showList" @row-click="toListPage">
       <el-table-column label="排名" type="index" align="center">
       </el-table-column>
       <el-table-column label="头像" align="center">
@@ -66,12 +66,16 @@
       </el-table-column>
       <el-table-column label="姓名" align="center" prop="user.name" />
       <el-table-column label="单据数量" align="center" prop="orderCount" />
-      <el-table-column label="单据金额" align="center" sortable>
+      <el-table-column label="单据金额" prop="amount" align="center" sortable>
         <template slot-scope="scope">
           <span>￥{{ scope.row.amount | thousandSymbol }}</span>
         </template>
       </el-table-column>
     </el-table>
+    <!-- 点击详情表格 -->
+    <el-dialog title="销售单清单" :visible.sync="listVisble" width="65%">
+      <list :saleList="saleList" />
+    </el-dialog>
   </div>
 </template>
 
@@ -79,9 +83,12 @@
 import * as dates from "@/utils/date.js";
 import { getCollectRank } from "@/api/vehicle-monitoring/report";
 import Pie from "../components/PieChart.vue";
+import list from "./list.vue";
 export default {
   data() {
     return {
+      saleList: [],
+      listVisble: false,
       // 遮罩层
       loading: true,
       // 日期单选框选择项
@@ -123,6 +130,7 @@ export default {
   },
   components: {
     Pie,
+    list,
   },
   mounted() {
     this.handleQuery();
@@ -165,9 +173,25 @@ export default {
     },
     // 选择查询日期
     selectQueryDate(val) {
+      if (!val) {
+        this.postForm.startDate = "";
+        this.postForm.endDate = "";
+        return;
+      }
       this.postForm.startDate = val[0];
       this.postForm.endDate = val[1];
       this.handleQuery("not");
+    },
+    // 到行项目页面
+    toListPage(row) {
+      if (!row.saleOrderHeadList || row.saleOrderHeadList.length === 0) {
+        this.$modal.msgWarning(
+          "该用户在此时间区间内没有回款业绩，无法跳转销售单清单页面"
+        );
+        return;
+      }
+      this.saleList = row.saleOrderHeadList;
+      this.listVisble = true;
     },
     // 渲染图表测试数据
     getServerData() {

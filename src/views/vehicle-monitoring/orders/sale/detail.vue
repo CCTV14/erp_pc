@@ -3,9 +3,11 @@
     <!-- 详情描述 -->
     <div class="head mb15">
       <el-descriptions title="销售单详情">
-        <el-descriptions-item label="单号">{{
-          head.orderApprovalStatusEnum.Desc
-        }}</el-descriptions-item>
+        <el-descriptions-item label="单号"
+          ><span :style="$thinking.getCheckType(head.orderApprovalStatusEnum.Name)"
+            >{{ head.orderApprovalStatusEnum.Desc }} </span
+          ><span class="ml5">{{ head.orderNo }}</span></el-descriptions-item
+        >
         <el-descriptions-item label="客户">{{
           (head.customer.customerNo || "") + " " + (head.customer.name || "")
         }}</el-descriptions-item>

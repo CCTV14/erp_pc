@@ -163,7 +163,10 @@ export default {
     // 我的待办跳转到详情
     toDetail(name) {
       let data = {
+        待审单据:"pending-order",
         库存预警: "inventory_warning",
+        客户跟进: "customer-my",
+        待出入库: "commodity_inout",
       };
       this.$router.push({ name: data[name] });
     },
@@ -291,6 +294,7 @@ export default {
       display: flex;
       justify-content: center;
       align-items: center;
+      cursor: pointer;
       width: 25%;
       border-right: 1px solid #cccccc;
 

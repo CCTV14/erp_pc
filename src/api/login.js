@@ -4,7 +4,8 @@ import request from '@/utils/request'
 export function login(phoneNumber, password) {
   const data = {
     phoneNumber,
-    password
+    password,
+    from: "WEB"
   }
   return request({
     url: 'user/login',

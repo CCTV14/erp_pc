@@ -16,6 +16,7 @@
           v-model="params.quickSearchInfoList[1].quickSearchValue"
           placeholder="请输入客户编号"
           clearable
+          style="width: 220px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -27,6 +28,7 @@
           v-model="params.quickSearchInfoList[2].quickSearchValue"
           placeholder="请输入客户姓名"
           clearable
+          style="width: 220px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -38,6 +40,7 @@
           v-model="params.quickSearchInfoList[3].quickSearchValue"
           placeholder="请输入跟进用户名称"
           clearable
+          style="width: 220px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -49,6 +52,7 @@
           v-model="params.quickSearchInfoList[4].quickSearchValue"
           placeholder="请输入跟进内容"
           clearable
+          style="width: 220px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -57,6 +61,8 @@
           v-model="params.customerFollowUpDetailTypeEnum"
           placeholder="请选择客户类型"
           clearable
+          style="width: 220px"
+          @change="handleQuery"
         >
           <el-option label="全部类型" value=""></el-option>
           <el-option label="跟进记录" value="1"></el-option>
@@ -66,7 +72,7 @@
       <el-form-item label="创建日期">
         <el-date-picker
           v-model="dateRange"
-          style="width: 240px"
+          style="width: 220px"
           value-format="yyyy-MM-dd"
           type="daterange"
           range-separator="-"
@@ -76,7 +82,7 @@
         >
         </el-date-picker>
       </el-form-item>
-      <el-form-item>
+      <el-form-item class="flex-end">
         <el-button
           type="primary"
           icon="el-icon-search"
@@ -96,7 +102,7 @@
       :cell-style="$thinking.getCellFontColor"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55" align="center" />
+      <!-- <el-table-column type="selection" width="55" align="center" /> -->
       <el-table-column
         label="编号"
         align="center"
@@ -150,7 +156,7 @@
           >
             {{ row.nextFollowUpTime + (timedOut(row) ? "[已超时]" : null) }}
           </span>
-          <span v-else> 暂无跟进 </span>
+          <span v-else>暂无跟进</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -159,6 +165,25 @@
         prop="followUpTime"
         width="160"
       />
+      <el-table-column
+        label="跟进状态"
+        align="center"
+        prop="customerFollowUp.customerFollowUpStatusEnum.Desc"
+        fixed="right"
+      >
+        <template slot-scope="{ row }">
+          <span
+            :class="
+              row.customerFollowUp.customerFollowUpStatusEnum.Name ===
+              'Following'
+                ? 'text-primary'
+                : 'text-warning'
+            "
+          >
+            {{ row.customerFollowUp.customerFollowUpStatusEnum.Desc }}
+          </span>
+        </template>
+      </el-table-column>
       <el-table-column
         label="操作"
         fixed="right"
@@ -378,12 +403,7 @@ export default {
     },
     // 表单重置
     reset() {
-      this.form = {
-        id: "",
-        name: "",
-        phone: "",
-        email: "",
-      };
+      this.form = {};
       this.resetForm("form");
     },
     // 选择查询日期
@@ -395,6 +415,7 @@ export default {
       }
       this.params.minCreateDate = val[0];
       this.params.maxCreateDate = val[1];
+      this.handleQuery();
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -423,6 +444,7 @@ export default {
     handleDetail(row) {
       this.$router.push({
         name: "floow-record-detail",
+        query: { id: row.id },
       });
     },
     // 多选框选中数据

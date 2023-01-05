@@ -125,7 +125,7 @@
           <el-option label="最近创建" :value="7"></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item>
+      <el-form-item class="flex-end">
         <el-button
           type="primary"
           icon="el-icon-search"
@@ -151,7 +151,7 @@
           >新增</el-button
         >
       </el-col>
-      <el-col :span="1.5">
+      <!-- <el-col :span="1.5">
         <el-button
           type="success"
           plain
@@ -162,19 +162,7 @@
           v-hasPermi="['system:purchase:edit']"
           >修改</el-button
         >
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:purchase:remove']"
-          >删除</el-button
-        >
-      </el-col>
+      </el-col> -->
       <!-- <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar> -->
     </el-row>
 
@@ -192,12 +180,12 @@
         width="120"
       />
       <el-table-column label="客户姓名" align="center" prop="name" />
-      <el-table-column
-        label="客户电话"
-        align="center"
-        prop="phoneNumber"
-        width="120"
-      />
+        <el-table-column
+          label="客户电话"
+          align="center"
+          prop="phoneNumber"
+          width="120"
+        />
       <el-table-column
         label="地址"
         align="center"
@@ -211,7 +199,7 @@
         width="200"
         show-overflow-tooltip
       />
-      <el-table-column label="状态" align="center" width="160">
+      <el-table-column label="状态" align="center">
         <template slot-scope="scope">
           <el-tag v-if="scope.row.frozen" type="danger" disable-transitions
             >已冻结</el-tag
@@ -247,7 +235,7 @@
         label="操作"
         fixed="right"
         align="center"
-        width="160"
+        width="200"
         class-name="small-padding fixed-width"
       >
         <template slot-scope="scope">
@@ -264,7 +252,14 @@
             size="mini"
             type="text"
             icon="el-icon-edit"
-            @click="handleDelete(scope.row)"
+            @click="handleUpdate(scope.row)"
+            >修改</el-button
+          >
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-edit"
+            @click="handleFloowDetail(scope.row)"
             >跟进详情</el-button
           >
         </template>
@@ -279,65 +274,13 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改参数配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="客户编号" v-if="form.id">
-          <span>{{ form.customerNo }}</span>
-        </el-form-item>
-        <el-form-item label="名称" prop="name">
-          <el-input v-model="form.name" placeholder="请输入名称" />
-        </el-form-item>
-        <el-form-item label="当前余额" v-if="form.id">
-          <span>{{ form.balanceAmount }}</span>
-        </el-form-item>
-        <el-form-item label="联系方式" prop="phoneNumber">
-          <el-input v-model="form.phoneNumber" placeholder="请输入联系方式" />
-        </el-form-item>
-        <el-form-item label="地址" prop="address">
-          <el-input
-            v-model="form.address"
-            type="textarea"
-            placeholder="请输入内容"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="客户分组" prop="customerGroupEnum">
-          <el-select
-            v-model="form.customerGroupEnum"
-            style="width: 100%"
-            placeholder="请选择类型"
-            clearable
-          >
-            <el-option label="成交" value="1"></el-option>
-            <el-option label="流失" value="0"></el-option>
-            <el-option label="支付宝账户" value="1"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="客户类型" prop="customerTypeEnum">
-          <el-select
-            v-model="form.customerTypeEnum"
-            style="width: 100%"
-            placeholder="请选择类型"
-            clearable
-          >
-            <el-option label="成交" value="1"></el-option>
-            <el-option label="流失" value="0"></el-option>
-            <el-option label="支付宝账户" value="1"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input
-            v-model="form.remark"
-            type="textarea"
-            placeholder="请输入内容"
-          ></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
-      </div>
-    </el-dialog>
+    <!-- 操作框 -->
+    <edit-dialog
+      :form="form"
+      :open="open"
+      :title="title"
+      @closeDialog="cancel"
+    />
   </div>
 </template>
 
@@ -346,12 +289,15 @@ import {
   getCustomerData,
   getCustomerGroupEnumList,
   getCustomerTypeEnumList,
+  getCustomerDetailById,
 } from "@/api/vehicle-monitoring/customer";
+import editDialog from "./components/edit.vue";
 
 export default {
   name: "Purchase",
   data() {
     return {
+      form: {},
       // 排序方式名称
       sortName: "",
       // 遮罩层
@@ -417,33 +363,10 @@ export default {
         },
         sortInfo: null,
       },
-      // 表单参数
-      form: {},
-      // 表单校验
-      rules: {
-        name: [
-          {
-            required: true,
-            message: "用户名称不能为空",
-            trigger: "blur",
-          },
-        ],
-        phone: [
-          {
-            required: true,
-            message: "手机号码不能为空",
-            trigger: "blur",
-          },
-        ],
-        email: [
-          {
-            required: true,
-            message: "邮箱不能为空",
-            trigger: "blur",
-          },
-        ],
-      },
     };
+  },
+  components: {
+    editDialog,
   },
   created() {
     this.getList();
@@ -467,12 +390,7 @@ export default {
     },
     // 表单重置
     reset() {
-      this.form = {
-        id: "",
-        name: "",
-        phone: "",
-        email: "",
-      };
+      this.form = {};
       this.resetForm("form");
     },
     // 获取客户分组
@@ -487,58 +405,53 @@ export default {
         this.customerTypeEnumList = res.data;
       });
     },
+    // 跳转至跟进详情
+    handleFloowDetail(row) {
+      this.$router.push({
+        name: "floow-detail",
+        query: {
+          floowId: row.customerFollowUpList[0].id,
+          customerId: row.id
+        },
+      });
+    },
     // 选择排序下拉框值
     selectSortType(val) {
-      switch (val) {
-        case 1:
-          this.params.sortInfo = {
-            columnName: "customerNo",
-            order: "DESC",
-          };
-          break;
-        case 2:
-          this.params.sortInfo = {
-            columnName: "name",
-            order: "ASC",
-          };
-          break;
-        case 3:
-          this.params.sortInfo = {
-            columnName: "name",
-            order: "DESC",
-          };
-          break;
-        case 4:
-          this.params.sortInfo = {
-            columnName: "balanceAmount",
-            order: "ASC",
-          };
-          break;
-        case 5:
-          this.params.sortInfo = {
-            columnName: "balanceAmount",
-            order: "DESC",
-          };
-          break;
-        case 6:
-          this.params.sortInfo = {
-            columnName: "createTime",
-            order: "ASC",
-          };
-          break;
-        case 7:
-          this.params.sortInfo = {
-            columnName: "createTime",
-            order: "DESC",
-          };
-          break;
-        default:
-          this.params.sortInfo = {
-            columnName: "customerNo",
-            order: "ASC",
-          };
-          break;
-      }
+      let data = {
+        1: {
+          columnName: "customerNo",
+          order: "DESC",
+        },
+        2: {
+          columnName: "name",
+          order: "ASC",
+        },
+        3: {
+          columnName: "name",
+          order: "DESC",
+        },
+        4: {
+          columnName: "balanceAmount",
+          order: "ASC",
+        },
+        5: {
+          columnName: "balanceAmount",
+          order: "DESC",
+        },
+        6: {
+          columnName: "createTime",
+          order: "ASC",
+        },
+        7: {
+          columnName: "createTime",
+          order: "DESC",
+        },
+      };
+
+      this.params.sortInfo = data[val] || {
+        columnName: "customerNo",
+        order: "ASC",
+      };
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -567,6 +480,7 @@ export default {
     handleDetail(row) {
       this.$router.push({
         name: "customer-detail",
+        query: { id: row.id },
       });
     },
     // 多选框选中数据
@@ -581,45 +495,13 @@ export default {
       // this.form = {...row};
       // this.open=true;
       const id = row.id || this.ids;
-      getType(id).then((response) => {
+      getCustomerDetailById({ id: id }).then((response) => {
         this.form = response.data;
+        this.form.customerTypeEnum = response.data.customerTypeEnum.Name;
+        this.form.customerGroupEnum = response.data.customerGroupEnum.Name;
         this.open = true;
         this.title = "修改客户";
       });
-    },
-    /** 提交按钮 */
-    submitForm: function () {
-      this.$refs["form"].validate((valid) => {
-        if (valid) {
-          if (this.form.id != undefined) {
-            updateType(this.form).then((response) => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addType(this.form).then((response) => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
-      });
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$modal
-        .confirm('是否确认删除客户id为"' + ids + '"的数据项？')
-        .then(function () {
-          return delType(ids);
-        })
-        .then(() => {
-          this.getList();
-          this.$modal.msgSuccess("删除成功");
-        })
-        .catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {

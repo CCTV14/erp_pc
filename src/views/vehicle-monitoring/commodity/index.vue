@@ -53,6 +53,7 @@
           style="width: 240px"
           placeholder="请选择商品分类"
           clearable
+          @change="handleQuery"
         >
           <el-option label="不限" :value="null"></el-option>
           <el-option
@@ -69,6 +70,7 @@
           style="width: 240px"
           placeholder="请选择在产状态"
           clearable
+          @change="handleQuery"
         >
           <el-option label="不限" :value="null"></el-option>
           <el-option
@@ -85,6 +87,7 @@
           style="width: 240px"
           placeholder="请选择冻结状态"
           clearable
+          @change="handleQuery"
         >
           <el-option label="不限" value=""></el-option>
           <el-option label="已冻结" :value="true"></el-option>
@@ -130,11 +133,20 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:purchase:add']"
           >新增</el-button
         >
       </el-col>
       <el-col :span="1.5">
+        <el-button
+          type="warning"
+          plain
+          icon="el-icon-download"
+          size="mini"
+          @click="handleExport"
+          >导出</el-button
+        >
+      </el-col>
+      <!-- <el-col :span="1.5">
         <el-button
           type="success"
           plain
@@ -157,7 +169,7 @@
           v-hasPermi="['system:purchase:remove']"
           >删除</el-button
         >
-      </el-col>
+      </el-col> -->
       <!-- <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar> -->
     </el-row>
     <el-table
@@ -166,12 +178,12 @@
       :cell-style="$thinking.getCellFontColor"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55" align="center" />
+      <!-- <el-table-column type="selection" width="55" align="center" /> -->
       <el-table-column
         label="商品名称"
         align="center"
         prop="name"
-        width="120"
+        width="130"
       />
       <el-table-column
         label="商品分类"
@@ -298,6 +310,7 @@ import {
   getCommodityData,
   getCommodityProductionStatusEnumList,
   getCommodityCategoryFindAvailableList,
+  commodityExport,
 } from "@/api/vehicle-monitoring/commodity.js";
 
 export default {
@@ -435,60 +448,43 @@ export default {
     },
     // 表单重置
     reset() {
-      this.form = {
-        id: "",
-        name: "",
-        phone: "",
-        email: "",
-      };
+      this.form = {};
       this.resetForm("form");
     },
     // 选择排序下拉框值
     selectSortType(val) {
-      switch (val) {
-        case 1:
-          this.params.sortInfo = {
-            columnName: "name",
-            order: "DESC",
-          };
-          break;
-        case 2:
-          this.params.sortInfo = {
-            columnName: "maxBuyingPrice",
-            order: "DESC",
-          };
-          break;
-        case 3:
-          this.params.sortInfo = {
-            columnName: "minBuyingPrice",
-            order: "ASC",
-          };
-        case 4:
-          this.params.sortInfo = {
-            columnName: "maxTradePrice",
-            order: "DESC",
-          };
-
-        case 5:
-          this.params.sortInfo = {
-            columnName: "minTradePrice",
-            order: "ASC",
-          };
-        case 6:
-          this.params.sortInfo = {
-            columnName: "createTime",
-            order: "DESC",
-          };
-        case 7:
-          this.params.sortInfo = {
-            columnName: "createTime",
-            order: "ASC",
-          };
-          break;
-        default:
-          this.params.sortInfo = null;
-          break;
-      }
+      let data = {
+        1: {
+          columnName: "name",
+          order: "DESC",
+        },
+        2: {
+          columnName: "maxBuyingPrice",
+          order: "DESC",
+        },
+        3: {
+          columnName: "minBuyingPrice",
+          order: "ASC",
+        },
+        4: {
+          columnName: "maxTradePrice",
+          order: "DESC",
+        },
+        5: {
+          columnName: "minTradePrice",
+          order: "ASC",
+        },
+        6: {
+          columnName: "createTime",
+          order: "DESC",
+        },
+        7: {
+          columnName: "createTime",
+          order: "ASC",
+        },
+      };
+      this.params.sortInfo = data[val] || null;
+      this.handleQuery();
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -573,13 +569,14 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download(
-        "system/dict/type/export",
-        {
-          ...this.queryParams,
-        },
-        `type_${new Date().getTime()}.xlsx`
-      );
+      this.$modal.loading('正在导出...');
+      commodityExport(this.params).then((res) => {
+        if (res.success) {
+          this.$modal.closeLoading();
+          this.$modal.msgSuccess("导出成功");
+          this.$thinking.downloadFileByByte(res.data, "商品管理导出数据.xlsx");
+        }
+      });
     },
     /** 刷新缓存按钮操作 */
     handleRefreshCache() {

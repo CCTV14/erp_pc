@@ -165,6 +165,11 @@ export default {
     },
     // 选择查询日期
     selectQueryDate(val) {
+      if (!val) {
+        this.postForm.startDate = "";
+        this.postForm.endDate = "";
+        return;
+      }
       this.postForm.startDate = val[0];
       this.postForm.endDate = val[1];
       this.handleQuery("not");

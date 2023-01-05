@@ -10,7 +10,6 @@ const user = {
     permissions: [],
     userInfo: {},
   },
-
   mutations: {
     SET_TOKEN: (state, token) => {
       state.token = token;
@@ -44,7 +43,7 @@ const user = {
           .then((res) => {
             setToken(res.data.authorityToken);
             commit("SET_TOKEN", res.data.authorityToken);
-            commit("SET_USER", res.data.user);
+            commit("SET_USER", res.data.userInfo);
             resolve();
           })
           .catch((error) => {
@@ -58,17 +57,21 @@ const user = {
       return new Promise((resolve, reject) => {
         getInfo()
           .then((response) => {
+            if (!response.data) {
+              reject(response.message);
+            }
             const res = response.data;
-            const user = res.user;
+            const user = res.userInfo;
             const avatar =
               user.avatarName == "" || user.avatarName == null
                 ? require("@/assets/images/profile.jpg")
                 : process.env.VUE_APP_BASE_USER_AVATAR + user.avatarName;
+                console.log(avatar);
             // 验证返回的roles是否是一个非空数组
             // 之前这里做过if判断目前暂时删除（如果返回的权限列表长度大于0，就进行下面操作，否则给予默认权限，如下else
-            commit("SET_ROLES", res.authGroupList);
+            commit("SET_ROLES", res.roles);
             commit("SET_USER", user);
-            commit("SET_PERMISSIONS", res.authGroupList);
+            commit("SET_PERMISSIONS", res.permissions);
             // } else {
             //   commit("SET_ROLES", ["ROLE_DEFAULT"]);
             // }

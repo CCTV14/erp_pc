@@ -118,40 +118,10 @@
           >新增</el-button
         >
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['system:purchase:edit']"
-          >修改</el-button
-        >
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:purchase:remove']"
-          >删除</el-button
-        >
-      </el-col>
       <!-- <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar> -->
     </el-row>
 
-    <el-table
-      v-loading="loading"
-      :data="tableData"
-      :cell-style="$thinking.getCellFontColor"
-      @selection-change="handleSelectionChange"
-    >
-      <el-table-column type="selection" width="55" align="center" />
+    <el-table v-loading="loading" :data="tableData">
       <el-table-column
         label="编号"
         align="center"
@@ -244,43 +214,103 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改参数配置对话框 -->
+    <!-- 新增 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="客户" prop="customerGroupEnum">
+        <el-form-item label="客户" prop="customerId">
           <div @click="selectCustomerVisble = true">
             <el-input
               placeholder="请选择客户"
               suffix-icon="el-icon-arrow-right"
-              v-model="form.customerGroupEnum"
+              v-model="customer.customerName"
               readonly
             >
             </el-input>
           </div>
         </el-form-item>
-        <el-form-item label="跟进内容" prop="name">
-          <el-input v-model="form.name" placeholder="请输入跟进内容" />
+        <el-form-item label="跟进内容" prop="content">
+          <el-input v-model="form.content" placeholder="请输入跟进内容" />
         </el-form-item>
         <el-form-item label="添加方式">
-          <el-radio-group v-model="form.addDefaultType">
+          <el-radio-group v-model="addDefaultType">
             <el-radio label="Pool">添加至公海池</el-radio>
             <el-radio label="User">分配给用户</el-radio>
           </el-radio-group>
         </el-form-item>
+        <el-form-item
+          label="跟进用户"
+          prop="userId"
+          v-if="addDefaultType == 'User'"
+        >
+          <div @click="selectUserVisble = true">
+            <el-input
+              placeholder="请选择跟进用户"
+              suffix-icon="el-icon-arrow-right"
+              v-model="customer.userName"
+              readonly
+            >
+            </el-input>
+          </div>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button type="primary" @click="submitFormAdd">确 定</el-button>
+        <el-button @click="cancel">取 消</el-button>
+      </div>
+    </el-dialog>
+    <!-- 编辑 -->
+    <el-dialog
+      :title="title"
+      :visible.sync="openEdit"
+      width="500px"
+      append-to-body
+    >
+      <el-form
+        ref="formEdit"
+        :model="postForm"
+        :rules="rulesEdit"
+        label-width="80px"
+      >
+        <el-form-item label="公海池来源">
+          <div>{{ postForm.customerPoolSourceEnum.Desc }}</div>
+        </el-form-item>
+        <el-form-item label="客户编号">
+          <div>{{ postForm.customer.customerNo }}</div>
+        </el-form-item>
+        <el-form-item label="客户姓名">
+          <div>{{ postForm.customer.customerNo }}</div>
+        </el-form-item>
+        <el-form-item label="客户电话">
+          <div>{{ postForm.customer.customerNo }}</div>
+        </el-form-item>
+        <el-form-item label="跟进内容" prop="content">
+          <el-input v-model="postForm.content" placeholder="请输入跟进内容" />
+        </el-form-item>
+        <el-form-item label="添加时间">
+          <div>{{ postForm.createTime }}</div>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="submitFormEdit">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
     <el-drawer
       title="此页面仅显示可以添加至公海池的客户！"
-      :modal="false"
       :visible.sync="selectCustomerVisble"
       direction="rtl"
-      :size="450"
+      size="70%"
     >
-      <customer-list />
+      <customer-list @handleSelectCustomer="handleSelectCustomer" />
+    </el-drawer>
+    <!--  -->
+    <el-drawer
+      title="此页面仅显示可以添加至公海池的用户！"
+      :visible.sync="selectUserVisble"
+      direction="rtl"
+      size="70%"
+    >
+      <user-list @handleSelectUser="handleSelectUser" />
     </el-drawer>
   </div>
 </template>
@@ -290,9 +320,13 @@ import {
   getCustomerPoolData,
   getCustomerGroupEnumList,
   getCustomerTypeEnumList,
+  customerPoolAddCustomerToPool,
+  customerPoolDistributeCustomerToUser,
+  customerPoolFindById,
+  customerPoolUpdateCustomerPool,
 } from "@/api/vehicle-monitoring/customer";
 import customerList from "@/components/thinking/customerList";
-
+import userList from "@/components/thinking/userList";
 export default {
   name: "Purchase",
   data() {
@@ -301,6 +335,8 @@ export default {
       sortName: "",
       // 选择客户抽屉显示
       selectCustomerVisble: false,
+      // 选择跟进用户抽屉显示
+      selectUserVisble: false,
       // 遮罩层
       loading: true,
       // 选中数组
@@ -321,8 +357,10 @@ export default {
       customerTypeEnumList: [],
       // 弹出层标题
       title: "",
-      // 是否显示弹出层 新增/编辑框
+      // 是否显示弹出层 新增
       open: false,
+      // 是否显示弹出层 编辑
+      openEdit: false,
       // 日期范围
       dateRange: [],
       // 查询参数
@@ -363,38 +401,54 @@ export default {
         },
         sortInfo: null,
       },
+      postForm: {
+        customerId: "",
+        customerPoolSourceEnum: {
+          Desc: "",
+        },
+        customer: {},
+      },
       // 表单参数
       form: {
-        addDefaultType: "Pool",
+        customerId: "",
+        customerPoolSourceEnum: {
+          Desc: "",
+        },
+        customer: {},
+      },
+      customer: {
+        customerName: "",
+        userName: "",
+      },
+      addDefaultType: "Pool",
+      rulesEdit: {
+        content: {
+          type: "string",
+          required: true,
+          message: "请输入跟进内容",
+          trigger: ["blur", "change"],
+        },
       },
       // 表单校验
       rules: {
-        name: [
-          {
-            required: true,
-            message: "用户名称不能为空",
-            trigger: "blur",
-          },
-        ],
-        phone: [
-          {
-            required: true,
-            message: "手机号码不能为空",
-            trigger: "blur",
-          },
-        ],
-        email: [
-          {
-            required: true,
-            message: "邮箱不能为空",
-            trigger: "blur",
-          },
-        ],
+        customerId: {
+          type: "string",
+          required: true,
+          message: "请选择客户",
+          trigger: ["blur", "change"],
+        },
+        content: {
+          type: "string",
+          required: true,
+          message: "请输入跟进内容",
+          trigger: ["blur", "change"],
+        },
       },
     };
   },
   components: {
     customerList,
+    userList,
   },
   created() {
     this.getList();
@@ -428,43 +482,46 @@ export default {
     // 取消按钮
     cancel() {
       this.open = false;
+      this.openEdit = false;
       this.reset();
     },
     // 表单重置
     reset() {
-      this.form = {
-        id: "",
-        name: "",
-        phone: "",
-        email: "",
-      };
+      this.addDefaultType = "Pool";
+      this.form = {};
       this.resetForm("form");
     },
     // 选择排序下拉框值
     selectSortType(val) {
-      switch (val) {
-        case 1:
-          this.params.sortInfo = {
-            columnName: "createTime",
-            order: "ASC",
-          };
-          break;
-        case 2:
-          this.params.sortInfo = {
-            columnName: "customer.customerNo",
-            order: "DESC",
-          };
-          break;
-        case 3:
-          this.params.sortInfo = {
-            columnName: "customer.customerNo",
-            order: "ASC",
-          };
-          break;
-        default:
-          this.params.sortInfo = null;
-          break;
-      }
+      let data = {
+        1: {
+          columnName: "createTime",
+          order: "ASC",
+        },
+        2: {
+          columnName: "customer.customerNo",
+          order: "DESC",
+        },
+        3: {
+          columnName: "customer.customerNo",
+          order: "ASC",
+        },
+      };
+
+      this.params.sortInfo = data[val] || null;
+      this.handleQuery();
+    },
+    // 选择客户
+    handleSelectCustomer(row) {
+      this.form.customerId = row.id;
+      this.customer.customerName = row.name;
+      this.selectCustomerVisble = false;
+    },
+    // 选择用户
+    handleSelectUser(row) {
+      this.form.userId = row.id;
+      this.customer.userName = row.name;
+      this.selectUserVisble = false;
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -487,6 +544,9 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
+      for (const w in this.customer) {
+        this.customer[w] = "";
+      }
       this.title = "添加公海池客户";
     },
     /** 查看详情按钮操作 */
@@ -495,41 +555,48 @@ export default {
         name: "customer-detail",
       });
     },
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map((item) => item.id);
-      this.single = selection.length != 1;
-      this.multiple = !selection.length;
-    },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
       // this.form = {...row};
       // this.open=true;
       const id = row.id || this.ids;
-      getType(id).then((response) => {
-        this.form = response.data;
+      customerPoolFindById({ id: id }).then((response) => {
+        this.postForm = response.data;
         this.open = true;
         this.title = "修改公海池客户";
       });
     },
-    /** 提交按钮 */
-    submitForm: function () {
+    /** 提交按钮新增 */
+    submitFormAdd: function () {
       this.$refs["form"].validate((valid) => {
         if (valid) {
-          if (this.form.id != undefined) {
-            updateType(this.form).then((response) => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
+          if (this.addDefaultType === "Pool") {
+            customerPoolAddCustomerToPool(this.form).then((res) => {
+              if (res.success) {
+                this.$modal.msgSuccess(res.message);
+              }
             });
           } else {
-            addType(this.form).then((response) => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
+            customerPoolDistributeCustomerToUser(this.form).then((res) => {
+              if (res.success) {
+                this.$modal.msgSuccess(res.message);
+              }
             });
           }
+        }
+      });
+    },
+    /** 提交按钮修改 */
+    submitFormEdit: function () {
+      this.$refs["formEdit"].validate((valid) => {
+        if (valid) {
+          //  修改
+          customerPoolUpdateCustomerPool(this.postForm).then((res) => {
+            if (res.success) {
+              this.$modal.msgSuccess(res.message);
+            }
+          });
         }
       });
     },

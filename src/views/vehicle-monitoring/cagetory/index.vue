@@ -35,6 +35,7 @@
           style="width: 240px"
           placeholder="请选择状态"
           clearable
+          @change="handleQuery"
         >
           <el-option label="全部" value=""></el-option>
           <el-option label="未冻结" :value="false"></el-option>
@@ -81,7 +82,7 @@
           >新增</el-button
         >
       </el-col>
-      <el-col :span="1.5">
+      <!-- <el-col :span="1.5">
         <el-button
           type="success"
           plain
@@ -92,28 +93,11 @@
           v-hasPermi="['system:account:edit']"
           >修改</el-button
         >
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:account:remove']"
-          >删除</el-button
-        >
-      </el-col>
+      </el-col> -->
       <!-- <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar> -->
     </el-row>
 
-    <el-table
-      v-loading="loading"
-      :data="tableData"
-      @selection-change="handleSelectionChange"
-    >
-      <el-table-column type="selection" width="55" align="center" />
+    <el-table v-loading="loading" :data="tableData">
       <el-table-column label="名称" align="center" prop="name" />
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="冻结状态" align="center" key="frozen">
@@ -151,8 +135,8 @@
             size="mini"
             type="text"
             icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            >冻结</el-button
+            @click="handleFrozen(scope.row)"
+            >{{scope.row.frozen ? "解冻" : "冻结"}}</el-button
           >
         </template>
       </el-table-column>
@@ -181,7 +165,7 @@
           </el-switch>
         </el-form-item>
         <el-form-item label="创建信息" v-if="form.id">
-          <span>{{ form.createName + " " + form.createTime }}</span>
+          <span>{{ form.creator.name + " " + form.createTime }}</span>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input
@@ -200,7 +184,13 @@
 </template>
 
 <script>
-import { getCategoryData } from "@/api/vehicle-monitoring/commodity.js";
+import {
+  getCategoryData,
+  addCommodityCategory,
+  editCommodityCategory,
+  getCommodityCategoryDetail,
+  changeCommodityCategoryFrozenStatus
+} from "@/api/vehicle-monitoring/commodity.js";
 
 export default {
   name: "Cagetory",
@@ -317,29 +307,23 @@ export default {
     },
     // 选择排序下拉框值
     selectSortType(val) {
-      switch (val) {
-        case 1:
-          this.params.sortInfo = {
-            columnName: "name",
-            order: "DESC",
-          };
-          break;
-        case 2:
-          this.params.sortInfo = {
-            columnName: "createTime",
-            order: "DESC",
-          };
-          break;
-        case 3:
-          this.params.sortInfo = {
-            columnName: "createTime",
-            order: "ASC",
-          };
-          break;
-        default:
-          this.params.sortInfo = null;
-          break;
-      }
+      let data = {
+        1: {
+          columnName: "name",
+          order: "DESC",
+        },
+        2: {
+          columnName: "createTime",
+          order: "DESC",
+        },
+        3: {
+          columnName: "createTime",
+          order: "ASC",
+        },
+      };
+
+      this.params.sortInfo = data[val] || null;
+      this.handleQuery();
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -370,58 +354,47 @@ export default {
         name: "account-detail",
       });
     },
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map((item) => item.id);
-      this.single = selection.length != 1;
-      this.multiple = !selection.length;
-    },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
       // this.form = {...row};
       // this.open=true;
       const id = row.id || this.ids;
-      getType(id).then((response) => {
+      getCommodityCategoryDetail({ id: id }).then((response) => {
         // this.form = {...response.data,...{id:response.data.dictId}};
         this.form = response.data;
         this.open = true;
         this.title = "修改商品分类";
       });
     },
+    // 冻结
+    handleFrozen(row) {
+      let text = row.frozen ? "解冻" : "冻结";
+      this.$modal
+        .confirm('是否确认' + text)
+        .then(async () => {
+          let res = await changeCommodityCategoryFrozenStatus({ id: row.id });
+          if (res) {
+            this.getList();
+            this.$modal.msgSuccess(text + "成功");
+          }
+        })
+        .catch(() => {});
+    },
     /** 提交按钮 */
     submitForm: function () {
-      this.$refs["form"].validate((valid) => {
+      this.$refs["form"].validate(async (valid) => {
         if (valid) {
-          if (this.form.id != undefined) {
-            updateType(this.form).then((response) => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addType(this.form).then((response) => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
+          let res = this.form.id
+            ? await editCommodityCategory(this.form)
+            : await addCommodityCategory(this.form);
+          if (res) {
+            this.$modal.msgSuccess(res.message);
+            this.open = false;
+            this.getList();
           }
         }
       });
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$modal
-        .confirm('是否确认删除用户id为"' + ids + '"的数据项？')
-        .then(function () {
-          return delType(ids);
-        })
-        .then(() => {
-          this.getList();
-          this.$modal.msgSuccess("删除成功");
-        })
-        .catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {

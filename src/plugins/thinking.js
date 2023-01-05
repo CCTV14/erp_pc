@@ -3,30 +3,24 @@ import store from "@/store";
 import { Notification, MessageBox, Message, Loading } from "element-ui";
 
 // 判断权限
-const checkAuth = (userAuthItemCode) => {
-  if (!userAuthItemCode || userAuthItemCode.length === 0) {
-    return false;
-  }
-  if (currentUserIsBoss()) {
-    return true;
-  }
-  let authGroupList = store.getters.permissions || [];
-  return (
-    authGroupList.findIndex((authGroup) => {
+const checkAuth = (value) => {
+  if (value) {
+    const all_permission = "*:*:*";
+    const permissions = store.getters.permissions || [];
+    const hasPermissions = permissions.some((permission) => {
       return (
-        authGroup.authGroupAuthList.findIndex((authGroupAuth) => {
-          if (typeof userAuthItemCode === "string") {
-            return userAuthItemCode === authGroupAuth.userAuthItem.code;
-          } else {
-            return (
-              userAuthItemCode.indexOf(authGroupAuth.userAuthItem.code) > -1
-            );
-          }
-        }) > -1
+        all_permission === permission ||
+        (value instanceof Array
+          ? value.includes(permission)
+          : value == permission)
       );
-    }) > -1
-  );
+    });
+    return hasPermissions;
+  } else {
+    throw new Error(`请设置操作权限标签值`);
+  }
 };
+// 判断权限 暂时用不到
 const checkAuthAsync = async (userAuthItemCode) => {
   return new Promise((resolve, reject) => {
     if (checkAuth(userAuthItemCode)) {
@@ -62,14 +56,17 @@ const currentUserIsBoss = () => {
 // }
 
 const getCheckType = (enumName) => {
+  if (!enumName) {
+    return null;
+  }
   if (enumName === "Draft") {
-    return "warning";
+    return "color:#E6A23C;";
   } else if (enumName === "Pending") {
-    return "primary";
+    return "color:#409EFF;";
   } else if (enumName === "Approval") {
-    return "success";
+    return "color:#67C23A;";
   } else if (enumName === "Reject") {
-    return "error";
+    return "color:#F56C6C;";
   }
 };
 const toOrderPage = (orderName, orderId) => {
@@ -279,34 +276,95 @@ function getCellFontColor({ row, column, rowIndex, columnIndex }) {
     }
     // 包含出库
     else if (label.indexOf("出库") != -1) {
-      if (row.commodityOutputProgressEnum.Desc == "全部出库") {
+      if (
+        row.commodityOutputProgressEnum &&
+        row.commodityOutputProgressEnum.Desc == "全部出库"
+      ) {
         return "color:#67C23A";
       }
       //
     }
     // 包含入库
     else if (label.indexOf("入库") != -1) {
-      if (row.commodityInputProgressEnum.Desc == "全部入库") {
+      if (
+        row.commodityInputProgressEnum &&
+        row.commodityInputProgressEnum.Desc == "全部入库"
+      ) {
         return "color:#67C23A";
       }
       //
     }
     // 包含收款
     else if (label.indexOf("收款") != -1) {
-      if (row.fundCollectProgressEnum.Desc == "全部收款") {
+      if (
+        row.fundCollectProgressEnum &&
+        row.fundCollectProgressEnum.Desc == "全部收款"
+      ) {
         return "color:#67C23A";
       }
       //
     }
     // 包含付款
     else if (label.indexOf("付款") != -1) {
-      if (row.fundPayProgressEnum.Desc == "全部付款") {
+      if (
+        row.fundPayProgressEnum &&
+        row.fundPayProgressEnum.Desc == "全部付款"
+      ) {
         return "color:#67C23A";
       }
       //
     }
   }
 }
+
+function downloadFile(blob, fileName) {
+  const link = document.createElement("a");
+  link.href = window.URL.createObjectURL(blob);
+  link.download = fileName;
+  // 此写法兼容可火狐浏览器
+  document.body.appendChild(link);
+  const evt = document.createEvent("MouseEvents");
+  evt.initEvent("click", false, false);
+  link.dispatchEvent(evt);
+  document.body.removeChild(link);
+}
+// 将Base64文件转为 Blob
+function buildBlobByByte(data) {
+  const raw = window.atob(data);
+  const rawLength = raw.length;
+  const uInt8Array = new Uint8Array(rawLength);
+  for (let i = 0; i < rawLength; ++i) {
+    uInt8Array[i] = raw.charCodeAt(i);
+  }
+  return new Blob([uInt8Array]);
+}
+
+// 二进制数组 生成文件
+const downloadFileByByte = (data, fileName) => {
+  const blob = buildBlobByByte(data);
+  downloadFile(blob, fileName);
+};
+
+// 导出数据
+const exportData = (name, data) => {
+  var raw = window.atob(data);
+  var uInt8Array = new Uint8Array(data.length);
+  for (var i = 0; i < raw.length; i++) {
+    uInt8Array[i] = raw.charCodeAt(i);
+  }
+  const link = document.createElement("a");
+  const blob = new Blob([uInt8Array], {
+    type: "application/vnd.ms-excel",
+  });
+  link.style.display = "none";
+  link.href = URL.createObjectURL(blob);
+  link.setAttribute("download", name);
+
+  document.body.appendChild(link);
+  link.click();
+
+  document.body.removeChild(link);
+};
 
 export default {
   checkAuth,
@@ -323,4 +381,6 @@ export default {
   clearAllStorageCache,
   formatFileSize,
   getCellFontColor,
+  exportData,
+  downloadFileByByte,
 };

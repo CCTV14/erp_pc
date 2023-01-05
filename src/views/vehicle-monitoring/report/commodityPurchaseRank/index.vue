@@ -108,7 +108,7 @@
       <div class="out">
         <div>采购数量</div>
         <div class="price">
-          {{ reportData.orderCount || 0}}
+          {{ reportData.orderCount || 0 }}
         </div>
       </div>
     </div>
@@ -118,15 +118,15 @@
       <el-table-column
         label="商品分类"
         align="center"
-        prop="commodityCategory.name"
+        prop="commodity.commodityCategory.name"
       />
       <el-table-column label="颜色" align="center" prop="commodity.color" />
-      <el-table-column label="供应商" align="center" prop="supplier.name" />
       <el-table-column
-        label="规格"
+        label="供应商"
         align="center"
-        prop="commodityInfo.unit"
+        prop="commodity.supplier.name"
       />
+      <el-table-column label="规格" align="center" prop="commodity.unit" />
       <el-table-column prop="imgUrl" label="图片" align="center">
         <template slot-scope="scope">
           <ImagePreview
@@ -137,10 +137,14 @@
         </template>
       </el-table-column>
       <el-table-column label="单据数量" align="center" prop="orderCount" />
-      <el-table-column label="采购数量" align="center" prop="purchaseQuantity" />
+      <el-table-column
+        label="采购数量"
+        align="center"
+        prop="purchaseQuantity"
+      />
       <el-table-column label="采购额" align="center" sortable>
         <template slot-scope="scope">
-          <span>￥{{ scope.row.purchaseAmount || 0 | thousandSymbol}}</span>
+          <span>￥{{ scope.row.purchaseAmount || 0 | thousandSymbol }}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -157,28 +161,36 @@
             icon="el-icon-edit"
             @click="handleDetail(scope.row)"
             v-if="
-              scope.row.saleOrderHeadList &&
-              scope.row.saleOrderHeadList.length > 0
+              scope.row.purchaseOrderHeadList &&
+              scope.row.purchaseOrderHeadList.length > 0
             "
             >单据清单</el-button
           >
         </template>
       </el-table-column>
     </el-table>
+    <!-- 点击详情表格 -->
+    <el-dialog title="采购单清单" :visible.sync="listVisble" width="65%">
+      <list :purchaseList="purchaseList" />
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import * as dates from "@/utils/date.js";
-import { getCommoditySaleReport } from "@/api/vehicle-monitoring/report";
 import {
   getCommodityCategoryFindAvailableList,
   getCommodityPurchaseReport,
+} from "@/api/vehicle-monitoring/report";
+import {
+  changeCanSupplier,
 } from "@/api/vehicle-monitoring/commodity";
-import { validLowerCase } from "../../../../utils/validate";
+import list from "./list.vue";
 export default {
   data() {
     return {
+      purchaseList: [],
+      listVisble: false,
       // 遮罩层
       loading: true,
       // 日期单选框选择项
@@ -236,6 +248,9 @@ export default {
       },
     };
   },
+  components: {
+    list,
+  },
   mounted() {
     this.selectDate("本月");
     this.getCommodityCategoryFindAvailableList();
@@ -270,12 +285,12 @@ export default {
     loadmore(val) {
       this.getSupplierList();
     },
-    //获取采购报表
+    //获取供应商
     async getSupplierList(init) {
       if (init) {
         this.supplierParam.pageInfo.page = 1;
       }
-      let searchRes = await getCommodityPurchaseReport(this.supplierParam);
+      let searchRes = await changeCanSupplier(this.supplierParam);
       if (searchRes && searchRes.success) {
         this.supplierParam.pageInfo = searchRes.pageInfo;
         this.supplierParam.pageInfo.page++;
@@ -303,14 +318,23 @@ export default {
     // 搜索
     async handleQuery() {
       this.loading = true;
-      let res = await getCommoditySaleReport(this.searchParam);
+      let res = await getCommodityPurchaseReport(this.searchParam);
       if (res && res.success) {
         this.loading = false;
         this.reportData = res.data;
       }
     },
+    handleDetail(row) {
+      this.purchaseList = row.purchaseOrderHeadList;
+      this.listVisble = true;
+    },
     // 选择查询日期
     selectQueryDate(val) {
+      if (!val) {
+        this.postForm.startDate = "";
+        this.postForm.endDate = "";
+        return;
+      }
       this.postForm.startDate = val[0];
       this.postForm.endDate = val[1];
       this.handleQuery();

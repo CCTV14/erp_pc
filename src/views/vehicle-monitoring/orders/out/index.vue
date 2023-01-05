@@ -11,27 +11,54 @@
       <el-form-item label="单号" prop="quickSearchInfoList[1].quickSearchValue">
         <el-input
           v-model="params.quickSearchInfoList[1].quickSearchValue"
-          placeholder="请输入销售单单号"
+          placeholder="请输入单号"
           clearable
+          style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item label="客户" prop="quickSearchInfoList[2].quickSearchValue">
         <el-input
           v-model="params.quickSearchInfoList[2].quickSearchValue"
-          placeholder="请输入客户编号/收货人"
+          placeholder="请输入客户编号/供应商"
           clearable
+          style="width: 240px"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item
+        label="关联单号"
+        prop="quickSearchInfoList[3].quickSearchValue"
+      >
+        <el-input
+          v-model="params.quickSearchInfoList[3].quickSearchValue"
+          placeholder="请输入关联销售单/采购退货单单号"
+          clearable
+          style="width: 240px"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item
+        label="出库说明"
+        prop="quickSearchInfoList[4].quickSearchValue"
+      >
+        <el-input
+          v-model="params.quickSearchInfoList[4].quickSearchValue"
+          placeholder="请输入出库说明"
+          clearable
+          style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item
         label="制单人"
-        prop="quickSearchInfoList[3].quickSearchValue"
+        prop="quickSearchInfoList[5].quickSearchValue"
       >
         <el-input
-          v-model="params.quickSearchInfoList[3].quickSearchValue"
+          v-model="params.quickSearchInfoList[5].quickSearchValue"
           placeholder="请输入制单人名称"
           clearable
+          style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -42,6 +69,8 @@
           multiple
           placeholder="请选择审批状态"
           clearable
+          style="width: 240px"
+          @change="handleQuery"
         >
           <!-- <el-option label="不限" :value="[]"></el-option> -->
           <el-option
@@ -52,44 +81,61 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="出库进度" prop="commodityOutputProgressEnumList">
+      <el-form-item label="出库类型" prop="commodityOutputOrderTypeEnumList">
         <el-select
-          v-model="params.commodityOutputProgressEnumList"
+          v-model="params.commodityOutputOrderTypeEnumList"
           collapse-tags
           multiple
-          placeholder="请选择出库进度"
+          placeholder="请选择出库类型"
           clearable
+          style="width: 240px"
+          @change="handleQuery"
         >
           <!-- <el-option label="不限" value=""></el-option> -->
           <el-option
-            v-for="(item, index) in selectCommodityOutputProgressList"
+            v-for="(item, index) in selectCommodityOutputOrderTypeList"
             :key="index"
             :label="item.Desc"
             :value="item.Name"
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="收款进度" prop="fundCollectProgressEnumList">
+      <el-form-item label="配送状态" prop="commodityDeliverStatusEnumList">
         <el-select
-          v-model="params.fundCollectProgressEnumList"
+          v-model="params.commodityDeliverStatusEnumList"
           collapse-tags
           multiple
-          placeholder="请选择收款进度"
+          placeholder="请选择付款进度"
           clearable
+          style="width: 240px"
+          @change="handleQuery"
         >
           <!-- <el-option label="不限" value=""></el-option> -->
           <el-option
-            v-for="(item, index) in selectOrderCollectProgressList"
+            v-for="(item, index) in selectCommodityDeliverStatusList"
             :key="index"
             :label="item.Desc"
             :value="item.Name"
           ></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="是否配送" prop="needDelivery">
+        <el-select
+          v-model="params.needDelivery"
+          placeholder="请选择是否配送"
+          clearable
+          style="width: 240px"
+          @change="handleQuery"
+        >
+          <el-option label="不限" value=""></el-option>
+          <el-option label="需要配送" :value="true"></el-option>
+          <el-option label="无需配送" :value="false"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="单据金额">
         <div style="display: flex">
           <el-input
-            style="width: 150px"
+            style="width: 108px"
             v-model="params.minOrderAmount"
             placeholder="不限"
             clearable
@@ -97,7 +143,7 @@
           />
           <div class="ml10 mr10">-</div>
           <el-input
-            style="width: 150px"
+            style="width: 108px"
             v-model="params.maxOrderAmount"
             placeholder="不限"
             clearable
@@ -110,12 +156,13 @@
           v-model="sortName"
           placeholder="请选择排序方式"
           clearable
+          style="width: 240px"
           @change="selectSortType"
         >
           <el-option label="最近创建 [默认]" value=""></el-option>
           <el-option label="最早创建" :value="1"></el-option>
-          <el-option label="单据金额倒序" :value="2"></el-option>
-          <el-option label="单据金额正序" :value="3"></el-option>
+          <el-option label="出库数量倒序" :value="2"></el-option>
+          <el-option label="出库数量正序" :value="3"></el-option>
         </el-select>
       </el-form-item>
       <el-form-item label="制单日期">
@@ -131,24 +178,9 @@
         >
         </el-date-picker>
       </el-form-item>
-      <el-form-item>
-        <el-button
-          type="primary"
-          icon="el-icon-search"
-          size="mini"
-          @click="handleQuery"
-          >搜索</el-button
-        >
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-          >重置</el-button
-        >
-        <!-- <el-checkbox class="ml10" v-model="params.onlyMyCreate" shape="cirle" @change="getList()">仅我的单据</el-checkbox> -->
-      </el-form-item>
-    </el-form>
-
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
+      <el-row class="wd100 mb8">
+        <el-col :span="12" class="flex-start">
+          <!-- <el-button
           type="primary"
           plain
           icon="el-icon-plus"
@@ -156,82 +188,112 @@
           @click="handleAdd"
           v-hasPermi="['SaleOrder_AddNewOrder']"
           >新增</el-button
-        >
-      </el-col>
-      <el-col :span="1.5">
+        > -->
         <el-button
-          type="success"
+          type="warning"
           plain
-          icon="el-icon-edit"
+          icon="el-icon-download"
           size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['system:sale:edit']"
-          >修改</el-button
+          @click="handleExport"
+          >导出</el-button
         >
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:sale:remove']"
-          >删除</el-button
-        >
-      </el-col>
-      <!-- <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar> -->
-    </el-row>
-
+        </el-col>
+        <el-col :span="12" class="flex-end">
+          <el-button
+            type="primary"
+            icon="el-icon-search"
+            size="mini"
+            @click="handleQuery"
+            >搜索</el-button
+          >
+          <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+            >重置</el-button
+          >
+        </el-col>
+      </el-row>
+    </el-form>
     <el-table
       v-loading="loading"
       :data="tableData"
       :cell-style="$thinking.getCellFontColor"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="单号" align="center" prop="orderNo" width="120" />
+      <!-- <el-table-column type="selection" width="55" align="center" /> -->
+      <el-table-column label="单号" align="center" prop="orderNo" width="130">
+        <template slot-scope="{ row }">
+          {{ row.orderNo || "草稿" }}
+        </template>
+      </el-table-column>
       <el-table-column
         label="客户姓名"
         align="center"
-        prop="customerName"
+        prop="customerSupplierName"
         width="100"
       />
       <el-table-column
         label="客户电话"
         align="center"
-        prop="customerPhoneNumber"
+        prop="customerSupplierPhoneNumber"
         width="120"
       />
       <el-table-column
         label="客户地址"
         align="center"
-        prop="customerAddress"
+        prop="customerSupplierAddress"
         width="200"
       />
-      <el-table-column label="单据金额" align="center" sortable width="100">
-        <template slot-scope="scope">
-          <span>￥{{ scope.row.orderAmount | thousandSymbol }}</span>
-        </template>
-      </el-table-column>
+      <el-table-column
+        label="供应商"
+        prop="customerSupplierName"
+        align="center"
+      />
+      <el-table-column
+        label="关联采购退货单"
+        prop="relatedPurchaseReturnOrderHead.orderNo"
+        align="center"
+        width="160"
+      />
+      <el-table-column
+        label="关联销售单"
+        align="center"
+        prop="relatedSaleOrderHead.orderNo"
+        width="160"
+      />
       <el-table-column label="制单信息" align="center" width="200">
         <template slot-scope="scope">
           <span>{{ scope.row.creator.name + " " + scope.row.createTime }}</span>
         </template>
       </el-table-column>
 
-      <el-table-column
-        label="收款进度"
-        prop="fundCollectProgressEnum.Desc"
-        align="center"
-      />
-      <el-table-column
-        label="出库进度"
-        prop="commodityOutputProgressEnum.Desc"
-        align="center"
-      />
+      <el-table-column label="配送状态" align="center">
+        <template slot-scope="{ row }">
+          {{
+            (row.commodityDeliverStatusEnum &&
+              row.commodityDeliverStatusEnum.Desc) ||
+            ""
+          }}
+        </template>
+      </el-table-column>
+      <el-table-column label="出库类型" align="center" width="120">
+        <template slot-scope="{ row }">
+          {{
+            (row.commodityOutputOrderTypeEnum &&
+              row.commodityOutputOrderTypeEnum.Desc) ||
+            ""
+          }}
+        </template>
+      </el-table-column>
+      <el-table-column label="配送员" align="center" width="120">
+        <template slot-scope="{ row }">
+          {{
+            row.deliveryUserList
+              .map((crr) => {
+                return crr.user.name;
+              })
+              .join("、")
+          }}
+        </template>
+      </el-table-column>
       <el-table-column
         label="审批状态"
         fixed="right"
@@ -254,14 +316,6 @@
             icon="el-icon-edit"
             @click="handleDetail(scope.row)"
             >查看</el-button
-          >
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:dict:remove']"
-            >删除</el-button
           >
         </template>
       </el-table-column>
@@ -310,14 +364,16 @@
 
 <script>
 import {
-  getFundCollectProgressEnumList,
-  getCommodityOutputProgressEnumList,
+  getCommodityOutputOrderTypeEnumList,
+  getCommodityDeliverStatusEnumList,
   getOrderApprovalStatusEnumList,
-  getSaleOrderData,
+  commodityOutputOrderFindPageForManage,
 } from "@/api/vehicle-monitoring/order.js";
 
+import { commodityOutputOrderExport } from "@/api/vehicle-monitoring/order";
+
 export default {
-  name: "Sale",
+  name: "Out",
   data() {
     return {
       // 排序方式名称
@@ -342,10 +398,10 @@ export default {
       tableData: [],
       // 审批状态
       selectOrderApprovalStatusListTemp: [],
-      // 收款状态
-      selectOrderCollectProgressList: [],
-      // 出库进度
-      selectCommodityOutputProgressList: [],
+      // 配送状态
+      selectCommodityDeliverStatusList: [],
+      // 出库类型
+      selectCommodityOutputOrderTypeList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层 新增/编辑框
@@ -354,14 +410,22 @@ export default {
       dateRange: [],
       // 查询参数
       params: {
+        // 单号//出库说明/制单人
         quickSearchInfoList: [
           {
             columns: [
               "orderNo",
               "customer.customerNo",
-              "customerName",
-              "customerPhoneNumber",
-              "customerAddress",
+              "customer.name",
+              "customer.phoneNumber",
+              "customer.address",
+              "supplier.name",
+              "customerSupplierName",
+              "customerSupplierPhoneNumber",
+              "customerSupplierAddress",
+              "relatedSaleOrderHead.orderNo",
+              "relatedPurchaseReturnOrderHead.orderNo",
+              "remark",
               "creator.name",
             ],
             quickSearchValue: null,
@@ -373,10 +437,25 @@ export default {
           {
             columns: [
               "customer.customerNo",
-              "customerName",
-              "customerPhoneNumber",
-              "customerAddress",
+              "customer.name",
+              "customer.phoneNumber",
+              "customer.address",
+              "supplier.name",
+              "customerSupplierName",
+              "customerSupplierPhoneNumber",
+              "customerSupplierAddress",
             ],
+            quickSearchValue: null,
+          },
+          {
+            columns: [
+              "relatedSaleOrderHead.orderNo",
+              "relatedPurchaseReturnOrderHead.orderNo",
+            ],
+            quickSearchValue: null,
+          },
+          {
+            columns: ["remark"],
             quickSearchValue: null,
           },
           {
@@ -385,10 +464,9 @@ export default {
           },
         ],
         orderApprovalStatusEnumList: null,
-        fundCollectProgressEnumList: null,
-        commodityOutputProgressEnumList: null,
-        minOrderAmount: null,
-        maxOrderAmount: null,
+        commodityOutputOrderTypeEnumList: null,
+        commodityDeliverStatusEnumList: null,
+        needDelivery: null,
         minCreateDate: null,
         maxCreateDate: null,
         onlyMyCreate: false,
@@ -429,18 +507,42 @@ export default {
   created() {
     this.getList();
     this.getOrderApprovalStatusList();
-    this.getFundCollectProgressList();
-    this.getCommodityOutputProgressEnumList();
+    this.flushCommodityOutputOrderType();
+    this.flushCommodityDeliverStatus();
   },
   methods: {
-    /** 查询用户列表 */
+    /** 查询销售退货列表 */
     getList() {
       this.loading = true;
-      getSaleOrderData(this.params).then((response) => {
+      commodityOutputOrderFindPageForManage(this.params).then((response) => {
         this.tableData = response.data;
         this.total = Number(response.total);
         this.loading = false;
       });
+    },
+    // 获取出库进度
+    async flushCommodityOutputOrderType() {
+      let res = await getCommodityOutputOrderTypeEnumList();
+      if (res && res.success) {
+        this.selectCommodityOutputOrderTypeList = [
+          {
+            Desc: "不限",
+            Name: null,
+          },
+        ].concat(res.data);
+      }
+    },
+    // 获取配送状态
+    async flushCommodityDeliverStatus() {
+      let res = await getCommodityDeliverStatusEnumList();
+      if (res && res.success) {
+        this.selectCommodityDeliverStatusList = [
+          {
+            Desc: "不限",
+            Name: null,
+          },
+        ].concat(res.data);
+      }
     },
     // 获取审批状态列表
     getOrderApprovalStatusList() {
@@ -448,16 +550,27 @@ export default {
         this.selectOrderApprovalStatusListTemp = res.data;
       });
     },
-    // 获取收款状态列表
-    getFundCollectProgressList() {
-      getFundCollectProgressEnumList().then((res) => {
-        this.selectOrderCollectProgressList = res.data;
+    // 获取付款状态列表
+    getFunPayProgressList() {
+      getFundPayProgressEnumList().then((res) => {
+        this.selectFundPayProgressList = res.data;
       });
     },
     // 获取出库进度列表
-    getCommodityOutputProgressEnumList() {
-      getCommodityOutputProgressEnumList().then((res) => {
-        this.selectCommodityOutputProgressList = res.data;
+    getCommodityInputProgressEnumList() {
+      getCommodityInputProgressEnumList().then((res) => {
+        this.selectCommodityInputProgressList = res.data;
+      });
+    },
+    /** 导出按钮操作 */
+    handleExport() {
+      this.$modal.loading('正在导出...');
+      commodityOutputOrderExport(this.params).then((res) => {
+        if (res.success) {
+          this.$modal.closeLoading();
+          this.$modal.msgSuccess("导出成功");ƒ
+          this.$thinking.downloadFileByByte(res.data,"出库单导出数据.xlsx");
+        }
       });
     },
     // 取消按钮
@@ -486,13 +599,13 @@ export default {
           break;
         case 2:
           this.params.sortInfo = {
-            columnName: "orderAmount",
+            columnName: "totalOutputQuantity",
             order: "DESC",
           };
           break;
         case 3:
           this.params.sortInfo = {
-            columnName: "orderAmount",
+            columnName: "totalOutputQuantity",
             order: "ASC",
           };
           break;
@@ -503,8 +616,14 @@ export default {
     },
     // 选择查询日期
     selectQueryDate(val) {
+      if (!val) {
+        this.params.minCreateDate = "";
+        this.params.maxCreateDate = "";
+        return;
+      }
       this.params.minCreateDate = val[0];
       this.params.maxCreateDate = val[1];
+      this.handleQuery();
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -587,16 +706,6 @@ export default {
           this.$modal.msgSuccess("删除成功");
         })
         .catch(() => {});
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      this.download(
-        "system/dict/type/export",
-        {
-          ...this.queryParams,
-        },
-        `type_${new Date().getTime()}.xlsx`
-      );
     },
     /** 刷新缓存按钮操作 */
     handleRefreshCache() {

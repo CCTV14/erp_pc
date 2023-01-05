@@ -8,32 +8,45 @@
           </div>
           <div>
             <div class="text-center">
-              <userAvatar :user="user" />
+              <userAvatar :user="userInfo" />
             </div>
             <ul class="list-group list-group-striped">
               <li class="list-group-item">
-                <svg-icon icon-class="user" />用户名称
-                <div class="pull-right">{{ user.userName }}</div>
+                <svg-icon icon-class="user" />姓名
+                <div class="pull-right">{{ userInfo.name }}</div>
               </li>
               <li class="list-group-item">
-                <svg-icon icon-class="phone" />手机号码
-                <div class="pull-right">{{ user.phonenumber }}</div>
+                <svg-icon icon-class="phone" />手机号
+                <div class="pull-right">{{ userInfo.phoneNumber }}</div>
               </li>
               <li class="list-group-item">
-                <svg-icon icon-class="email" />用户邮箱
-                <div class="pull-right">{{ user.email }}</div>
+                <svg-icon icon-class="email" />邮箱
+                <div class="pull-right">{{ userInfo.mailAddress }}</div>
               </li>
               <li class="list-group-item">
-                <svg-icon icon-class="tree" />所属部门
-                <div class="pull-right" v-if="user.dept">{{ user.dept.deptName }} / {{ postGroup }}</div>
+                <svg-icon icon-class="tree" />我的权限
+                <div class="pull-right">
+                  {{
+                    permissions && permissions.length > 0
+                      ? "共 " + permissions.length + " 个权限组"
+                      : "尚未分配权限组"
+                  }}
+                </div>
               </li>
-              <li class="list-group-item">
+              <!-- <li class="list-group-item">
                 <svg-icon icon-class="peoples" />所属角色
                 <div class="pull-right">{{ roleGroup }}</div>
-              </li>
+              </li> -->
               <li class="list-group-item">
                 <svg-icon icon-class="date" />创建日期
-                <div class="pull-right">{{ user.createTime }}</div>
+                <div class="pull-right">{{ userInfo.createTime }}</div>
+              </li>
+              <li class="list-group-item">
+                <svg-icon icon-class="date" />冻结账号
+                <div class="pull-right">
+                  <span :class="userInfo.frozen ? 'text-error' : ''"></span
+                  >{{ userInfo.frozen ? "已冻结" : "未冻结" }}
+                </div>
               </li>
             </ul>
           </div>
@@ -46,10 +59,10 @@
           </div>
           <el-tabs v-model="activeTab">
             <el-tab-pane label="基本资料" name="userinfo">
-              <userInfo :user="user" />
+              <userInfo :user="userInfo" />
             </el-tab-pane>
             <el-tab-pane label="修改密码" name="resetPwd">
-              <resetPwd :user="user" />
+              <resetPwd :user="userInfo" />
             </el-tab-pane>
           </el-tabs>
         </el-card>
@@ -62,30 +75,18 @@
 import userAvatar from "./userAvatar";
 import userInfo from "./userInfo";
 import resetPwd from "./resetPwd";
-import { getUserProfile } from "@/api/system/user";
+import { mapGetters } from "vuex";
 
 export default {
   name: "Profile",
   components: { userAvatar, userInfo, resetPwd },
+  computed: {
+    ...mapGetters(["userInfo","permissions"])
+  },
   data() {
     return {
-      user: {},
-      roleGroup: {},
-      postGroup: {},
-      activeTab: "userinfo"
+      activeTab: "userinfo",
     };
-  },
-  created() {
-    this.getUser();
-  },
-  methods: {
-    getUser() {
-      getUserProfile().then(response => {
-        this.user = response.data;
-        this.roleGroup = response.roleGroup;
-        this.postGroup = response.postGroup;
-      });
-    }
   }
 };
 </script>

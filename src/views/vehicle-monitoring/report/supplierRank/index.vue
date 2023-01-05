@@ -141,15 +141,22 @@
         </template>
       </el-table-column>
     </el-table>
+    <!-- 点击详情表格 -->
+    <el-dialog title="单据清单" :visible.sync="listVisble" width="65%">
+      <list :detailObj="detailObj" />
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import * as dates from "@/utils/date.js";
 import { getSupplierRank } from "@/api/vehicle-monitoring/report";
+import list from "./list.vue";
 export default {
   data() {
     return {
+      detailObj: {},
+      listVisble: false,
       // 遮罩层
       loading: true,
       // 日期单选框选择项
@@ -187,6 +194,9 @@ export default {
         startDate: "",
       },
     };
+  },
+  components: {
+    list,
   },
   mounted() {
     this.selectDate("本月");
@@ -228,8 +238,20 @@ export default {
         this.reportData = res.data;
       }
     },
+    handleDetail(row) {
+      this.detailObj = {
+        purchaseOrderHeadList: row.purchaseOrderHeadList,
+        purchaseReturnOrderHeadList: row.purchaseReturnOrderHeadList,
+      };
+      this.listVisble = true;
+    },
     // 选择查询日期
     selectQueryDate(val) {
+      if (!val) {
+        this.postForm.startDate = "";
+        this.postForm.endDate = "";
+        return;
+      }
       this.postForm.startDate = val[0];
       this.postForm.endDate = val[1];
       this.handleQuery();

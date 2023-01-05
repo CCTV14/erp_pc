@@ -42,11 +42,18 @@ export function getCommoditySaleReport(data) {
   });
 }
 // 报表 - 获取商品采购报表
-export function getCommodityPurchaseReport(params) {
+export function getCommodityPurchaseReport(data) {
   return request({
     url: "/dynamicKanban/commodityPurchaseReport",
     method: "post",
     data: data,
+  });
+}
+// 商品分类清单 (列表)(获取可用的商品分类清单)
+export function getCommodityCategoryFindAvailableList() {
+  return request({
+    url: "/commodityCategory/findAvailableList",
+    method: "post",
   });
 }
 

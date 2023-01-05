@@ -11,8 +11,9 @@
       <el-form-item label="单号" prop="quickSearchInfoList[1].quickSearchValue">
         <el-input
           v-model="params.quickSearchInfoList[1].quickSearchValue"
-          placeholder="请输入销售单单号"
+          placeholder="请输入单号"
           clearable
+          style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -21,6 +22,7 @@
           v-model="params.quickSearchInfoList[2].quickSearchValue"
           placeholder="请输入客户编号/收货人"
           clearable
+          style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -32,6 +34,7 @@
           v-model="params.quickSearchInfoList[3].quickSearchValue"
           placeholder="请输入制单人名称"
           clearable
+          style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -42,6 +45,8 @@
           multiple
           placeholder="请选择审批状态"
           clearable
+          style="width: 240px"
+          @change="handleQuery"
         >
           <!-- <el-option label="不限" :value="[]"></el-option> -->
           <el-option
@@ -52,34 +57,38 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="出库进度" prop="commodityOutputProgressEnumList">
+      <el-form-item label="入库进度" prop="commodityInputProgressEnumList">
         <el-select
-          v-model="params.commodityOutputProgressEnumList"
+          v-model="params.commodityInputProgressEnumList"
           collapse-tags
           multiple
-          placeholder="请选择出库进度"
+          placeholder="请选择入库进度"
           clearable
+          style="width: 240px"
+          @change="handleQuery"
         >
           <!-- <el-option label="不限" value=""></el-option> -->
           <el-option
-            v-for="(item, index) in selectCommodityOutputProgressList"
+            v-for="(item, index) in selectCommodityInputProgressList"
             :key="index"
             :label="item.Desc"
             :value="item.Name"
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="收款进度" prop="fundCollectProgressEnumList">
+      <el-form-item label="付款进度" prop="fundPayProgressEnumList">
         <el-select
-          v-model="params.fundCollectProgressEnumList"
+          v-model="params.fundPayProgressEnumList"
           collapse-tags
           multiple
-          placeholder="请选择收款进度"
+          placeholder="请选择付款进度"
           clearable
+          style="width: 240px"
+          @change="handleQuery"
         >
           <!-- <el-option label="不限" value=""></el-option> -->
           <el-option
-            v-for="(item, index) in selectOrderCollectProgressList"
+            v-for="(item, index) in selectFundPayProgressList"
             :key="index"
             :label="item.Desc"
             :value="item.Name"
@@ -89,7 +98,7 @@
       <el-form-item label="单据金额">
         <div style="display: flex">
           <el-input
-            style="width: 140px"
+            style="width: 108px"
             v-model="params.minOrderAmount"
             placeholder="不限"
             clearable
@@ -97,7 +106,7 @@
           />
           <div class="ml10 mr10">-</div>
           <el-input
-            style="width: 140px"
+            style="width: 108px"
             v-model="params.maxOrderAmount"
             placeholder="不限"
             clearable
@@ -110,6 +119,7 @@
           v-model="sortName"
           placeholder="请选择排序方式"
           clearable
+          style="width: 240px"
           @change="selectSortType"
         >
           <el-option label="最近创建 [默认]" value=""></el-option>
@@ -131,68 +141,52 @@
         >
         </el-date-picker>
       </el-form-item>
-      <el-form-item>
-        <el-button
-          type="primary"
-          icon="el-icon-search"
-          size="mini"
-          @click="handleQuery"
-          >搜索</el-button
-        >
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-          >重置</el-button
-        >
-        <!-- <el-checkbox class="ml10" v-model="params.onlyMyCreate" shape="cirle" @change="getList()">仅我的单据</el-checkbox> -->
-      </el-form-item>
+      <el-row class="wd100 mb8">
+        <el-col :span="12" class="flex-start">
+          <!-- <el-button
+            type="primary"
+            plain
+            icon="el-icon-plus"
+            size="mini"
+            @click="handleAdd"
+            v-hasPermi="['SaleOrder_AddNewOrder']"
+            >新增</el-button
+          > -->
+          <el-button
+            type="warning"
+            plain
+            icon="el-icon-download"
+            size="mini"
+            @click="handleExport"
+            >导出</el-button
+          >
+        </el-col>
+        <el-col :span="12" class="flex-end">
+          <el-button
+            type="primary"
+            icon="el-icon-search"
+            size="mini"
+            @click="handleQuery"
+            >搜索</el-button
+          >
+          <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+            >重置</el-button
+          >
+        </el-col>
+      </el-row>
     </el-form>
-
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:sale:add']"
-          >新增</el-button
-        >
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['system:sale:edit']"
-          >修改</el-button
-        >
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:sale:remove']"
-          >删除</el-button
-        >
-      </el-col>
-      <!-- <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar> -->
-    </el-row>
-
     <el-table
       v-loading="loading"
       :data="tableData"
       :cell-style="$thinking.getCellFontColor"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="单号" align="center" prop="orderNo" width="120" />
+      <!-- <el-table-column type="selection" width="55" align="center" /> -->
+      <el-table-column label="单号" align="center" prop="orderNo" width="130">
+        <template slot-scope="{ row }">
+          {{ row.orderNo || "草稿" }}
+        </template>
+      </el-table-column>
       <el-table-column
         label="客户姓名"
         align="center"
@@ -223,13 +217,13 @@
       </el-table-column>
 
       <el-table-column
-        label="收款进度"
-        prop="fundCollectProgressEnum.Desc"
+        label="付款进度"
+        prop="fundPayProgressEnum.Desc"
         align="center"
       />
       <el-table-column
-        label="出库进度"
-        prop="commodityOutputProgressEnum.Desc"
+        label="入库进度"
+        prop="commodityInputProgressEnum.Desc"
         align="center"
       />
       <el-table-column
@@ -260,6 +254,7 @@
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
+            v-hasPermi="['system:dict:remove']"
             >删除</el-button
           >
         </template>
@@ -301,7 +296,6 @@
       title="请选择商品"
       :visible.sync="selectCommodityVisble"
       direction="rtl"
-      :before-close="handleClose"
     >
       <span>我来啦!</span>
     </el-drawer>
@@ -310,11 +304,13 @@
 
 <script>
 import {
-  getFundCollectProgressEnumList,
-  getCommodityOutputProgressEnumList,
+  getFundPayProgressEnumList,
+  getCommodityInputProgressEnumList,
   getOrderApprovalStatusEnumList,
-  getSaleOrderData,
+  saleReturnOrderFindPageForManage,
 } from "@/api/vehicle-monitoring/order.js";
+
+import { saleReturnOrderExport } from "@/api/vehicle-monitoring/order";
 
 export default {
   name: "Sale",
@@ -342,10 +338,10 @@ export default {
       tableData: [],
       // 审批状态
       selectOrderApprovalStatusListTemp: [],
-      // 收款状态
-      selectOrderCollectProgressList: [],
-      // 出库进度
-      selectCommodityOutputProgressList: [],
+      // 付款进度
+      selectFundPayProgressList: [],
+      // 入库进度
+      selectCommodityInputProgressList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层 新增/编辑框
@@ -385,13 +381,13 @@ export default {
           },
         ],
         orderApprovalStatusEnumList: null,
-        fundCollectProgressEnumList: null,
-        commodityOutputProgressEnumList: null,
+        fundPayProgressEnumList: null,
+        commodityInputProgressEnumList: null,
         minOrderAmount: null,
         maxOrderAmount: null,
         minCreateDate: null,
         maxCreateDate: null,
-        onlyMyCreate: true,
+        onlyMyCreate: false,
         pageInfo: {
           page: 1,
           pageSize: 10,
@@ -429,14 +425,14 @@ export default {
   created() {
     this.getList();
     this.getOrderApprovalStatusList();
-    this.getFundCollectProgressList();
-    this.getCommodityOutputProgressEnumList();
+    this.getFunPayProgressList();
+    this.getCommodityInputProgressEnumList();
   },
   methods: {
-    /** 查询用户列表 */
+    /** 查询销售退货列表 */
     getList() {
       this.loading = true;
-      getSaleOrderData(this.params).then((response) => {
+      saleReturnOrderFindPageForManage(this.params).then((response) => {
         this.tableData = response.data;
         this.total = Number(response.total);
         this.loading = false;
@@ -448,16 +444,30 @@ export default {
         this.selectOrderApprovalStatusListTemp = res.data;
       });
     },
-    // 获取收款状态列表
-    getFundCollectProgressList() {
-      getFundCollectProgressEnumList().then((res) => {
-        this.selectOrderCollectProgressList = res.data;
+    // 获取付款状态列表
+    getFunPayProgressList() {
+      getFundPayProgressEnumList().then((res) => {
+        this.selectFundPayProgressList = res.data;
       });
     },
     // 获取出库进度列表
-    getCommodityOutputProgressEnumList() {
-      getCommodityOutputProgressEnumList().then((res) => {
-        this.selectCommodityOutputProgressList = res.data;
+    getCommodityInputProgressEnumList() {
+      getCommodityInputProgressEnumList().then((res) => {
+        this.selectCommodityInputProgressList = res.data;
+      });
+    },
+    /** 导出按钮操作 */
+    handleExport() {
+      this.$modal.loading("正在导出...");
+      saleReturnOrderExport(this.params).then((res) => {
+        if (res.success) {
+          this.$modal.closeLoading();
+          this.$modal.msgSuccess("导出成功");
+          this.$thinking.downloadFileByByte(
+            res.data,
+            "销售退货单导出数据.xlsx"
+          );
+        }
       });
     },
     // 取消按钮
@@ -503,8 +513,14 @@ export default {
     },
     // 选择查询日期
     selectQueryDate(val) {
+      if (!val) {
+        this.params.minCreateDate = "";
+        this.params.maxCreateDate = "";
+        return;
+      }
       this.params.minCreateDate = val[0];
       this.params.maxCreateDate = val[1];
+      this.handleQuery();
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -533,6 +549,7 @@ export default {
     handleDetail(row) {
       this.$router.push({
         name: "sale-detail",
+        query: { orderId: row.id },
       });
     },
     // 多选框选中数据
@@ -586,16 +603,6 @@ export default {
           this.$modal.msgSuccess("删除成功");
         })
         .catch(() => {});
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      this.download(
-        "system/dict/type/export",
-        {
-          ...this.queryParams,
-        },
-        `type_${new Date().getTime()}.xlsx`
-      );
     },
     /** 刷新缓存按钮操作 */
     handleRefreshCache() {

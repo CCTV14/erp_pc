@@ -319,3 +319,16 @@ h6 {
 .flex-card .el-card__body {
   display: flex;
 }
+
+.flex-end {
+  display: flex !important;
+  justify-content: flex-end !important;
+}
+
+.flex-start {
+  display: flex !important;
+  justify-content: flex-start !important;
+}
+.wd100 {
+  width: 100%;
+}

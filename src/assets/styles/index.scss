@@ -86,6 +86,11 @@ div:focus {
   display: block;
 }
 
+.flex-end {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .clearfix {
   &:after {
     visibility: hidden;

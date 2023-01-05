@@ -122,7 +122,7 @@
           >新增</el-button
         >
       </el-col>
-      <el-col :span="1.5">
+      <!-- <el-col :span="1.5">
         <el-button
           type="success"
           plain
@@ -133,19 +133,7 @@
           v-hasPermi="['system:purchase:edit']"
           >修改</el-button
         >
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:purchase:remove']"
-          >删除</el-button
-        >
-      </el-col>
+      </el-col> -->
       <!-- <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar> -->
     </el-row>
 
@@ -153,10 +141,8 @@
       v-loading="loading"
       :data="tableData"
       :cell-style="$thinking.getCellFontColor"
-      @selection-change="handleSelectionChange"
       :default-sort="{ prop: 'balanceAmount', order: 'descending' }"
     >
-      <el-table-column type="selection" width="55" align="center" />
       <el-table-column label="名称" align="center" prop="name" />
       <el-table-column label="当前余额" align="center" sortable width="120">
         <template slot-scope="scope">
@@ -164,6 +150,11 @@
         </template>
       </el-table-column>
       <el-table-column label="联系方式" align="center" prop="phoneNumber" />
+      <el-table-column label="冻结状态" align="center">
+        <template slot-scope="scope">
+          <span>{{ scope.row.frozen ? "已冻结" : "未冻结" }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="地址" align="center" prop="address" />
       <el-table-column label="备注" align="center" prop="remark" />
       <el-table-column label="创建信息" align="center" width="200">
@@ -175,7 +166,7 @@
         label="操作"
         fixed="right"
         align="center"
-        width="120"
+        width="160"
         class-name="small-padding fixed-width"
       >
         <template slot-scope="scope">
@@ -192,10 +183,9 @@
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:dict:remove']"
-            >删除</el-button
+            icon="el-icon-edit"
+            @click="handleDetail(scope.row)"
+            >查看详情</el-button
           >
         </template>
       </el-table-column>
@@ -212,11 +202,11 @@
     <!-- 添加或修改参数配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="名称" prop="supplierName">
-          <el-input v-model="form.supplierName" placeholder="请输入名称" />
+        <el-form-item label="名称" prop="name">
+          <el-input v-model="form.name" placeholder="请输入名称" />
         </el-form-item>
         <el-form-item label="当前余额" v-if="form.id">
-          <span>{{ form.balanceAmount }}</span>
+          <span>￥{{ form.balanceAmount }}</span>
         </el-form-item>
         <el-form-item label="联系方式" prop="phoneNumber">
           <el-input v-model="form.phoneNumber" placeholder="请输入联系方式" />
@@ -225,11 +215,11 @@
           <el-input v-model="form.address" placeholder="请输入地址"></el-input>
         </el-form-item>
         <el-form-item label="创建信息" v-if="form.id">
-          <span>{{ form.createName + " " + form.createTime }}</span>
+          <span>{{ form.creator.name + " " + form.createTime }}</span>
         </el-form-item>
         <el-form-item label="冻结状态" v-if="form.id">
           <el-switch
-            v-model="form.status"
+            v-model="form.frozen"
             :active-value="true"
             :inactive-value="false"
           >
@@ -252,7 +242,12 @@
 </template>
 
 <script>
-import { getSupplierData } from "@/api/vehicle-monitoring/commodity";
+import {
+  getSupplierData,
+  supplierAddSupplier,
+  supplierFindById,
+  supplierUpdate,
+} from "@/api/vehicle-monitoring/commodity";
 
 export default {
   name: "Purchase",
@@ -317,7 +312,7 @@ export default {
       form: {},
       // 表单校验
       rules: {
-        supplierName: [
+        name: [
           {
             required: true,
             message: "名称不能为空",
@@ -328,6 +323,11 @@ export default {
           {
             required: true,
             message: "联系方式不能为空",
+            trigger: "blur",
+          },
+          {
+            pattern: /^1[3456789]\d{9}$/,
+            message: "联系方式格式不正确",
             trigger: "blur",
           },
         ],
@@ -368,52 +368,35 @@ export default {
     },
     // 表单重置
     reset() {
-      this.form = {
-        id: "",
-        supplierName: "",
-        phoneNumber: "",
-        address: "",
-        remark: "",
-      };
+      this.form = {};
       this.resetForm("form");
     },
     // 选择排序下拉框值
     selectSortType(val) {
-      switch (val) {
-        case 1:
-          this.params.sortInfo = {
-            columnName: "name",
-            order: "DESC",
-          };
-          break;
-        case 2:
-          this.params.sortInfo = {
-            columnName: "balanceAmount",
-            order: "ASC",
-          };
-          break;
-        case 3:
-          this.params.sortInfo = {
-            columnName: "balanceAmount",
-            order: "DESC",
-          };
-          break;
-        case 4:
-          this.params.sortInfo = {
-            columnName: "createTime",
-            order: "ASC",
-          };
-          break;
-        case 5:
-          this.params.sortInfo = {
-            columnName: "createTime",
-            order: "DESC",
-          };
-          break;
-        default:
-          this.params.sortInfo = null;
-          break;
-      }
+      let data = {
+        1: {
+          columnName: "name",
+          order: "DESC",
+        },
+        2: {
+          columnName: "balanceAmount",
+          order: "ASC",
+        },
+        3: {
+          columnName: "balanceAmount",
+          order: "DESC",
+        },
+        4: {
+          columnName: "createTime",
+          order: "ASC",
+        },
+        5: {
+          columnName: "createTime",
+          order: "DESC",
+        },
+      };
+      this.params.sortInfo = data[val] || null;
+      this.getList();
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -436,19 +419,14 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加客户";
+      this.title = "添加供应商";
     },
     /** 查看详情按钮操作 */
     handleDetail(row) {
       this.$router.push({
-        name: "customer-detail",
+        name: "supplier-detail",
+        query: { id: row.id },
       });
-    },
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map((item) => item.id);
-      this.single = selection.length != 1;
-      this.multiple = !selection.length;
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -456,45 +434,26 @@ export default {
       // this.form = {...row};
       // this.open=true;
       const id = row.id || this.ids;
-      getType(id).then((response) => {
+      supplierFindById({ id: id }).then((response) => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改客户";
+        this.title = "修改供应商";
       });
     },
     /** 提交按钮 */
     submitForm: function () {
-      this.$refs["form"].validate((valid) => {
+      this.$refs["form"].validate(async (valid) => {
         if (valid) {
-          if (this.form.id != undefined) {
-            updateType(this.form).then((response) => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addType(this.form).then((response) => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
+          let res = this.form.id
+            ? await supplierUpdate(this.form)
+            : await supplierAddSupplier(this.form);
+          if (res) {
+            this.$modal.msgSuccess(res.message);
+            this.open = false;
+            this.getList();
           }
         }
       });
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$modal
-        .confirm('是否确认删除客户id为"' + ids + '"的数据项？')
-        .then(function () {
-          return delType(ids);
-        })
-        .then(() => {
-          this.getList();
-          this.$modal.msgSuccess("删除成功");
-        })
-        .catch(() => {});
     },
     /** 导出按钮操作 */
     handleExport() {

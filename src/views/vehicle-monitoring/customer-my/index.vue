@@ -74,6 +74,7 @@
           style="width: 240px"
           placeholder="请选择分组"
           clearable
+          @change="handleQuery"
         >
           <el-option
             v-for="(item, index) in customerGroupEnumList"
@@ -89,6 +90,7 @@
           style="width: 240px"
           placeholder="请选择客户类型"
           clearable
+          @change="handleQuery"
         >
           <el-option
             v-for="(item, index) in customerTypeEnumList"
@@ -104,6 +106,7 @@
           style="width: 240px"
           placeholder="请选择客户跟进状态"
           clearable
+          @change="handleQuery"
         >
           <el-option
             v-for="(item, index) in customerFloowStatusList"
@@ -153,7 +156,7 @@
           >新增</el-button
         >
       </el-col>
-      <el-col :span="1.5">
+      <!-- <el-col :span="1.5">
         <el-button
           type="success"
           plain
@@ -175,7 +178,7 @@
           @click="handleDelete"
           v-hasPermi="['system:purchase:remove']"
           >删除</el-button
-        >
+        > -->
       </el-col>
       <!-- <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar> -->
     </el-row>
@@ -186,7 +189,7 @@
       :cell-style="$thinking.getCellFontColor"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55" align="center" />
+      <!-- <el-table-column type="selection" width="55" align="center" /> -->
       <el-table-column
         label="编号"
         align="center"
@@ -292,65 +295,13 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改参数配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="客户编号" v-if="form.id">
-          <span>{{ form.customerNo }}</span>
-        </el-form-item>
-        <el-form-item label="客户姓名" prop="name">
-          <el-input v-model="form.name" placeholder="请输入客户姓名" />
-        </el-form-item>
-        <el-form-item label="当前余额" v-if="form.id">
-          <span>{{ form.balanceAmount }}</span>
-        </el-form-item>
-        <el-form-item label="联系方式" prop="phoneNumber">
-          <el-input v-model="form.phoneNumber" placeholder="请输入联系方式" />
-        </el-form-item>
-        <el-form-item label="地址" prop="address">
-          <el-input
-            v-model="form.address"
-            type="textarea"
-            placeholder="请输入内容"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="客户分组" prop="customerGroupEnum">
-          <el-select
-            v-model="form.customerGroupEnum"
-            style="width: 100%"
-            placeholder="请选择类型"
-            clearable
-          >
-            <el-option label="成交" value="1"></el-option>
-            <el-option label="流失" value="0"></el-option>
-            <el-option label="支付宝账户" value="1"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="客户类型" prop="customerTypeEnum">
-          <el-select
-            v-model="form.customerTypeEnum"
-            style="width: 100%"
-            placeholder="请选择类型"
-            clearable
-          >
-            <el-option label="成交" value="1"></el-option>
-            <el-option label="流失" value="0"></el-option>
-            <el-option label="支付宝账户" value="1"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input
-            v-model="form.remark"
-            type="textarea"
-            placeholder="请输入内容"
-          ></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
-      </div>
-    </el-dialog>
+    <!-- 操作框 -->
+    <edit-dialog
+      :form="form"
+      :open="open"
+      :title="title"
+      @closeDialog="cancel"
+    />
   </div>
 </template>
 
@@ -361,6 +312,7 @@ import {
   getCustomerTypeEnumList,
   getCustomerFollowUpStatusEnumList,
 } from "@/api/vehicle-monitoring/customer";
+import editDialog from "../customer/components/edit.vue";
 
 export default {
   name: "Purchase",
@@ -471,6 +423,9 @@ export default {
       },
     };
   },
+  components: {
+    editDialog,
+  },
   computed: {
     timedOut() {
       return (val) => {
@@ -538,28 +493,22 @@ export default {
     },
     // 选择排序下拉框值
     selectSortType(val) {
-      switch (val) {
-        case 1:
-          this.params.sortInfo = {
-            columnName: "nextFollowUpTime",
-            order: "ASC",
-          };
-          break;
-        case 2:
-          this.params.sortInfo = {
-            columnName: "createTime",
-            order: "ASC",
-          };
-          break;
-        case 3:
-          this.params.sortInfo = {
-            columnName: "customer.customerNo",
-            order: "ASC",
-          };
-        default:
-          this.params.sortInfo = null;
-          break;
-      }
+      let data = {
+        1: {
+          columnName: "nextFollowUpTime",
+          order: "ASC",
+        },
+        2: {
+          columnName: "createTime",
+          order: "ASC",
+        },
+        3: {
+          columnName: "customer.customerNo",
+          order: "ASC",
+        },
+      };
+      this.params.sortInfo = data[val] || null;
+      this.handleQuery();
     },
     /** 搜索按钮操作 */
     handleQuery() {

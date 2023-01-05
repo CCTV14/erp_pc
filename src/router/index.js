@@ -89,190 +89,340 @@ export const constantRoutes = [
     ],
   },
   {
-    path: "/vehicle",
+    path: "/role-auth",
     component: Layout,
-    hidden: false,
-    alwaysShow: true,
-    redirect: "noRedirect",
-    meta: { title: "应用", icon: "job" },
+    hidden: true,
     children: [
       {
-        path: "inventory_warning",
-        hidden: true,
-        component: () =>
-          import("@/views/vehicle-monitoring/home/inventory_warning"),
-        name: "inventory_warning",
-        meta: { title: "库存预警" },
-      },
-      {
-        path: "sale",
-        component: () => import("@/views/vehicle-monitoring/sale/index"),
-        name: "sale",
-        meta: { title: "销售单管理" },
-      },
-      {
-        path: "sale-detail",
-        hidden: true,
-        component: () => import("@/views/vehicle-monitoring/sale/detail"),
-        name: "sale-detail",
-        meta: { title: "销售单详情" },
-      },
-      {
-        path: "sale-my",
-        component: () => import("@/views/vehicle-monitoring/sale-my/index"),
-        name: "sale-my",
-        meta: { title: "我的销售退货单" },
-      },
-      {
-        path: "account",
-        component: () => import("@/views/vehicle-monitoring/account/index"),
-        name: "account",
-        meta: { title: "资金账户管理" },
-      },
-      {
-        path: "account-detail",
-        hidden: true,
-        component: () => import("@/views/vehicle-monitoring/account/detail"),
-        name: "account-detail",
-        meta: { title: "资金账户详情" },
-      },
-      {
-        path: "customer",
-        component: () => import("@/views/vehicle-monitoring/customer/index"),
-        name: "customer",
-        meta: { title: "客户管理" },
-      },
-      {
-        path: "customer-detail",
-        hidden: true,
-        component: () => import("@/views/vehicle-monitoring/customer/detail"),
-        name: "customer-detail",
-        meta: { title: "客户详情" },
-      },
-      {
-        path: "customer-pool",
-        component: () =>
-          import("@/views/vehicle-monitoring/customer-pool/index"),
-        name: "customer-pool",
-        meta: { title: "客户公海池" },
-      },
-      {
-        path: "customer-my",
-        component: () => import("@/views/vehicle-monitoring/customer-my/index"),
-        name: "customer-my",
-        meta: { title: "我的客户" },
-      },
-      {
-        path: "floow-record",
-        component: () =>
-          import("@/views/vehicle-monitoring/floow-record/index"),
-        name: "floow-record",
-        meta: { title: "跟进记录" },
-      },
-      {
-        path: "floow-record-detail",
-        hidden: true,
-        component: () =>
-          import("@/views/vehicle-monitoring/floow-record/detail"),
-        name: "floow-record-detail",
-        meta: { title: "跟进记录详情" },
-      },
-      {
-        path: "commodity",
-        component: () => import("@/views/vehicle-monitoring/commodity/index"),
-        name: "commodity",
-        meta: { title: "商品管理" },
-      },
-      {
-        path: "cagetory",
-        component: () => import("@/views/vehicle-monitoring/cagetory/index"),
-        name: "cagetory",
-        meta: { title: "商品分类" },
-      },
-      {
-        path: "supplier",
-        component: () => import("@/views/vehicle-monitoring/supplier/index"),
-        name: "supplier",
-        meta: { title: "供应商管理" },
+        path: "authUser",
+        component: () => import("@/views/system/role/authUser"),
+        name: "AuthUser",
+        meta: { title: "分配用户" },
       },
     ],
   },
-  {
-    path: "/rank",
-    component: Layout,
-    hidden: false,
-    alwaysShow: true,
-    redirect: "noRedirect",
-    meta: { title: "报表", icon: "tab" },
-    children: [
-      {
-        path: "saleRank",
-        component: () =>
-          import("@/views/vehicle-monitoring/report/saleRank/index"),
-        name: "saleRank",
-        meta: { title: "销售业绩统计" },
-      },
-      {
-        path: "collectRank",
-        component: () =>
-          import("@/views/vehicle-monitoring/report/collectRank/index"),
-        name: "collectRank",
-        meta: { title: "回款业绩统计" },
-      },
-      {
-        path: "deliveryRank",
-        component: () =>
-          import("@/views/vehicle-monitoring/report/deliveryRank/index"),
-        name: "deliveryRank",
-        meta: { title: "配送费统计" },
-      },
-      {
-        path: "supplierRank",
-        component: () =>
-          import("@/views/vehicle-monitoring/report/supplierRank/index"),
-        name: "supplierRank",
-        meta: { title: "供应商采购统计" },
-      },
-      {
-        path: "commoditySaleRank",
-        component: () =>
-          import("@/views/vehicle-monitoring/report/commoditySaleRank/index"),
-        name: "commoditySaleRank",
-        meta: { title: "商品销售统计" },
-      },
-      {
-        path: "commodityPurchaseRank",
-        component: () =>
-          import(
-            "@/views/vehicle-monitoring/report/commodityPurchaseRank/index"
-          ),
-        name: "commodityPurchaseRank",
-        meta: { title: "商品采购统计" },
-      },
-    ],
-  },
-  {
-    path: "/setting",
-    component: Layout,
-    hidden: false,
-    alwaysShow: true,
-    redirect: "noRedirect",
-    meta: { title: "系统管理", icon: "system" },
-    children: [
-      {
-        path: "user",
-        component: () => import("@/views/vehicle-monitoring/user/index"),
-        name: "user",
-        meta: { title: "用户管理", icon: "user" },
-      },
-      {
-        path: "set",
-        component: () => import("@/views/vehicle-monitoring/set/index"),
-        name: "set",
-        meta: { title: "设置" },
-      },
-    ],
-  },
+  // {
+  //   path: "/vehicle",
+  //   component: Layout,
+  //   hidden: false,
+  //   alwaysShow: true,
+  //   redirect: "noRedirect",
+  //   meta: { title: "应用", icon: "log" },
+  //   children: [
+  //     {
+  //       path: "pending-order",
+  //       hidden: true,
+  //       component: () =>
+  //         import("@/views/vehicle-monitoring/home/pending-order"),
+  //       name: "pending-order",
+  //       meta: { title: "待审单据" },
+  //     },
+  //     {
+  //       path: "inventory_warning",
+  //       hidden: true,
+  //       component: () =>
+  //         import("@/views/vehicle-monitoring/home/inventory_warning"),
+  //       name: "inventory_warning",
+  //       meta: { title: "库存预警" },
+  //     },
+  //     {
+  //       path: "commodity_inout",
+  //       hidden: true,
+  //       component: () =>
+  //         import("@/views/vehicle-monitoring/home/commodity_inout"),
+  //       name: "commodity_inout",
+  //       meta: { title: "待出入库" },
+  //     },
+  //     {
+  //       path: "sale",
+  //       component: () => import("@/views/vehicle-monitoring/orders/sale/index"),
+  //       name: "sale",
+  //       meta: { title: "销售单管理" },
+  //     },
+  //     {
+  //       path: "sale-detail",
+  //       hidden: true,
+  //       component: () => import("@/views/vehicle-monitoring/orders/sale/detail"),
+  //       name: "sale-detail",
+  //       meta: { title: "销售单详情" },
+  //     },
+  //     // {
+  //     //   path: "sale-my",
+  //     //   component: () => import("@/views/vehicle-monitoring/orders/sale-my/index"),
+  //     //   name: "sale-my",
+  //     //   meta: { title: "我的销售退货单" },
+  //     // },
+  //     {
+  //       path: "sale-return",
+  //       component: () => import("@/views/vehicle-monitoring/orders/sale-return/index"),
+  //       name: "sale-return",
+  //       meta: { title: "销售退货单" },
+  //     },
+  //     {
+  //       path: "out",
+  //       component: () => import("@/views/vehicle-monitoring/orders/out/index"),
+  //       name: "out",
+  //       meta: { title: "出库单" },
+  //     },
+  //     {
+  //       path: "in",
+  //       component: () => import("@/views/vehicle-monitoring/orders/in/index"),
+  //       name: "in",
+  //       meta: { title: "入库单" },
+  //     },
+  //     {
+  //       path: "purchase",
+  //       component: () => import("@/views/vehicle-monitoring/orders/purchase/index"),
+  //       name: "purchase",
+  //       meta: { title: "采购单" },
+  //     },
+  //     {
+  //       path: "purchase-return",
+  //       component: () => import("@/views/vehicle-monitoring/orders/purchase-return/index"),
+  //       name: "purchase-return",
+  //       meta: { title: "采购退货单" },
+  //     },
+  //     {
+  //       path: "loss",
+  //       component: () => import("@/views/vehicle-monitoring/orders/loss/index"),
+  //       name: "loss",
+  //       meta: { title: "报损单" },
+  //     },
+  //     {
+  //       path: "funPay",
+  //       component: () => import("@/views/vehicle-monitoring/orders/funPay/index"),
+  //       name: "funPay",
+  //       meta: { title: "付款单" },
+  //     },
+  //     {
+  //       path: "funCollect",
+  //       component: () => import("@/views/vehicle-monitoring/orders/funCollect/index"),
+  //       name: "funCollect",
+  //       meta: { title: "收款单" },
+  //     },
+  //     {
+  //       path: "prePay",
+  //       component: () => import("@/views/vehicle-monitoring/orders/prePay/index"),
+  //       name: "prePay",
+  //       meta: { title: "预付单" },
+  //     },
+  //     {
+  //       path: "preCollect",
+  //       component: () => import("@/views/vehicle-monitoring/orders/preCollect/index"),
+  //       name: "preCollect",
+  //       meta: { title: "预收单" },
+  //     },
+  //     {
+  //       path: "expense",
+  //       component: () => import("@/views/vehicle-monitoring/orders/expense/index"),
+  //       name: "expense",
+  //       meta: { title: "费用支出单" },
+  //     },
+  //     {
+  //       path: "other",
+  //       component: () => import("@/views/vehicle-monitoring/orders/other/index"),
+  //       name: "other",
+  //       meta: { title: "其他收入单" },
+  //     },
+  //     {
+  //       path: "rotation",
+  //       component: () => import("@/views/vehicle-monitoring/orders/rotation/index"),
+  //       name: "rotation",
+  //       meta: { title: "资金互转单" },
+  //     },
+  //     {
+  //       path: "account",
+  //       component: () => import("@/views/vehicle-monitoring/account/index"),
+  //       name: "account",
+  //       meta: { title: "资金账户管理" },
+  //     },
+  //     {
+  //       path: "account-detail",
+  //       hidden: true,
+  //       component: () => import("@/views/vehicle-monitoring/account/detail"),
+  //       name: "account-detail",
+  //       meta: { title: "资金账户详情" },
+  //     },
+  //     {
+  //       path: "customer",
+  //       component: () => import("@/views/vehicle-monitoring/customer/index"),
+  //       name: "customer",
+  //       meta: { title: "客户管理" },
+  //     },
+  //     {
+  //       path: "customer-detail",
+  //       hidden: true,
+  //       component: () => import("@/views/vehicle-monitoring/customer/detail"),
+  //       name: "customer-detail",
+  //       meta: { title: "客户详情" },
+  //     },
+  //     {
+  //       path: "floow-detail",
+  //       hidden: true,
+  //       component: () =>
+  //         import("@/views/vehicle-monitoring/customer/floowDetail"),
+  //       name: "floow-detail",
+  //       meta: { title: "客户跟进详情" },
+  //     },
+  //     {
+  //       path: "customer-pool",
+  //       component: () =>
+  //         import("@/views/vehicle-monitoring/customer-pool/index"),
+  //       name: "customer-pool",
+  //       meta: { title: "客户公海池" },
+  //     },
+  //     {
+  //       path: "customer-my",
+  //       component: () => import("@/views/vehicle-monitoring/customer-my/index"),
+  //       name: "customer-my",
+  //       meta: { title: "我的客户" },
+  //     },
+  //     {
+  //       path: "floow-record",
+  //       component: () =>
+  //         import("@/views/vehicle-monitoring/floow-record/index"),
+  //       name: "floow-record",
+  //       meta: { title: "跟进记录" },
+  //     },
+  //     {
+  //       path: "floow-record-detail",
+  //       hidden: true,
+  //       component: () =>
+  //         import("@/views/vehicle-monitoring/floow-record/detail"),
+  //       name: "floow-record-detail",
+  //       meta: { title: "跟进记录详情" },
+  //     },
+  //     {
+  //       path: "commodity",
+  //       component: () => import("@/views/vehicle-monitoring/commodity/index"),
+  //       name: "commodity",
+  //       meta: { title: "商品管理" },
+  //     },
+  //     {
+  //       path: "cagetory",
+  //       component: () => import("@/views/vehicle-monitoring/cagetory/index"),
+  //       name: "cagetory",
+  //       meta: { title: "商品分类" },
+  //     },
+  //     {
+  //       path: "supplier",
+  //       component: () => import("@/views/vehicle-monitoring/supplier/index"),
+  //       name: "supplier",
+  //       meta: { title: "供应商管理" },
+  //     },
+  //     {
+  //       path: "supplier-detail",
+  //       hidden: true,
+  //       component: () => import("@/views/vehicle-monitoring/supplier/detail"),
+  //       name: "supplier-detail",
+  //       meta: { title: "供应商详情" },
+  //     },
+  //   ],
+  // },
+  // {
+  //   path: "/rank",
+  //   component: Layout,
+  //   hidden: false,
+  //   alwaysShow: true,
+  //   redirect: "noRedirect",
+  //   meta: { title: "报表", icon: "tab" },
+  //   children: [
+  //     {
+  //       path: "saleRank",
+  //       component: () =>
+  //         import("@/views/vehicle-monitoring/report/saleRank/index"),
+  //       name: "saleRank",
+  //       meta: { title: "销售业绩统计" },
+  //     },
+  //     {
+  //       path: "collectRank",
+  //       component: () =>
+  //         import("@/views/vehicle-monitoring/report/collectRank/index"),
+  //       name: "collectRank",
+  //       meta: { title: "回款业绩统计" },
+  //     },
+  //     {
+  //       path: "deliveryRank",
+  //       component: () =>
+  //         import("@/views/vehicle-monitoring/report/deliveryRank/index"),
+  //       name: "deliveryRank",
+  //       meta: { title: "配送费统计" },
+  //     },
+  //     {
+  //       path: "supplierRank",
+  //       component: () =>
+  //         import("@/views/vehicle-monitoring/report/supplierRank/index"),
+  //       name: "supplierRank",
+  //       meta: { title: "供应商采购统计" },
+  //     },
+  //     {
+  //       path: "commoditySaleRank",
+  //       component: () =>
+  //         import("@/views/vehicle-monitoring/report/commoditySaleRank/index"),
+  //       name: "commoditySaleRank",
+  //       meta: { title: "商品销售统计" },
+  //     },
+  //     {
+  //       path: "commodityPurchaseRank",
+  //       component: () =>
+  //         import(
+  //           "@/views/vehicle-monitoring/report/commodityPurchaseRank/index"
+  //         ),
+  //       name: "commodityPurchaseRank",
+  //       meta: { title: "商品采购统计" },
+  //     },
+  //   ],
+  // },
+  // {
+  //   path: "/setting",
+  //   component: Layout,
+  //   hidden: false,
+  //   alwaysShow: true,
+  //   redirect: "noRedirect",
+  //   meta: { title: "系统管理", icon: "system" },
+  //   children: [
+  //     {
+  //       path: "user",
+  //       component: () => import("@/views/vehicle-monitoring/user/index"),
+  //       name: "user",
+  //       meta: { title: "用户管理" },
+  //     },
+  //     {
+  //       path: "dept",
+  //       component: () => import("@/views/system/dept/index"),
+  //       name: "dept",
+  //       meta: { title: "组织管理" },
+  //     },
+  //     {
+  //       path: "menu",
+  //       component: () => import("@/views/system/menu/index"),
+  //       name: "menu",
+  //       meta: { title: "菜单管理" },
+  //     },
+  //     {
+  //       path: "set",
+  //       component: () => import("@/views/vehicle-monitoring/set/index"),
+  //       name: "set",
+  //       meta: { title: "设置" },
+  //     },
+  //   ],
+  // },
+  // {
+  //   path: "/test",
+  //   component: Layout,
+  //   hidden: false,
+  //   alwaysShow: true,
+  //   redirect: "noRedirect",
+  //   meta: { title: "测试菜单", icon: "system" },
+  //   children: [
+  //     {
+  //       path: "test",
+  //       component: () => import("@/views/test/index"),
+  //       name: "test",
+  //       meta: { title: "测试用", icon: "wechat" },
+  //     },
+  //   ],
+  // },
 ];
 
 // 动态路由，基于用户权限动态去加载

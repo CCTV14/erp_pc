@@ -11,8 +11,9 @@
       <el-form-item label="名称" prop="quickSearchInfoList[1].quickSearchValue">
         <el-input
           v-model="params.quickSearchInfoList[1].quickSearchValue"
-          placeholder="请输入客户编号"
+          placeholder="请输入名称"
           clearable
+          style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -21,6 +22,7 @@
           v-model="params.quickSearchInfoList[2].quickSearchValue"
           placeholder="请输入账户"
           clearable
+          style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -29,6 +31,7 @@
           v-model="params.quickSearchInfoList[3].quickSearchValue"
           placeholder="请输入备注"
           clearable
+          style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -37,6 +40,8 @@
           v-model="params.fundAccountTypeEnum"
           placeholder="请选择类型"
           clearable
+          style="width: 240px"
+          @change="handleQuery"
         >
           <!-- <el-option label="全部类型" value=""></el-option> -->
           <el-option
@@ -48,7 +53,13 @@
         </el-select>
       </el-form-item>
       <el-form-item label="冻结状态" prop="frozen">
-        <el-select v-model="params.frozen" placeholder="请选择状态" clearable>
+        <el-select
+          v-model="params.frozen"
+          placeholder="请选择状态"
+          clearable
+          style="width: 240px"
+          @change="handleQuery"
+        >
           <el-option label="全部" value=""></el-option>
           <el-option label="未冻结" :value="false"></el-option>
           <el-option label="已冻结" :value="true"></el-option>
@@ -59,6 +70,7 @@
           v-model="sortName"
           placeholder="请选择排序方式"
           clearable
+          style="width: 240px"
           @change="selectSortType"
         >
           <el-option label="名字正序 [默认]" value=""></el-option>
@@ -94,13 +106,26 @@
       </el-form-item>
     </el-form>
 
+    <el-row :gutter="10" class="mb8">
+      <el-col :span="1.5">
+        <el-button
+          type="primary"
+          plain
+          icon="el-icon-plus"
+          size="mini"
+          @click="handleAdd"
+          v-hasPermi="['system:purchase:add']"
+          >新增</el-button
+        >
+      </el-col>
+    </el-row>
+
     <el-table
       v-loading="loading"
       :data="tableData"
       :cell-style="$thinking.getCellFontColor"
-      @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55" align="center" />
+      <!-- <el-table-column type="selection" width="55" align="center" /> -->
       <el-table-column label="名称" align="center" prop="name" width="160" />
       <el-table-column label="账户余额" align="center" sortable>
         <template slot-scope="scope">
@@ -141,7 +166,7 @@
         label="操作"
         fixed="right"
         align="center"
-        width="120"
+        width="160"
         class-name="small-padding fixed-width"
       >
         <!--             v-hasPermi="['system:dict:edit']" -->
@@ -150,7 +175,7 @@
             size="mini"
             type="text"
             icon="el-icon-edit"
-            @click="handleDetail(scope.row)"
+            @click="handleUpdate(scope.row)"
             >编辑</el-button
           >
           <el-button
@@ -175,47 +200,34 @@
     <!-- 添加或修改参数配置对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="客户编号" v-if="form.id">
-          <span>{{ form.customerNo }}</span>
+        <el-form-item label="名称" prop="name">
+          <el-input v-model="form.name" placeholder="请输入名称" />
         </el-form-item>
-        <el-form-item label="客户姓名" prop="name">
-          <el-input v-model="form.name" placeholder="请输入客户姓名" />
+        <el-form-item label="账号" prop="account">
+          <el-input v-model="form.account" placeholder="请输入账号" />
         </el-form-item>
         <el-form-item label="当前余额" v-if="form.id">
-          <span>{{ form.balanceAmount }}</span>
+          <span>￥{{ form.balanceAmount.toFixed(2) }}</span>
         </el-form-item>
-        <el-form-item label="联系方式" prop="phoneNumber">
-          <el-input v-model="form.phoneNumber" placeholder="请输入联系方式" />
+        <el-form-item label="累计流入" v-if="form.id">
+          <span>￥{{ form.totalInflowAmount.toFixed(2) }}</span>
         </el-form-item>
-        <el-form-item label="地址" prop="address">
-          <el-input
-            v-model="form.address"
-            type="textarea"
-            placeholder="请输入内容"
-          ></el-input>
+        <el-form-item label="累计流出" v-if="form.id">
+          <span>￥{{ form.totalOutflowAmount.toFixed(2) }}</span>
         </el-form-item>
-        <el-form-item label="客户分组" prop="customerGroupEnum">
+        <el-form-item label="账户类型" prop="fundAccountTypeEnum">
           <el-select
-            v-model="form.customerGroupEnum"
+            v-model="form.fundAccountTypeEnum"
             style="width: 100%"
             placeholder="请选择类型"
             clearable
           >
-            <el-option label="成交" value="1"></el-option>
-            <el-option label="流失" value="0"></el-option>
-            <el-option label="支付宝账户" value="1"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="客户类型" prop="customerTypeEnum">
-          <el-select
-            v-model="form.customerTypeEnum"
-            style="width: 100%"
-            placeholder="请选择类型"
-            clearable
-          >
-            <el-option label="成交" value="1"></el-option>
-            <el-option label="流失" value="0"></el-option>
-            <el-option label="支付宝账户" value="1"></el-option>
+            <el-option
+              v-for="(item, index) in accountTypeEnumList"
+              :key="index"
+              :label="item.Desc"
+              :value="item.Name"
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
@@ -224,6 +236,15 @@
             type="textarea"
             placeholder="请输入内容"
           ></el-input>
+        </el-form-item>
+        <el-form-item label="冻结状态" prop="frozen" v-if="form.id">
+          <el-switch
+            v-model="form.frozen"
+            :active-value="true"
+            :inactive-value="false"
+            active-color="#F56C6C"
+          >
+          </el-switch>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -238,6 +259,9 @@
 import {
   getFundAccountTypeEnumList,
   getAccountData,
+  addAccount,
+  editAccount,
+  getAccountDetail,
 } from "@/api/vehicle-monitoring/user.js";
 
 export default {
@@ -352,38 +376,28 @@ export default {
     },
     // 表单重置
     reset() {
-      this.form = {
-        id: "",
-        name: "",
-        phone: "",
-        email: "",
-      };
+      this.form = {};
       this.resetForm("form");
     },
     // 选择排序下拉框值
     selectSortType(val) {
-      switch (val) {
-        case 1:
-          this.params.sortInfo = {
-            columnName: "name",
-            order: "DESC",
-          };
-          break;
-        case 2:
-          this.params.sortInfo = {
-            columnName: "balanceAmount",
-            order: "ASC",
-          };
-          break;
-        case 3:
-          this.params.sortInfo = {
-            columnName: "balanceAmount",
-            order: "DESC",
-          };
-        default:
-          this.params.sortInfo = null;
-          break;
-      }
+      let data = {
+        1: {
+          columnName: "name",
+          order: "DESC",
+        },
+        2: {
+          columnName: "balanceAmount",
+          order: "ASC",
+        },
+        3: {
+          columnName: "balanceAmount",
+          order: "DESC",
+        },
+      };
+
+      this.params.sortInfo = data[val] || null;
+      this.handleQuery();
     },
     // 选择查询日期
     selectQueryDate(val) {
@@ -394,6 +408,7 @@ export default {
       }
       this.params.minCreateDate = val[0];
       this.params.maxCreateDate = val[1];
+      this.handleQuery();
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -416,19 +431,14 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加客户";
+      this.title = "添加资金账户";
     },
     /** 查看详情按钮操作 */
     handleDetail(row) {
       this.$router.push({
-        name: "floow-record-detail",
+        path: "account-detail",
+        query: { id: row.id },
       });
-    },
-    // 多选框选中数据
-    handleSelectionChange(selection) {
-      this.ids = selection.map((item) => item.id);
-      this.single = selection.length != 1;
-      this.multiple = !selection.length;
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
@@ -436,56 +446,38 @@ export default {
       // this.form = {...row};
       // this.open=true;
       const id = row.id || this.ids;
-      getType(id).then((response) => {
+      getAccountDetail({ id: id }).then((response) => {
         this.form = response.data;
+        this.form.fundAccountTypeEnum = response.data.fundAccountTypeEnum.Name;
         this.open = true;
-        this.title = "修改客户";
+        this.title = "修改资金账户";
       });
     },
     /** 提交按钮 */
     submitForm: function () {
-      this.$refs["form"].validate((valid) => {
+      this.$refs["form"].validate(async (valid) => {
         if (valid) {
-          if (this.form.id != undefined) {
-            updateType(this.form).then((response) => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addType(this.form).then((response) => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
+          let res = this.form.id
+            ? await editAccount(this.form)
+            : await addAccount(this.form);
+          if (res) {
+            this.$modal.msgSuccess(res.message);
+            this.open = false;
+            this.getList();
           }
         }
       });
     },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$modal
-        .confirm('是否确认删除客户id为"' + ids + '"的数据项？')
-        .then(function () {
-          return delType(ids);
-        })
-        .then(() => {
-          this.getList();
-          this.$modal.msgSuccess("删除成功");
-        })
-        .catch(() => {});
-    },
     /** 导出按钮操作 */
-    handleExport() {
-      this.download(
-        "system/dict/type/export",
-        {
-          ...this.queryParams,
-        },
-        `type_${new Date().getTime()}.xlsx`
-      );
-    },
+    // handleExport() {
+    //   this.download(
+    //     "system/dict/type/export",
+    //     {
+    //       ...this.queryParams,
+    //     },
+    //     `type_${new Date().getTime()}.xlsx`
+    //   );
+    // },
     /** 刷新缓存按钮操作 */
     handleRefreshCache() {
       refreshCache().then(() => {
