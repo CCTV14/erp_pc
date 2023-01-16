@@ -70,7 +70,7 @@ export const constantRoutes = [
         path: "index",
         component: () => import("@/views/index2"),
         name: "Index",
-        meta: { title: "首页", icon: "dashboard", affix: true },
+        meta: { title: "数据看板", icon: "dashboard", affix: true },
       },
     ],
   },
@@ -101,38 +101,40 @@ export const constantRoutes = [
       },
     ],
   },
-  // {
-  //   path: "/vehicle",
-  //   component: Layout,
-  //   hidden: false,
-  //   alwaysShow: true,
-  //   redirect: "noRedirect",
-  //   meta: { title: "应用", icon: "log" },
-  //   children: [
-  //     {
-  //       path: "pending-order",
-  //       hidden: true,
-  //       component: () =>
-  //         import("@/views/vehicle-monitoring/home/pending-order"),
-  //       name: "pending-order",
-  //       meta: { title: "待审单据" },
-  //     },
-  //     {
-  //       path: "inventory_warning",
-  //       hidden: true,
-  //       component: () =>
-  //         import("@/views/vehicle-monitoring/home/inventory_warning"),
-  //       name: "inventory_warning",
-  //       meta: { title: "库存预警" },
-  //     },
-  //     {
-  //       path: "commodity_inout",
-  //       hidden: true,
-  //       component: () =>
-  //         import("@/views/vehicle-monitoring/home/commodity_inout"),
-  //       name: "commodity_inout",
-  //       meta: { title: "待出入库" },
-  //     },
+  {
+    path: "/vehicle",
+    component: Layout,
+    hidden: true,
+    alwaysShow: true,
+    redirect: "noRedirect",
+    meta: { title: "应用", icon: "log" },
+    children: [
+      {
+        path: "pending-order",
+        hidden: true,
+        component: () =>
+          import("@/views/vehicle-monitoring/home/pending-order"),
+        name: "pending-order",
+        meta: { title: "待审单据" },
+      },
+      {
+        path: "inventory-warning",
+        hidden: true,
+        component: () =>
+          import("@/views/vehicle-monitoring/home/inventory_warning"),
+        name: "inventory-warning",
+        meta: { title: "库存预警" },
+      },
+      {
+        path: "commodity-inout",
+        hidden: true,
+        component: () =>
+          import("@/views/vehicle-monitoring/home/commodity_inout"),
+        name: "commodity-inout",
+        meta: { title: "待出入库" },
+      },
+    ],
+  },
   //     {
   //       path: "sale",
   //       component: () => import("@/views/vehicle-monitoring/orders/sale/index"),

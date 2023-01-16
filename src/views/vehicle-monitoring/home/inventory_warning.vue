@@ -10,7 +10,7 @@
       />
       <el-table-column prop="color" label="颜色" align="center" />
       <el-table-column prop="unit" label="单位" align="center" />
-      <el-table-column label="规格" align="center">
+      <el-table-column label="规格" align="center" width="180">
         <template slot-scope="{ row }">
           {{
             row.commoditySpecList

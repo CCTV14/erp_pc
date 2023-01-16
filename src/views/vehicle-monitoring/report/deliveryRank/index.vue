@@ -36,7 +36,7 @@
       <div class="out">
         <div>配送费</div>
         <div class="price">
-          {{ params.data.orderCount }}
+          {{ params.data.orderCount | priceFixedTwo}}
         </div>
       </div>
     </div>

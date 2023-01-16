@@ -1,7 +1,7 @@
 <template>
   <div class="app-container home">
     <!-- 最近使用 -->
-    <el-row :gutter="24">
+    <!-- <el-row :gutter="24">
       <el-col :span="24">
         <el-card class="card bornone">
           <div slot="header" class="title">
@@ -18,7 +18,7 @@
           </div>
         </el-card>
       </el-col>
-    </el-row>
+    </el-row> -->
     <!-- 我的待办 -->
     <el-row :gutter="24" class="mt20 mb20">
       <el-col :span="24">
@@ -46,19 +46,19 @@
     </el-row>
     <!-- 四个排行/分析 -->
     <el-row :gutter="14">
-      <el-col :span="8">
+      <el-col :span="24">
         <sale-data />
       </el-col>
-      <el-col :span="16">
+      <!-- <el-col :span="16">
         <sale-line />
-      </el-col>
+      </el-col> -->
     </el-row>
     <!-- 排行 -->
     <el-row :gutter="14" class="mt20">
-      <el-col :span="8">
+      <el-col :span="12">
         <sale-rank type="pay" />
       </el-col>
-      <el-col :span="8">
+      <el-col :span="12">
         <sale-rank type="collect" />
       </el-col>
     </el-row>
@@ -163,12 +163,12 @@ export default {
     // 我的待办跳转到详情
     toDetail(name) {
       let data = {
-        待审单据:"pending-order",
-        库存预警: "inventory_warning",
+        待审单据: "pending-order",
+        库存预警: "inventory-warning",
         客户跟进: "customer-my",
-        待出入库: "commodity_inout",
+        待出入库: "commodity-inout",
       };
-      this.$router.push({ name: data[name] });
+      this.$router.push({ path: "vehicle/" + data[name] });
     },
     // 获取待审单据数量
     async getPendingOrderCount(args) {

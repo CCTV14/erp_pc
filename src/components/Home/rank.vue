@@ -98,7 +98,7 @@ export default {
     // 跳转
     toReportData() {
       let name = this.type == "pay" ? "saleRank" : "collectRank";
-      this.$router.push({ name: name });
+      this.$router.push({ path: name });
     },
     async getSaleData(args) {
       let todayDate = new Date();

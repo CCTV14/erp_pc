@@ -12,7 +12,7 @@
         >
         <el-descriptions-item label="当前余额"
           ><span class="text-success"
-            >￥{{ detailForm.balanceAmount }}</span
+            >￥{{ detailForm.balanceAmount | priceFixedTwo }}</span
           ></el-descriptions-item
         >
         <el-descriptions-item label="客户电话">{{
@@ -67,10 +67,18 @@
     <div>
       <el-tabs v-model="operTips" @tab-click="handleTabClick">
         <el-tab-pane label="余额变动明细" name="first">
-          <balanceDetailList :id="$route.query.id" v-if="$route.query.id" />
+          <balanceDetailList
+            :id="$route.query.id"
+            v-if="$route.query.id && operTips == 'first'"
+          />
         </el-tab-pane>
         <el-tab-pane label="历史跟进记录" name="second">
-          <el-table :data="historyList" stripe style="width: 100%">
+          <el-table
+            :data="historyList"
+            stripe
+            style="width: 100%"
+            v-if="operTips == 'second'"
+          >
             <el-table-column prop="customerFollowUp.user.name" label="跟进人">
             </el-table-column>
             <el-table-column label="客户分组变化">
@@ -144,7 +152,7 @@ export default {
     // 跳转至跟进详情
     toFloowDetail() {
       this.$router.push({
-        name: "floow-detail",
+        path: "customer-floow-detail",
         query: {
           floowId: this.detailForm.customerFollowUpList[0].id,
           customerId: this.$route.query.id,

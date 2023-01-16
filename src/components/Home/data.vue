@@ -36,7 +36,7 @@
             <el-col :span="15">
               <div class="title">收款额（元）</div>
               <div class="num">
-                {{ saleData.summaryData.fundCollectOrderAmount }}
+                {{ saleData.summaryData.fundCollectOrderAmount | priceFixedTwo}}
               </div>
             </el-col>
             <!-- <el-col :span="8">
@@ -46,7 +46,7 @@
             <el-col :span="9">
               <div class="title">配送费（元）</div>
               <div class="num">
-                {{ saleData.summaryData.commodityOutPutOrderDistributeAmount }}
+                {{ saleData.summaryData.commodityOutPutOrderDistributeAmount | priceFixedTwo}}
               </div>
             </el-col>
           </el-row>

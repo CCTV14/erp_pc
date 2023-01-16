@@ -227,9 +227,9 @@
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-edit"
+            icon="el-icon-view"
             @click="handleDetail(scope.row)"
-            >查看</el-button
+            >查看详情</el-button
           >
         </template>
       </el-table-column>
@@ -253,7 +253,7 @@
           <el-input v-model="form.name" placeholder="请输入客户姓名" />
         </el-form-item>
         <el-form-item label="当前余额" v-if="form.id">
-          <span>{{ form.balanceAmount }}</span>
+          <span>{{ form.balanceAmount | priceFixedTwo }}</span>
         </el-form-item>
         <el-form-item label="联系方式" prop="phoneNumber">
           <el-input v-model="form.phoneNumber" placeholder="请输入联系方式" />

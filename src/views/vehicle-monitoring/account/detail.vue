@@ -99,9 +99,9 @@
             <el-button
               size="mini"
               type="text"
-              icon="el-icon-edit"
+              icon="el-icon-view"
               @click="handleDetail(scope.row.id)"
-              >查看详情</el-button
+              >查看</el-button
             >
           </template>
         </el-table-column>
@@ -119,7 +119,7 @@
           <span>{{ detailForm.fundAccountDetailTypeEnum.Desc }}</span>
         </el-form-item>
         <el-form-item label="变动金额">
-          <span>￥{{ detailForm.changeAmount }}</span>
+          <span>￥{{ detailForm.changeAmount | priceFixedTwo }}</span>
         </el-form-item>
         <el-form-item label="关联单号">
           <span>{{ detailForm.relatedOrderNo }}</span>
@@ -132,7 +132,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary">跳转单据</el-button>
+        <el-button type="primary" @click="toOrderDetail">跳转单据</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
@@ -208,6 +208,16 @@ export default {
         this.detailForm = res.data;
         this.detailVisble = true;
       }
+    },
+    // 跳转单据
+    toOrderDetail() {
+      let url = this.$thinking.toOrderPage(
+        this.detailForm.fundAccountDetailTypeEnum.Name,
+        this.detailForm.relatedOrderId
+      );
+      this.$router.push({
+        path: url,
+      });
     },
     // 重置
     resetQuery() {

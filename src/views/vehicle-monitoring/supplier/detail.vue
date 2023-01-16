@@ -8,7 +8,7 @@
         }}</el-descriptions-item>
         <el-descriptions-item label="当前余额"
           ><span class="text-success"
-            >￥{{ detailForm.balanceAmount }}</span
+            >￥{{ detailForm.balanceAmount | priceFixedTwo }}</span
           ></el-descriptions-item
         >
         <el-descriptions-item label="联系方式">{{

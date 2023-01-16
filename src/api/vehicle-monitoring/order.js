@@ -313,3 +313,129 @@ export function getFundCollectOrderTypeEnumList() {
     method: "get",
   });
 }
+
+// 预收单详情
+export function getPreCollectOrderFindById(params) {
+  return request({
+    url: "/preCollectOrder/findById",
+    method: "get",
+    params: params,
+  });
+}
+
+// 费用支出单详情
+export function getExpenseOrderFindById(params) {
+  return request({
+    url: "/expenseOrder/findById",
+    method: "get",
+    params: params,
+  });
+}
+// 其他收入单详情
+export function getIncomeOrderFindById(params) {
+  return request({
+    url: "/otherIncomeOrder/findById",
+    method: "get",
+    params: params,
+  });
+}
+// 预付单详情
+export function getPrePayOrderFindById(params) {
+  return request({
+    url: "/prePayOrder/findById",
+    method: "get",
+    params: params,
+  });
+}
+
+// 报损单详情
+export function getLossOrderDetailById(params) {
+  return request({
+    url: "/commodityLossOrder/findVoById",
+    method: "get",
+    params: params,
+  });
+}
+// 采购单详情
+export function getPurchaseOrderDetailById(params) {
+  return request({
+    url: "/purchaseOrder/findVoById",
+    method: "get",
+    params: params,
+  });
+}
+
+// 资金互转单详情
+export function getRotationOrderFindById(params) {
+  return request({
+    url: "/fundAccountTransferOrder/findById",
+    method: "get",
+    params: params,
+  });
+}
+// 销售退货单详情
+export function getSaleReturnOrderDetailById(params) {
+  return request({
+    url: "/saleReturnOrder/findVoById",
+    method: "get",
+    params: params,
+  });
+}
+// 出库单详情
+export function getOutOrderDetailById(params) {
+  return request({
+    url: "/commodityOutputOrder/findVoById",
+    method: "get",
+    params: params,
+  });
+}
+// 入库单详情
+export function getInOrderDetailById(params) {
+  return request({
+    url: "/commodityInputOrder/findVoById",
+    method: "get",
+    params: params,
+  });
+}
+// 采购退货单详情
+export function getPurchaseReturnOrderDetailById(params) {
+  return request({
+    url: "/purchaseReturnOrder/findVoById",
+    method: "get",
+    params: params,
+  });
+}
+// 付款单详情
+export function getFunPayOrderDetailById(params) {
+  return request({
+    url: "/fundPayOrder/findVoById",
+    method: "get",
+    params: params,
+  });
+}
+// 收款单详情
+export function getFunCollectOrderDetailById(params) {
+  return request({
+    url: "/fundCollectOrder/findVoById",
+    method: "get",
+    params: params,
+  });
+}
+
+// 入库单配送管理
+export function getInDeliverList(data) {
+  return request({
+    url: "/commodityInputOrder/findPageForDeliveryManage",
+    method: "post",
+    data: data,
+  });
+}
+
+// 出库单配送管理
+export function getOutDeliverList(data) {
+  return request({
+    url: "/commodityOutputOrder/findPageForDeliveryManage",
+    method: "post",
+    data: data,
+  });
+}

@@ -21,12 +21,12 @@
                 </el-table-column>
                 <el-table-column prop="changeAmount" label="变动金额">
                     <template slot-scope="{row}">
-                        <span>￥{{ row.changeAmount }}</span>
+                        <span>￥{{ row.changeAmount | priceFixedTwo}}</span>
                     </template>
                 </el-table-column>
                 <el-table-column prop="afterChangeAmount" label="变动后金额">
                     <template slot-scope="{row}">
-                        <span>￥{{row.afterChangeAmount}}</span>
+                        <span>￥{{row.afterChangeAmount | priceFixedTwo}}</span>
                     </template>
                 </el-table-column>
                 <el-table-column prop="remark" label="备注" width="300">

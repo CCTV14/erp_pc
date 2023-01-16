@@ -269,6 +269,7 @@
             filterable
             style="width: 100%"
             placeholder="请选择角色"
+            @change="forceDom"
           >
             <el-option
               v-for="item in roleOptions"
@@ -340,7 +341,7 @@ import {
   addUser,
   getUserList,
   changeFrozen,
-  resetPassword
+  resetPassword,
 } from "@/api/vehicle-monitoring/user.js";
 import { listSelectRole, getRoleByUserId } from "@/api/system/role.js";
 import { listSelectDept } from "@/api/system/dept";
@@ -501,6 +502,9 @@ export default {
         label: node.name,
         children: node.children,
       };
+    },
+    forceDom() {
+      this.$forceUpdate();
     },
     userDetail(row) {
       this.detailForm = { ...row };

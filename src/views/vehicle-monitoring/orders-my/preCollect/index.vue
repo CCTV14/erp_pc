@@ -11,30 +11,42 @@
       <el-form-item label="单号" prop="quickSearchInfoList[1].quickSearchValue">
         <el-input
           v-model="params.quickSearchInfoList[1].quickSearchValue"
-          placeholder="请输入销售单单号"
+          placeholder="请输入单号"
           clearable
-          style="width: 220px"
+          style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="客户" prop="quickSearchInfoList[2].quickSearchValue">
+      <el-form-item
+        label="供应商"
+        prop="quickSearchInfoList[2].quickSearchValue"
+      >
         <el-input
           v-model="params.quickSearchInfoList[2].quickSearchValue"
-          placeholder="请输入客户编号/收货人"
+          placeholder="请输入供应商"
           clearable
-          style="width: 220px"
+          style="width: 240px"
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="备注" prop="quickSearchInfoList[3].quickSearchValue">
+        <el-input
+          v-model="params.quickSearchInfoList[3].quickSearchValue"
+          placeholder="请输入备注"
+          clearable
+          style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
       <el-form-item
         label="制单人"
-        prop="quickSearchInfoList[3].quickSearchValue"
+        prop="quickSearchInfoList[4].quickSearchValue"
       >
         <el-input
-          v-model="params.quickSearchInfoList[3].quickSearchValue"
+          v-model="params.quickSearchInfoList[4].quickSearchValue"
           placeholder="请输入制单人名称"
           clearable
-          style="width: 220px"
+          style="width: 240px"
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
@@ -43,9 +55,10 @@
           v-model="params.orderApprovalStatusEnumList"
           collapse-tags
           multiple
-          style="width: 220px"
           placeholder="请选择审批状态"
           clearable
+          style="width: 240px"
+          @change="handleQuery"
         >
           <!-- <el-option label="不限" :value="[]"></el-option> -->
           <el-option
@@ -56,54 +69,18 @@
           ></el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="出库进度" prop="commodityOutputProgressEnumList">
-        <el-select
-          v-model="params.commodityOutputProgressEnumList"
-          collapse-tags
-          multiple
-          style="width: 220px"
-          placeholder="请选择出库进度"
-          clearable
-        >
-          <!-- <el-option label="不限" value=""></el-option> -->
-          <el-option
-            v-for="(item, index) in selectCommodityOutputProgressList"
-            :key="index"
-            :label="item.Desc"
-            :value="item.Name"
-          ></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="收款进度" prop="fundCollectProgressEnumList">
-        <el-select
-          v-model="params.fundCollectProgressEnumList"
-          collapse-tags
-          multiple
-          style="width: 220px"
-          placeholder="请选择收款进度"
-          clearable
-        >
-          <!-- <el-option label="不限" value=""></el-option> -->
-          <el-option
-            v-for="(item, index) in selectOrderCollectProgressList"
-            :key="index"
-            :label="item.Desc"
-            :value="item.Name"
-          ></el-option>
-        </el-select>
-      </el-form-item>
       <el-form-item label="单据金额">
         <div style="display: flex">
           <el-input
-            style="width: 102px"
+            style="width: 108px"
             v-model="params.minOrderAmount"
             placeholder="不限"
             clearable
             @keyup.enter.native="handleQuery"
           />
-          <div class="ml5 mr5">-</div>
+          <div class="ml10 mr10">-</div>
           <el-input
-            style="width: 102px"
+            style="width: 108px"
             v-model="params.maxOrderAmount"
             placeholder="不限"
             clearable
@@ -116,7 +93,7 @@
           v-model="sortName"
           placeholder="请选择排序方式"
           clearable
-          style="width: 220px"
+          style="width: 240px"
           @change="selectSortType"
         >
           <el-option label="最近创建 [默认]" value=""></el-option>
@@ -128,7 +105,7 @@
       <el-form-item label="制单日期">
         <el-date-picker
           v-model="dateRange"
-          style="width: 220px"
+          style="width: 240px"
           value-format="yyyy-MM-dd"
           type="daterange"
           range-separator="-"
@@ -144,71 +121,38 @@
           icon="el-icon-search"
           size="mini"
           @click="handleQuery"
+          v-hasPermi="['vehicle:precollectordermy:query']"
           >搜索</el-button
         >
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
           >重置</el-button
         >
-        <!-- <el-checkbox class="ml10" v-model="params.onlyMyCreate" shape="cirle" @change="getList()">仅我的单据</el-checkbox> -->
       </el-form-item>
     </el-form>
-
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:sale:add']"
-          >新增</el-button
-        >
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="success"
-          plain
-          icon="el-icon-edit"
-          size="mini"
-          :disabled="single"
-          @click="handleUpdate"
-          v-hasPermi="['system:sale:edit']"
-          >修改</el-button
-        >
-      </el-col>
-      <el-col :span="1.5">
-        <el-button
-          type="danger"
-          plain
-          icon="el-icon-delete"
-          size="mini"
-          :disabled="multiple"
-          @click="handleDelete"
-          v-hasPermi="['system:sale:remove']"
-          >删除</el-button
-        >
-      </el-col>
-      <!-- <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar> -->
-    </el-row>
-
     <el-table
       v-loading="loading"
       :data="tableData"
       :cell-style="$thinking.getCellFontColor"
       @selection-change="handleSelectionChange"
     >
+      <!-- 暂时已隐藏 选择框 -->
       <!-- <el-table-column type="selection" width="55" align="center" /> -->
-      <el-table-column label="单号" align="center" prop="orderNo" width="120">
+      <el-table-column label="单号" align="center" prop="orderNo" width="130">
         <template slot-scope="{ row }">
           {{ row.orderNo || "草稿" }}
         </template>
       </el-table-column>
       <el-table-column
+        label="客户编号"
+        align="center"
+        prop="customer.customerNo"
+        width="120"
+      />
+      <el-table-column
         label="客户姓名"
         align="center"
         prop="customerName"
-        width="100"
+        width="120"
       />
       <el-table-column
         label="客户电话"
@@ -232,44 +176,47 @@
           <span>{{ scope.row.creator.name + " " + scope.row.createTime }}</span>
         </template>
       </el-table-column>
-
-      <el-table-column
-        label="收款进度"
-        prop="fundCollectProgressEnum.Desc"
-        align="center"
-      />
-      <el-table-column
-        label="出库进度"
-        prop="commodityOutputProgressEnum.Desc"
-        align="center"
-      />
       <el-table-column
         label="审批状态"
         fixed="right"
         prop="orderApprovalStatusEnum.Desc"
         align="center"
       />
+      <el-table-column label="单据" fixed="right" align="center" width="120">
+        <template slot-scope="{ row }">
+          {{
+            row.relatedSaleOrderHeadId
+              ? row.relatedSaleOrderHead.orderNo || "草稿销售单"
+              : "未使用"
+          }}
+        </template>
+      </el-table-column>
       <el-table-column
         label="操作"
         fixed="right"
         align="center"
-        width="120"
+        width="180"
         class-name="small-padding fixed-width"
       >
         <template slot-scope="scope">
-          <!-- <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
-                        v-hasPermi="['system:dict:edit']">修改</el-button> -->
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-edit"
-            @click="handleDetail(scope.row)"
-            >查看</el-button
+            icon="el-icon-top-right"
+            v-hasPermi="['vehicle:precollectordermy:submit']"
+            v-if="scope.row.orderApprovalStatusEnum.Name === 'Draft'"
+            @click="handleSubmitById(scope.row.id)"
+            >提交</el-button
           >
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
+            v-hasPermi="['vehicle:precollectordermy:delete']"
+            v-if="
+              scope.row.orderApprovalStatusEnum.Name === 'Draft' ||
+              scope.row.orderApprovalStatusEnum.Name === 'Reject'
+            "
             @click="handleDelete(scope.row)"
             >删除</el-button
           >
@@ -284,57 +231,22 @@
       :limit.sync="params.pageInfo.pageSize"
       @pagination="getList"
     />
-
-    <!-- 添加或修改参数配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="用户姓名" prop="name">
-          <el-input v-model="form.name" placeholder="请输入用户姓名" />
-        </el-form-item>
-        <el-form-item label="手机号码" prop="phone">
-          <el-input v-model="form.phone" placeholder="请输入手机号码" />
-        </el-form-item>
-        <el-form-item label="邮箱" prop="email">
-          <el-input v-model="form.email" placeholder="请输入邮箱" />
-        </el-form-item>
-        <el-form-item label="选择商品" prop="email">
-          <i class="el-icon-edit" @click="selectCommodityVisble = true"></i>
-          <!-- <el-input v-model="form.email" placeholder="请输入邮箱" /> -->
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
-      </div>
-    </el-dialog>
-    <!-- 选择商品的抽屉 -->
-    <el-drawer
-      title="请选择商品"
-      :visible.sync="selectCommodityVisble"
-      direction="rtl"
-      :before-close="handleClose"
-    >
-      <span>我来啦!</span>
-    </el-drawer>
   </div>
 </template>
 
 <script>
+import { getOrderApprovalStatusEnumList } from "@/api/vehicle-monitoring/order.js";
 import {
-  getFundCollectProgressEnumList,
-  getCommodityOutputProgressEnumList,
-  getOrderApprovalStatusEnumList,
-  getSaleOrderData,
-} from "@/api/vehicle-monitoring/order.js";
-
+  myPreCollectOrderFindPageForManage,
+  myPreCollectOrderSubmitById,
+  deletePreCollectOrder,
+} from "@/api/vehicle-monitoring/order-my.js";
 export default {
-  name: "Sale",
+  name: "PrePayMy",
   data() {
     return {
       // 排序方式名称
       sortName: "",
-      // 选择商品
-      selectCommodityVisble: false,
       // 是否选择仅我的单据
       isMeOrder: false,
       // 遮罩层
@@ -353,10 +265,6 @@ export default {
       tableData: [],
       // 审批状态
       selectOrderApprovalStatusListTemp: [],
-      // 收款状态
-      selectOrderCollectProgressList: [],
-      // 出库进度
-      selectCommodityOutputProgressList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层 新增/编辑框
@@ -369,6 +277,7 @@ export default {
           {
             columns: [
               "orderNo",
+              "remark",
               "customer.customerNo",
               "customerName",
               "customerPhoneNumber",
@@ -379,6 +288,10 @@ export default {
           },
           {
             columns: ["orderNo"],
+            quickSearchValue: null,
+          },
+          {
+            columns: ["remark"],
             quickSearchValue: null,
           },
           {
@@ -396,58 +309,28 @@ export default {
           },
         ],
         orderApprovalStatusEnumList: null,
-        fundCollectProgressEnumList: null,
-        commodityOutputProgressEnumList: null,
         minOrderAmount: null,
         maxOrderAmount: null,
         minCreateDate: null,
         maxCreateDate: null,
-        onlyMyCreate: true,
+        onlyMyCreate: false,
         pageInfo: {
           page: 1,
           pageSize: 10,
         },
         sortInfo: null,
       },
-      // 表单参数
-      form: {},
-      // 表单校验
-      rules: {
-        name: [
-          {
-            required: true,
-            message: "用户名称不能为空",
-            trigger: "blur",
-          },
-        ],
-        phone: [
-          {
-            required: true,
-            message: "手机号码不能为空",
-            trigger: "blur",
-          },
-        ],
-        email: [
-          {
-            required: true,
-            message: "邮箱不能为空",
-            trigger: "blur",
-          },
-        ],
-      },
     };
   },
   created() {
     this.getList();
     this.getOrderApprovalStatusList();
-    this.getFundCollectProgressList();
-    this.getCommodityOutputProgressEnumList();
   },
   methods: {
-    /** 查询用户列表 */
+    /** 查询我的预付单列表 */
     getList() {
       this.loading = true;
-      getSaleOrderData(this.params).then((response) => {
+      myPreCollectOrderFindPageForManage(this.params).then((response) => {
         this.tableData = response.data;
         this.total = Number(response.total);
         this.loading = false;
@@ -459,35 +342,10 @@ export default {
         this.selectOrderApprovalStatusListTemp = res.data;
       });
     },
-    // 获取收款状态列表
-    getFundCollectProgressList() {
-      getFundCollectProgressEnumList().then((res) => {
-        this.selectOrderCollectProgressList = res.data;
-      });
-    },
-    // 获取出库进度列表
-    getCommodityOutputProgressEnumList() {
-      getCommodityOutputProgressEnumList().then((res) => {
-        this.selectCommodityOutputProgressList = res.data;
-      });
-    },
     // 取消按钮
     cancel() {
       this.open = false;
       this.reset();
-    },
-    // 表单重置
-    reset() {
-      this.form = {
-        id: "",
-        name: "",
-        phone: "",
-        email: "",
-      };
-      this.resetForm("form");
-    },
-    handleClose() {
-      this.selectCommodityVisble = false;
     },
     // 选择排序下拉框值
     selectSortType(val) {
@@ -543,16 +401,37 @@ export default {
       this.sortName = "";
       this.handleQuery();
     },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.open = true;
-      this.title = "添加销售单";
-    },
-    /** 查看详情按钮操作 */
+    /** 查看详情按钮操作 --可能会用到 */
     handleDetail(row) {
       this.$router.push({
-        name: "sale-detail",
+        path: "precollect-detail",
+        query: { orderId: row.id, mode: "view" },
+      });
+    },
+    /** 删除按钮操作 */
+    handleDelete(row) {
+      const id = row.id;
+      this.$modal
+        .confirm('是否确认删除单号为"' + row.orderNo + '"的单据？')
+        .then(function () {
+          return deletePreCollectOrder(id);
+        })
+        .then((res) => {
+          if (res.success) {
+            this.getList();
+            this.$modal.msgSuccess("删除成功");
+          }
+        })
+        .catch(() => {});
+    },
+    /** 提交 */
+    handleSubmitById(id) {
+      myPreCollectOrderSubmitById(id).then((res) => {
+        // 可能要做弹框显示操作...
+        if (res.success) {
+          this.$modal.alertSuccess(res.message);
+          this.getList();
+        }
       });
     },
     // 多选框选中数据
@@ -560,62 +439,6 @@ export default {
       this.ids = selection.map((item) => item.id);
       this.single = selection.length != 1;
       this.multiple = !selection.length;
-    },
-    /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.reset();
-      // this.form = {...row};
-      // this.open=true;
-      const id = row.id || this.ids;
-      getType(id).then((response) => {
-        this.form = response.data;
-        this.open = true;
-        this.title = "修改用户";
-      });
-    },
-    /** 提交按钮 */
-    submitForm: function () {
-      this.$refs["form"].validate((valid) => {
-        if (valid) {
-          if (this.form.id != undefined) {
-            updateType(this.form).then((response) => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
-            });
-          } else {
-            addType(this.form).then((response) => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
-            });
-          }
-        }
-      });
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
-      const ids = row.id || this.ids;
-      this.$modal
-        .confirm('是否确认删除用户id为"' + ids + '"的数据项？')
-        .then(function () {
-          return delType(ids);
-        })
-        .then(() => {
-          this.getList();
-          this.$modal.msgSuccess("删除成功");
-        })
-        .catch(() => {});
-    },
-    /** 导出按钮操作 */
-    handleExport() {
-      this.download(
-        "system/dict/type/export",
-        {
-          ...this.queryParams,
-        },
-        `type_${new Date().getTime()}.xlsx`
-      );
     },
     /** 刷新缓存按钮操作 */
     handleRefreshCache() {

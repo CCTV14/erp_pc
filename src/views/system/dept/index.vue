@@ -360,6 +360,9 @@ export default {
       this.reset();
       getDept(row.id).then((response) => {
         this.form = response.data;
+        if (response.data.parentId == 0) {
+          this.form.parentId = undefined;
+        }
         this.getTreeSelect();
         this.open = true;
         this.title = "修改部门";
@@ -401,4 +404,3 @@ export default {
   },
 };
 </script>
-

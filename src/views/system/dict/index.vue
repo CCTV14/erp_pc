@@ -1,64 +1,66 @@
 <template>
-  <div class="app-container">
-    <el-form
-      :model="queryParams"
-      ref="queryForm"
-      size="small"
-      :inline="true"
-      v-show="showSearch"
-      label-width="68px"
-    >
-      <el-form-item
-        label="字典名称"
-        prop="quickSearchInfoList[0].quickSearchValue"
+  <div>
+    <router-view></router-view>
+    <div class="app-container" v-show="$route.meta.showRole">
+      <el-form
+        :model="queryParams"
+        ref="queryForm"
+        size="small"
+        :inline="true"
+        v-show="showSearch"
+        label-width="68px"
       >
-        <el-input
-          v-model="queryParams.quickSearchInfoList[0].quickSearchValue"
-          placeholder="请输入字典名称"
-          clearable
-          style="width: 240px"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="冻结状态" prop="frozen">
-        <el-select
-          v-model="queryParams.frozen"
-          placeholder="请选择冻结状态"
-          clearable
-          @change="handleQuery"
+        <el-form-item
+          label="字典名称"
+          prop="quickSearchInfoList[0].quickSearchValue"
         >
-          <el-option label="已冻结" :value="true"></el-option>
-          <el-option label="未冻结" :value="false"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-button
-          type="primary"
-          icon="el-icon-search"
-          size="mini"
-          v-hasPermi="['system:dict:query']"
-          @click="handleQuery"
-          >搜索</el-button
-        >
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-          >重置</el-button
-        >
-      </el-form-item>
-    </el-form>
+          <el-input
+            v-model="queryParams.quickSearchInfoList[0].quickSearchValue"
+            placeholder="请输入字典名称"
+            clearable
+            style="width: 240px"
+            @keyup.enter.native="handleQuery"
+          />
+        </el-form-item>
+        <el-form-item label="冻结状态" prop="frozen">
+          <el-select
+            v-model="queryParams.frozen"
+            placeholder="请选择冻结状态"
+            clearable
+            @change="handleQuery"
+          >
+            <el-option label="已冻结" :value="true"></el-option>
+            <el-option label="未冻结" :value="false"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button
+            type="primary"
+            icon="el-icon-search"
+            size="mini"
+            v-hasPermi="['system:dict:query']"
+            @click="handleQuery"
+            >搜索</el-button
+          >
+          <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+            >重置</el-button
+          >
+        </el-form-item>
+      </el-form>
 
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:dict:add']"
-          >新增</el-button
-        >
-      </el-col>
-      <!-- <el-col :span="1.5">
+      <el-row :gutter="10" class="mb8">
+        <el-col :span="1.5">
+          <el-button
+            type="primary"
+            plain
+            icon="el-icon-plus"
+            size="mini"
+            @click="handleAdd"
+            v-hasPermi="['system:dict:add']"
+            >新增</el-button
+          >
+        </el-col>
+        <!-- <el-col :span="1.5">
         <el-button
           type="success"
           plain
@@ -82,7 +84,7 @@
           >删除</el-button
         >
       </el-col> -->
-      <!-- <el-col :span="1.5">
+        <!-- <el-col :span="1.5">
         <el-button
           type="warning"
           plain
@@ -104,131 +106,137 @@
           >刷新缓存</el-button
         >
       </el-col> -->
-      <!-- <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar> -->
-    </el-row>
+        <!-- <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar> -->
+      </el-row>
 
-    <el-table v-loading="loading" :data="typeList">
-      <!-- <el-table-column type="selection" width="55" align="center" /> -->
-      <el-table-column label="字典编号" align="center" prop="no" />
-      <el-table-column
-        label="字典名称"
-        align="center"
-        prop="name"
-        :show-overflow-tooltip="true"
+      <el-table v-loading="loading" :data="typeList">
+        <!-- <el-table-column type="selection" width="55" align="center" /> -->
+        <el-table-column label="字典编号" align="center" prop="no" />
+        <el-table-column
+          label="字典名称"
+          align="center"
+          prop="name"
+          :show-overflow-tooltip="true"
+        />
+        <el-table-column
+          label="字典类型"
+          align="center"
+          :show-overflow-tooltip="true"
+        >
+          <template slot-scope="scope">
+            <router-link
+              :to="{
+                path: '/dict-detail',
+                query: { id: scope.row.id, code: scope.row.code },
+              }"
+              class="link-type"
+            >
+              <span>{{ scope.row.code }}</span>
+            </router-link>
+          </template>
+        </el-table-column>
+        <el-table-column label="冻结状态" align="center" width="100">
+          <template slot-scope="scope">
+            <el-switch
+              v-model="scope.row.frozen"
+              :active-value="true"
+              :inactive-value="false"
+              @change="handleStatusChange(scope.row)"
+            ></el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="备注"
+          align="center"
+          prop="remark"
+          :show-overflow-tooltip="true"
+        />
+        <el-table-column
+          label="创建时间"
+          align="center"
+          prop="createTime"
+          width="180"
+        >
+          <template slot-scope="scope">
+            <span>{{ parseTime(scope.row.createTime) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="操作"
+          align="center"
+          class-name="small-padding fixed-width"
+        >
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-edit"
+              @click="handleUpdate(scope.row)"
+              v-hasPermi="['system:dict:edit']"
+              >修改</el-button
+            >
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-delete"
+              @click="handleDelete(scope.row)"
+              v-hasPermi="['system:dict:remove']"
+              >删除</el-button
+            >
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <pagination
+        v-show="total > 0"
+        :total="total"
+        :page.sync="queryParams.pageInfo.page"
+        :limit.sync="queryParams.pageInfo.pageSize"
+        @pagination="getList"
       />
-      <el-table-column
-        label="字典类型"
-        align="center"
-        :show-overflow-tooltip="true"
-      >
-        <template slot-scope="scope">
-          <router-link
-            :to="{
-              path: '/dict-detail',
-              query: { id: scope.row.id, code: scope.row.code },
-            }"
-            class="link-type"
-          >
-            <span>{{ scope.row.code }}</span>
-          </router-link>
-        </template>
-      </el-table-column>
-      <el-table-column label="冻结状态" align="center" width="100">
-        <template slot-scope="scope">
-          <el-switch
-            v-model="scope.row.frozen"
-            :active-value="true"
-            :inactive-value="false"
-            @change="handleStatusChange(scope.row)"
-          ></el-switch>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="备注"
-        align="center"
-        prop="remark"
-        :show-overflow-tooltip="true"
-      />
-      <el-table-column
-        label="创建时间"
-        align="center"
-        prop="createTime"
-        width="180"
-      >
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.createTime) }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="操作"
-        align="center"
-        class-name="small-padding fixed-width"
-      >
-        <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:dict:edit']"
-            >修改</el-button
-          >
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-delete"
-            @click="handleDelete(scope.row)"
-            v-hasPermi="['system:dict:remove']"
-            >删除</el-button
-          >
-        </template>
-      </el-table-column>
-    </el-table>
 
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="queryParams.pageInfo.page"
-      :limit.sync="queryParams.pageInfo.pageSize"
-      @pagination="getList"
-    />
-
-    <!-- 添加或修改参数配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="字典名称" prop="name">
-          <el-input v-model="form.name" placeholder="请输入字典名称" />
-        </el-form-item>
-        <el-form-item label="字典类型" prop="code">
-          <el-input v-model="form.code" placeholder="请输入字典类型" />
-        </el-form-item>
-        <el-form-item label="字典编号" prop="no">
-          <el-input-number
-            v-model="form.no"
-            controls-position="right"
-            :min="0"
-            style="width: 100%"
-          ></el-input-number>
-        </el-form-item>
-        <el-form-item label="冻结状态" prop="frozen">
-          <el-radio-group v-model="form.frozen">
-            <el-radio :label="true">已冻结</el-radio>
-            <el-radio :label="false">未冻结</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input
-            v-model="form.remark"
-            type="textarea"
-            placeholder="请输入内容"
-          ></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
-      </div>
-    </el-dialog>
+      <!-- 添加或修改参数配置对话框 -->
+      <el-dialog
+        :title="title"
+        :visible.sync="open"
+        width="500px"
+        append-to-body
+      >
+        <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+          <el-form-item label="字典名称" prop="name">
+            <el-input v-model="form.name" placeholder="请输入字典名称" />
+          </el-form-item>
+          <el-form-item label="字典类型" prop="code">
+            <el-input v-model="form.code" placeholder="请输入字典类型" />
+          </el-form-item>
+          <el-form-item label="字典编号" prop="no">
+            <el-input-number
+              v-model="form.no"
+              controls-position="right"
+              :min="0"
+              style="width: 100%"
+            ></el-input-number>
+          </el-form-item>
+          <el-form-item label="冻结状态" prop="frozen">
+            <el-radio-group v-model="form.frozen">
+              <el-radio :label="true">已冻结</el-radio>
+              <el-radio :label="false">未冻结</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="备注" prop="remark">
+            <el-input
+              v-model="form.remark"
+              type="textarea"
+              placeholder="请输入内容"
+            ></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="submitForm">确 定</el-button>
+          <el-button @click="cancel">取 消</el-button>
+        </div>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -279,6 +287,7 @@ export default {
         ],
         sortInfo: null,
       },
+      showRole: true,
       // 表单参数
       form: {},
       // 表单校验
@@ -291,6 +300,12 @@ export default {
         ],
       },
     };
+  },
+  watch: {
+    $route(val) {
+      console.log(val.meta.showRole);
+      this.showRole = val.meta.showRole;
+    },
   },
   created() {
     this.getList();

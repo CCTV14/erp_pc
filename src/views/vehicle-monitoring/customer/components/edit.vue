@@ -16,7 +16,7 @@
           <el-input v-model="form.name" placeholder="请输入名称" />
         </el-form-item>
         <el-form-item label="当前余额" v-if="form.id">
-          <span>￥{{ form.balanceAmount }}</span>
+          <span>￥{{ form.balanceAmount | priceFixedTwo }}</span>
         </el-form-item>
         <el-form-item label="联系方式" prop="phoneNumber">
           <el-input v-model="form.phoneNumber" placeholder="请输入联系方式" />
@@ -162,6 +162,7 @@ export default {
   },
   watch: {
     open(val) {
+      this.resetForm("form");
       val && this.getCustomerGroupEnumList(), this.getCustomerTypeEnumList();
     },
   },
@@ -190,8 +191,7 @@ export default {
             : await customerAdd(this.form);
           if (response) {
             this.$modal.msgSuccess(response.message);
-            this.open = false;
-            this.getList();
+            this.handClose();
           }
         }
       });

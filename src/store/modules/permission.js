@@ -54,8 +54,12 @@ function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
   return asyncRouterMap.filter((route) => {
     if (type && route.children) {
       route.children = filterChildren(route.children);
-      route.redirect = "noRedirect";
+      // route.redirect = "noRedirect";
+      route.meta.showRole = true;
       !route.component ? (route.component = "Layout") : "";
+    }
+    if (route.hidden) {
+      route.meta.showRole = false;
     }
     if (route.component) {
       // Layout ParentView 组件特殊处理
@@ -80,10 +84,12 @@ function filterAsyncRouter(asyncRouterMap, lastRouter = false, type = false) {
 function filterChildren(childrenMap, lastRouter = false) {
   var children = [];
   childrenMap.forEach((el, index) => {
+    // console.log(el);
     // el.path = el.path.split("/")[1]; 暂时隐藏，返回path自带/，什么时候做单独路由，再放开
     if (el.children && el.children.length) {
       if (el.component === "ParentView") {
         el.children.forEach((c) => {
+          // console.log(c["name"]);
           c.path = el.path + "/" + c.path;
           if (c.children && c.children.length) {
             children = children.concat(filterChildren(c.children, c));

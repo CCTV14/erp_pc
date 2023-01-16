@@ -5,7 +5,7 @@
       </el-table-column>
       <el-table-column prop="changeAmount" label="变动金额">
         <template slot-scope="{ row }">
-          <span>￥{{ row.changeAmount }}</span>
+          <span>￥{{ row.changeAmount | priceFixedTwo}}</span>
         </template>
       </el-table-column>
       <el-table-column prop="createTime" label="变动时间"> </el-table-column>

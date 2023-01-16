@@ -413,19 +413,23 @@ export default {
     submitForm: function () {
       this.$refs["form"].validate((valid) => {
         if (valid) {
-          if (this.form.id != undefined) {
+          if (this.form.id) {
             this.form.menuIdList = this.getMenuAllCheckedKeys();
             updateRole(this.form).then((response) => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
+              if (response.success) {
+                this.$modal.msgSuccess("修改成功");
+                this.open = false;
+                this.getList();
+              }
             });
           } else {
             this.form.menuIdList = this.getMenuAllCheckedKeys();
             addRole(this.form).then((response) => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
+              if (response.success) {
+                this.$modal.msgSuccess("新增成功");
+                this.open = false;
+                this.getList();
+              }
             });
           }
         }

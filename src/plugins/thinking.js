@@ -69,60 +69,6 @@ const getCheckType = (enumName) => {
     return "color:#F56C6C;";
   }
 };
-const toOrderPage = (orderName, orderId) => {
-  if (!orderName || !orderId) {
-    uni.showToast({
-      icon: "none",
-      position: "top",
-      title: "单据跳转参数不能为空",
-    });
-    return;
-  }
-  let url = null;
-  if (orderName.indexOf("OtherIncomeOrder") > -1) {
-    url = "/pages/application/orders/otherOrder/detail?orderId=" + orderId;
-  } else if (orderName.indexOf("ExpenseOrder") > -1) {
-    url = "/pages/application/orders/expensesOrder/detail?orderId=" + orderId;
-  } else if (orderName.indexOf("TransferOrder") > -1) {
-    url = "/pages/application/orders/rotationOrder/detail?orderId=" + orderId;
-  } else if (orderName.indexOf("CommodityLossOrder") > -1) {
-    url = "/pages/application/orders/lossOrder/detail?orderId=" + orderId;
-  } else if (orderName.indexOf("PreCollectOrder") > -1) {
-    url = "/pages/application/orders/preColletOrder/detail?orderId=" + orderId;
-  } else if (orderName.indexOf("PrePayOrder") > -1) {
-    url = "/pages/application/orders/preAdvanceOrder/detail?orderId=" + orderId;
-  } else if (orderName.indexOf("SaleOrder") > -1) {
-    url = "/pages/application/orders/saleOrder/detail?orderId=" + orderId;
-  } else if (orderName.indexOf("SaleReturnOrder") > -1) {
-    url = "/pages/application/orders/returnOrder/detail?orderId=" + orderId;
-  } else if (orderName.indexOf("PurchaseOrder") > -1) {
-    url = "/pages/application/orders/purchaseOrder/detail?orderId=" + orderId;
-  } else if (orderName.indexOf("PurchaseReturnOrder") > -1) {
-    url =
-      "/pages/application/orders/purchaseReturnOrder/detail?orderId=" + orderId;
-  } else if (orderName.indexOf("CommodityInputOrder") > -1) {
-    url =
-      "/pages/application/orders/commodityInputOrder/detail?orderId=" + orderId;
-  } else if (orderName.indexOf("CommodityOutputOrder") > -1) {
-    url =
-      "/pages/application/orders/commodityOutOrder/detail?orderId=" + orderId;
-  } else if (orderName.indexOf("FundPayOrder") > -1) {
-    url = "/pages/application/orders/funPayOrder/detail?orderId=" + orderId;
-  } else if (orderName.indexOf("FundCollectOrder") > -1) {
-    url = "/pages/application/orders/funCollectOrder/detail?orderId=" + orderId;
-  }
-  if (url) {
-    uni.navigateTo({
-      url,
-    });
-  } else {
-    uni.showToast({
-      icon: "none",
-      position: "top",
-      title: "单据跳转失败，请检查参数合规性",
-    });
-  }
-};
 const getOrderApprovalStatusEnumTagType = function (enumName) {
   if (!enumName) {
     return null;
@@ -364,6 +310,49 @@ const exportData = (name, data) => {
   link.click();
 
   document.body.removeChild(link);
+};
+
+// 从资金账户详情点击 跳转单据
+const toOrderPage = (orderName, orderId) => {
+  if (!orderName || !orderId) {
+    uni.showToast({
+      icon: "none",
+      position: "top",
+      title: "单据跳转参数不能为空",
+    });
+    return;
+  }
+  let url = null;
+  if (orderName.indexOf("OtherIncomeOrder") > -1) {
+    url = "income-detail?orderId=" + orderId;
+  } else if (orderName.indexOf("ExpenseOrder") > -1) {
+    url = "expenses-detail?orderId=" + orderId;
+  } else if (orderName.indexOf("TransferOrder") > -1) {
+    url = "rotation-detail?orderId=" + orderId;
+  } else if (orderName.indexOf("CommodityLossOrder") > -1) {
+    url = "loss-detail?orderId=" + orderId;
+  } else if (orderName.indexOf("PreCollectOrder") > -1) {
+    url = "precollect-detail?orderId=" + orderId;
+  } else if (orderName.indexOf("PrePayOrder") > -1) {
+    url = "prepay-detail?orderId=" + orderId;
+  } else if (orderName.indexOf("SaleOrder") > -1) {
+    url = "sale-detail?orderId=" + orderId;
+  } else if (orderName.indexOf("SaleReturnOrder") > -1) {
+    url = "salereturn-detail?orderId=" + orderId;
+  } else if (orderName.indexOf("PurchaseOrder") > -1) {
+    url = "purchase-detail?orderId=" + orderId;
+  } else if (orderName.indexOf("PurchaseReturnOrder") > -1) {
+    url = "purchasereturn-detail?orderId=" + orderId;
+  } else if (orderName.indexOf("CommodityInputOrder") > -1) {
+    url = "in-detail?orderId=" + orderId;
+  } else if (orderName.indexOf("CommodityOutputOrder") > -1) {
+    url = "out-detail?orderId=" + orderId;
+  } else if (orderName.indexOf("FundPayOrder") > -1) {
+    url = "funpay-detail?orderId=" + orderId;
+  } else if (orderName.indexOf("FundCollectOrder") > -1) {
+    url = "funcollect-detail?orderId=" + orderId;
+  }
+  return url;
 };
 
 export default {

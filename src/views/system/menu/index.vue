@@ -63,7 +63,20 @@
           >展开/折叠</el-button
         >
       </el-col>
-      <!-- <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar> -->
+      <el-col :span="1.5">
+        <el-button
+          type="warning"
+          plain
+          icon="el-icon-refresh"
+          size="mini"
+          @click="handleRefreshCache"
+          >刷新缓存</el-button
+        >
+      </el-col>
+      <!-- <right-toolbar
+        :showSearch.sync="showSearch"
+        @queryTable="getList"
+      ></right-toolbar> -->
     </el-row>
 
     <el-table
@@ -78,7 +91,7 @@
         prop="menuName"
         label="菜单名称"
         :show-overflow-tooltip="true"
-        width="160"
+        width="240"
       ></el-table-column>
       <el-table-column prop="iconName" label="图标" align="center" width="100">
         <template slot-scope="scope">
@@ -89,6 +102,7 @@
       <el-table-column
         prop="perms"
         label="权限标识"
+        width="300"
         :show-overflow-tooltip="true"
       ></el-table-column>
       <el-table-column
@@ -106,13 +120,19 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" align="center" prop="createTime">
+      <el-table-column
+        label="创建时间"
+        width="200"
+        align="center"
+        prop="createTime"
+      >
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
         </template>
       </el-table-column>
       <el-table-column
         label="操作"
+        width="160"
         align="center"
         class-name="small-padding fixed-width"
       >
@@ -164,7 +184,7 @@
             <el-form-item label="菜单类型" prop="menuTypeEnum">
               <el-radio-group v-model="form.menuTypeEnum">
                 <el-radio label="Menu">目录</el-radio>
-                <el-radio label="Page">菜单</el-radio>
+                <el-radio label="Page">页面</el-radio>
                 <el-radio label="Button">按钮</el-radio>
               </el-radio-group>
             </el-form-item>
@@ -379,6 +399,7 @@ import {
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import IconSelect from "@/components/IconSelect";
+import { refreshCache } from "@/api/system/config";
 
 export default {
   name: "Menu",
@@ -507,7 +528,7 @@ export default {
         frozen: false,
         componentPath: "",
         routerPath: "",
-        perms: "",
+        perms: null,
         outerChain: false,
       };
       this.resetForm("form");
@@ -562,17 +583,21 @@ export default {
     submitForm: function () {
       this.$refs["form"].validate((valid) => {
         if (valid) {
-          if (this.form.id != undefined) {
+          if (this.form.id) {
             updateMenu(this.form).then((response) => {
-              this.$modal.msgSuccess("修改成功");
-              this.open = false;
-              this.getList();
+              if (response.success) {
+                this.$modal.msgSuccess("修改成功");
+                this.open = false;
+                this.getList();
+              }
             });
           } else {
             addMenu(this.form).then((response) => {
-              this.$modal.msgSuccess("新增成功");
-              this.open = false;
-              this.getList();
+              if (response.success) {
+                this.$modal.msgSuccess("新增成功");
+                this.open = false;
+                this.getList();
+              }
             });
           }
         }
@@ -585,11 +610,19 @@ export default {
         .then(function () {
           return delMenu(row.id);
         })
-        .then(() => {
-          this.getList();
-          this.$modal.msgSuccess("删除成功");
+        .then((res) => {
+          if (res.success) {
+            this.getList();
+            this.$modal.msgSuccess("删除成功");
+          }
         })
         .catch(() => {});
+    },
+    /** 刷新缓存按钮操作 */
+    handleRefreshCache() {
+      refreshCache().then((res) => {
+        this.$modal.msgSuccess(res.message);
+      });
     },
   },
 };

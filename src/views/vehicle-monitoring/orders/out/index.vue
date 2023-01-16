@@ -1,186 +1,194 @@
 <template>
-  <div class="app-container">
-    <el-form
-      :model="params"
-      ref="queryForm"
-      size="small"
-      :inline="true"
-      v-show="showSearch"
-      label-width="68px"
-    >
-      <el-form-item label="单号" prop="quickSearchInfoList[1].quickSearchValue">
-        <el-input
-          v-model="params.quickSearchInfoList[1].quickSearchValue"
-          placeholder="请输入单号"
-          clearable
-          style="width: 240px"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="客户" prop="quickSearchInfoList[2].quickSearchValue">
-        <el-input
-          v-model="params.quickSearchInfoList[2].quickSearchValue"
-          placeholder="请输入客户编号/供应商"
-          clearable
-          style="width: 240px"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item
-        label="关联单号"
-        prop="quickSearchInfoList[3].quickSearchValue"
+  <div>
+    <router-view></router-view>
+    <div class="app-container" v-show="$route.meta.showRole">
+      <el-form
+        :model="params"
+        ref="queryForm"
+        size="small"
+        :inline="true"
+        v-show="showSearch"
+        label-width="68px"
       >
-        <el-input
-          v-model="params.quickSearchInfoList[3].quickSearchValue"
-          placeholder="请输入关联销售单/采购退货单单号"
-          clearable
-          style="width: 240px"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item
-        label="出库说明"
-        prop="quickSearchInfoList[4].quickSearchValue"
-      >
-        <el-input
-          v-model="params.quickSearchInfoList[4].quickSearchValue"
-          placeholder="请输入出库说明"
-          clearable
-          style="width: 240px"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item
-        label="制单人"
-        prop="quickSearchInfoList[5].quickSearchValue"
-      >
-        <el-input
-          v-model="params.quickSearchInfoList[5].quickSearchValue"
-          placeholder="请输入制单人名称"
-          clearable
-          style="width: 240px"
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="审批状态" prop="orderApprovalStatusEnumList">
-        <el-select
-          v-model="params.orderApprovalStatusEnumList"
-          collapse-tags
-          multiple
-          placeholder="请选择审批状态"
-          clearable
-          style="width: 240px"
-          @change="handleQuery"
+        <el-form-item
+          label="单号"
+          prop="quickSearchInfoList[1].quickSearchValue"
         >
-          <!-- <el-option label="不限" :value="[]"></el-option> -->
-          <el-option
-            v-for="(item, index) in selectOrderApprovalStatusListTemp"
-            :key="index"
-            :label="item.Desc"
-            :value="item.Name"
-          ></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="出库类型" prop="commodityOutputOrderTypeEnumList">
-        <el-select
-          v-model="params.commodityOutputOrderTypeEnumList"
-          collapse-tags
-          multiple
-          placeholder="请选择出库类型"
-          clearable
-          style="width: 240px"
-          @change="handleQuery"
-        >
-          <!-- <el-option label="不限" value=""></el-option> -->
-          <el-option
-            v-for="(item, index) in selectCommodityOutputOrderTypeList"
-            :key="index"
-            :label="item.Desc"
-            :value="item.Name"
-          ></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="配送状态" prop="commodityDeliverStatusEnumList">
-        <el-select
-          v-model="params.commodityDeliverStatusEnumList"
-          collapse-tags
-          multiple
-          placeholder="请选择付款进度"
-          clearable
-          style="width: 240px"
-          @change="handleQuery"
-        >
-          <!-- <el-option label="不限" value=""></el-option> -->
-          <el-option
-            v-for="(item, index) in selectCommodityDeliverStatusList"
-            :key="index"
-            :label="item.Desc"
-            :value="item.Name"
-          ></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="是否配送" prop="needDelivery">
-        <el-select
-          v-model="params.needDelivery"
-          placeholder="请选择是否配送"
-          clearable
-          style="width: 240px"
-          @change="handleQuery"
-        >
-          <el-option label="不限" value=""></el-option>
-          <el-option label="需要配送" :value="true"></el-option>
-          <el-option label="无需配送" :value="false"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="单据金额">
-        <div style="display: flex">
           <el-input
-            style="width: 108px"
-            v-model="params.minOrderAmount"
-            placeholder="不限"
+            v-model="params.quickSearchInfoList[1].quickSearchValue"
+            placeholder="请输入单号"
             clearable
+            style="width: 240px"
             @keyup.enter.native="handleQuery"
           />
-          <div class="ml10 mr10">-</div>
+        </el-form-item>
+        <el-form-item
+          label="客户"
+          prop="quickSearchInfoList[2].quickSearchValue"
+        >
           <el-input
-            style="width: 108px"
-            v-model="params.maxOrderAmount"
-            placeholder="不限"
+            v-model="params.quickSearchInfoList[2].quickSearchValue"
+            placeholder="请输入客户编号/供应商"
             clearable
+            style="width: 240px"
             @keyup.enter.native="handleQuery"
           />
-        </div>
-      </el-form-item>
-      <el-form-item label="排序方式" prop="sortInfo">
-        <el-select
-          v-model="sortName"
-          placeholder="请选择排序方式"
-          clearable
-          style="width: 240px"
-          @change="selectSortType"
+        </el-form-item>
+        <el-form-item
+          label="关联单号"
+          prop="quickSearchInfoList[3].quickSearchValue"
         >
-          <el-option label="最近创建 [默认]" value=""></el-option>
-          <el-option label="最早创建" :value="1"></el-option>
-          <el-option label="出库数量倒序" :value="2"></el-option>
-          <el-option label="出库数量正序" :value="3"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="制单日期">
-        <el-date-picker
-          v-model="dateRange"
-          style="width: 240px"
-          value-format="yyyy-MM-dd"
-          type="daterange"
-          range-separator="-"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          @change="selectQueryDate"
+          <el-input
+            v-model="params.quickSearchInfoList[3].quickSearchValue"
+            placeholder="请输入关联销售单/采购退货单单号"
+            clearable
+            style="width: 240px"
+            @keyup.enter.native="handleQuery"
+          />
+        </el-form-item>
+        <el-form-item
+          label="出库说明"
+          prop="quickSearchInfoList[4].quickSearchValue"
         >
-        </el-date-picker>
-      </el-form-item>
-      <el-row class="wd100 mb8">
-        <el-col :span="12" class="flex-start">
-          <!-- <el-button
+          <el-input
+            v-model="params.quickSearchInfoList[4].quickSearchValue"
+            placeholder="请输入出库说明"
+            clearable
+            style="width: 240px"
+            @keyup.enter.native="handleQuery"
+          />
+        </el-form-item>
+        <el-form-item
+          label="制单人"
+          prop="quickSearchInfoList[5].quickSearchValue"
+        >
+          <el-input
+            v-model="params.quickSearchInfoList[5].quickSearchValue"
+            placeholder="请输入制单人名称"
+            clearable
+            style="width: 240px"
+            @keyup.enter.native="handleQuery"
+          />
+        </el-form-item>
+        <el-form-item label="审批状态" prop="orderApprovalStatusEnumList">
+          <el-select
+            v-model="params.orderApprovalStatusEnumList"
+            collapse-tags
+            multiple
+            placeholder="请选择审批状态"
+            clearable
+            style="width: 240px"
+            @change="handleQuery"
+          >
+            <!-- <el-option label="不限" :value="[]"></el-option> -->
+            <el-option
+              v-for="(item, index) in selectOrderApprovalStatusListTemp"
+              :key="index"
+              :label="item.Desc"
+              :value="item.Name"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="出库类型" prop="commodityOutputOrderTypeEnumList">
+          <el-select
+            v-model="params.commodityOutputOrderTypeEnumList"
+            collapse-tags
+            multiple
+            placeholder="请选择出库类型"
+            clearable
+            style="width: 240px"
+            @change="handleQuery"
+          >
+            <!-- <el-option label="不限" value=""></el-option> -->
+            <el-option
+              v-for="(item, index) in selectCommodityOutputOrderTypeList"
+              :key="index"
+              :label="item.Desc"
+              :value="item.Name"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="配送状态" prop="commodityDeliverStatusEnumList">
+          <el-select
+            v-model="params.commodityDeliverStatusEnumList"
+            collapse-tags
+            multiple
+            placeholder="请选择付款进度"
+            clearable
+            style="width: 240px"
+            @change="handleQuery"
+          >
+            <!-- <el-option label="不限" value=""></el-option> -->
+            <el-option
+              v-for="(item, index) in selectCommodityDeliverStatusList"
+              :key="index"
+              :label="item.Desc"
+              :value="item.Name"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="是否配送" prop="needDelivery">
+          <el-select
+            v-model="params.needDelivery"
+            placeholder="请选择是否配送"
+            clearable
+            style="width: 240px"
+            @change="handleQuery"
+          >
+            <el-option label="不限" value=""></el-option>
+            <el-option label="需要配送" :value="true"></el-option>
+            <el-option label="无需配送" :value="false"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="单据金额">
+          <div style="display: flex">
+            <el-input
+              style="width: 108px"
+              v-model="params.minOrderAmount"
+              placeholder="不限"
+              clearable
+              @keyup.enter.native="handleQuery"
+            />
+            <div class="ml10 mr10">-</div>
+            <el-input
+              style="width: 108px"
+              v-model="params.maxOrderAmount"
+              placeholder="不限"
+              clearable
+              @keyup.enter.native="handleQuery"
+            />
+          </div>
+        </el-form-item>
+        <el-form-item label="排序方式" prop="sortInfo">
+          <el-select
+            v-model="sortName"
+            placeholder="请选择排序方式"
+            clearable
+            style="width: 240px"
+            @change="selectSortType"
+          >
+            <el-option label="最近创建 [默认]" value=""></el-option>
+            <el-option label="最早创建" :value="1"></el-option>
+            <el-option label="出库数量倒序" :value="2"></el-option>
+            <el-option label="出库数量正序" :value="3"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="制单日期">
+          <el-date-picker
+            v-model="dateRange"
+            style="width: 240px"
+            value-format="yyyy-MM-dd"
+            type="daterange"
+            range-separator="-"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            @change="selectQueryDate"
+          >
+          </el-date-picker>
+        </el-form-item>
+        <el-row class="wd100 mb8">
+          <el-col :span="12" class="flex-start">
+            <!-- <el-button
           type="primary"
           plain
           icon="el-icon-plus"
@@ -189,176 +197,184 @@
           v-hasPermi="['SaleOrder_AddNewOrder']"
           >新增</el-button
         > -->
-        <el-button
-          type="warning"
-          plain
-          icon="el-icon-download"
-          size="mini"
-          @click="handleExport"
-          >导出</el-button
-        >
-        </el-col>
-        <el-col :span="12" class="flex-end">
-          <el-button
-            type="primary"
-            icon="el-icon-search"
-            size="mini"
-            @click="handleQuery"
-            >搜索</el-button
-          >
-          <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-            >重置</el-button
-          >
-        </el-col>
-      </el-row>
-    </el-form>
-    <el-table
-      v-loading="loading"
-      :data="tableData"
-      :cell-style="$thinking.getCellFontColor"
-      @selection-change="handleSelectionChange"
-    >
-      <!-- <el-table-column type="selection" width="55" align="center" /> -->
-      <el-table-column label="单号" align="center" prop="orderNo" width="130">
-        <template slot-scope="{ row }">
-          {{ row.orderNo || "草稿" }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="客户姓名"
-        align="center"
-        prop="customerSupplierName"
-        width="100"
-      />
-      <el-table-column
-        label="客户电话"
-        align="center"
-        prop="customerSupplierPhoneNumber"
-        width="120"
-      />
-      <el-table-column
-        label="客户地址"
-        align="center"
-        prop="customerSupplierAddress"
-        width="200"
-      />
-      <el-table-column
-        label="供应商"
-        prop="customerSupplierName"
-        align="center"
-      />
-      <el-table-column
-        label="关联采购退货单"
-        prop="relatedPurchaseReturnOrderHead.orderNo"
-        align="center"
-        width="160"
-      />
-      <el-table-column
-        label="关联销售单"
-        align="center"
-        prop="relatedSaleOrderHead.orderNo"
-        width="160"
-      />
-      <el-table-column label="制单信息" align="center" width="200">
-        <template slot-scope="scope">
-          <span>{{ scope.row.creator.name + " " + scope.row.createTime }}</span>
-        </template>
-      </el-table-column>
-
-      <el-table-column label="配送状态" align="center">
-        <template slot-scope="{ row }">
-          {{
-            (row.commodityDeliverStatusEnum &&
-              row.commodityDeliverStatusEnum.Desc) ||
-            ""
-          }}
-        </template>
-      </el-table-column>
-      <el-table-column label="出库类型" align="center" width="120">
-        <template slot-scope="{ row }">
-          {{
-            (row.commodityOutputOrderTypeEnum &&
-              row.commodityOutputOrderTypeEnum.Desc) ||
-            ""
-          }}
-        </template>
-      </el-table-column>
-      <el-table-column label="配送员" align="center" width="120">
-        <template slot-scope="{ row }">
-          {{
-            row.deliveryUserList
-              .map((crr) => {
-                return crr.user.name;
-              })
-              .join("、")
-          }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="审批状态"
-        fixed="right"
-        prop="orderApprovalStatusEnum.Desc"
-        align="center"
-      />
-      <el-table-column
-        label="操作"
-        fixed="right"
-        align="center"
-        width="120"
-        class-name="small-padding fixed-width"
-      >
-        <template slot-scope="scope">
-          <!-- <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
-                        v-hasPermi="['system:dict:edit']">修改</el-button> -->
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleDetail(scope.row)"
-            >查看</el-button
-          >
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="params.pageInfo.page"
-      :limit.sync="params.pageInfo.pageSize"
-      @pagination="getList"
-    />
-
-    <!-- 添加或修改参数配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="用户姓名" prop="name">
-          <el-input v-model="form.name" placeholder="请输入用户姓名" />
-        </el-form-item>
-        <el-form-item label="手机号码" prop="phone">
-          <el-input v-model="form.phone" placeholder="请输入手机号码" />
-        </el-form-item>
-        <el-form-item label="邮箱" prop="email">
-          <el-input v-model="form.email" placeholder="请输入邮箱" />
-        </el-form-item>
-        <el-form-item label="选择商品" prop="email">
-          <i class="el-icon-edit" @click="selectCommodityVisble = true"></i>
-          <!-- <el-input v-model="form.email" placeholder="请输入邮箱" /> -->
-        </el-form-item>
+            <el-button
+              type="warning"
+              plain
+              icon="el-icon-download"
+              size="mini"
+              @click="handleExport"
+              >导出</el-button
+            >
+          </el-col>
+          <el-col :span="12" class="flex-end">
+            <el-button
+              type="primary"
+              icon="el-icon-search"
+              size="mini"
+              @click="handleQuery"
+              >搜索</el-button
+            >
+            <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+              >重置</el-button
+            >
+          </el-col>
+        </el-row>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
-      </div>
-    </el-dialog>
-    <!-- 选择商品的抽屉 -->
-    <el-drawer
-      title="请选择商品"
-      :visible.sync="selectCommodityVisble"
-      direction="rtl"
-    >
-      <span>我来啦!</span>
-    </el-drawer>
+      <el-table
+        v-loading="loading"
+        :data="tableData"
+        :cell-style="$thinking.getCellFontColor"
+        @selection-change="handleSelectionChange"
+      >
+        <!-- <el-table-column type="selection" width="55" align="center" /> -->
+        <el-table-column label="单号" align="center" prop="orderNo" width="130">
+          <template slot-scope="{ row }">
+            {{ row.orderNo || "草稿" }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="客户姓名"
+          align="center"
+          prop="customerSupplierName"
+          width="100"
+        />
+        <el-table-column
+          label="客户电话"
+          align="center"
+          prop="customerSupplierPhoneNumber"
+          width="120"
+        />
+        <el-table-column
+          label="客户地址"
+          align="center"
+          prop="customerSupplierAddress"
+          width="200"
+        />
+        <el-table-column
+          label="供应商"
+          prop="customerSupplierName"
+          align="center"
+        />
+        <el-table-column
+          label="关联采购退货单"
+          prop="relatedPurchaseReturnOrderHead.orderNo"
+          align="center"
+          width="160"
+        />
+        <el-table-column
+          label="关联销售单"
+          align="center"
+          prop="relatedSaleOrderHead.orderNo"
+          width="160"
+        />
+        <el-table-column label="制单信息" align="center" width="200">
+          <template slot-scope="scope">
+            <span>{{
+              scope.row.creator.name + " " + scope.row.createTime
+            }}</span>
+          </template>
+        </el-table-column>
+
+        <el-table-column label="配送状态" align="center">
+          <template slot-scope="{ row }">
+            {{
+              (row.commodityDeliverStatusEnum &&
+                row.commodityDeliverStatusEnum.Desc) ||
+              ""
+            }}
+          </template>
+        </el-table-column>
+        <el-table-column label="出库类型" align="center" width="120">
+          <template slot-scope="{ row }">
+            {{
+              (row.commodityOutputOrderTypeEnum &&
+                row.commodityOutputOrderTypeEnum.Desc) ||
+              ""
+            }}
+          </template>
+        </el-table-column>
+        <el-table-column label="配送员" align="center" width="120">
+          <template slot-scope="{ row }">
+            {{
+              row.deliveryUserList
+                .map((crr) => {
+                  return crr.user.name;
+                })
+                .join("、")
+            }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="审批状态"
+          fixed="right"
+          prop="orderApprovalStatusEnum.Desc"
+          align="center"
+        />
+        <el-table-column
+          label="操作"
+          fixed="right"
+          align="center"
+          width="120"
+          class-name="small-padding fixed-width"
+        >
+          <template slot-scope="scope">
+            <!-- <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
+                        v-hasPermi="['system:dict:edit']">修改</el-button> -->
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-view"
+              @click="handleDetail(scope.row)"
+              >查看详情</el-button
+            >
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <pagination
+        v-show="total > 0"
+        :total="total"
+        :page.sync="params.pageInfo.page"
+        :limit.sync="params.pageInfo.pageSize"
+        @pagination="getList"
+      />
+
+      <!-- 添加或修改参数配置对话框 -->
+      <el-dialog
+        :title="title"
+        :visible.sync="open"
+        width="500px"
+        append-to-body
+      >
+        <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+          <el-form-item label="用户姓名" prop="name">
+            <el-input v-model="form.name" placeholder="请输入用户姓名" />
+          </el-form-item>
+          <el-form-item label="手机号码" prop="phone">
+            <el-input v-model="form.phone" placeholder="请输入手机号码" />
+          </el-form-item>
+          <el-form-item label="邮箱" prop="email">
+            <el-input v-model="form.email" placeholder="请输入邮箱" />
+          </el-form-item>
+          <el-form-item label="选择商品" prop="email">
+            <i class="el-icon-edit" @click="selectCommodityVisble = true"></i>
+            <!-- <el-input v-model="form.email" placeholder="请输入邮箱" /> -->
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="submitForm">确 定</el-button>
+          <el-button @click="cancel">取 消</el-button>
+        </div>
+      </el-dialog>
+      <!-- 选择商品的抽屉 -->
+      <el-drawer
+        title="请选择商品"
+        :visible.sync="selectCommodityVisble"
+        direction="rtl"
+      >
+        <span>我来啦!</span>
+      </el-drawer>
+    </div>
   </div>
 </template>
 
@@ -564,12 +580,13 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.$modal.loading('正在导出...');
+      this.$modal.loading("正在导出...");
       commodityOutputOrderExport(this.params).then((res) => {
         if (res.success) {
           this.$modal.closeLoading();
-          this.$modal.msgSuccess("导出成功");ƒ
-          this.$thinking.downloadFileByByte(res.data,"出库单导出数据.xlsx");
+          this.$modal.msgSuccess("导出成功");
+          ƒ;
+          this.$thinking.downloadFileByByte(res.data, "出库单导出数据.xlsx");
         }
       });
     },
@@ -651,8 +668,8 @@ export default {
     /** 查看详情按钮操作 */
     handleDetail(row) {
       this.$router.push({
-        name: "sale-detail",
-        query: { orderId: row.id },
+        path: "out-detail",
+        query: { orderId: row.id, mode: "view" },
       });
     },
     // 多选框选中数据

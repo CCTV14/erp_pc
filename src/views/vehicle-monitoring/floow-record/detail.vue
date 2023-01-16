@@ -15,7 +15,7 @@
         >
         <el-descriptions-item label="客户电话">{{
           detailForm.customerFollowUp.customer.phoneNumber
-        }}</el-descriptions-item>
+        }}</el-descriptions-item> 
         <el-descriptions-item label="客户分组">{{
           detailForm.customerFollowUp.customer.customerGroupEnum.Desc
         }}</el-descriptions-item>

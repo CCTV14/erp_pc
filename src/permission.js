@@ -28,6 +28,7 @@ router.beforeEach((to, from, next) => {
             isRelogin.show = false;
             store.dispatch("GenerateRoutes").then((accessRoutes) => {
               router.addRoutes(accessRoutes); // 动态添加可访问路由表
+              console.log(router);
               next({ ...to, replace: true }); // hack方法 确保addRoutes已完成
             });
           })

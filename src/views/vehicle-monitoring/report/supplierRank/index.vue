@@ -81,7 +81,7 @@
       </div>
       <div class="out">
         <div>退货总额</div>
-        <div class="price">￥{{ reportData.purchaseReturnOrderSumAmount }}</div>
+        <div class="price">￥{{ reportData.purchaseReturnOrderSumAmount | priceFixedTwo}}</div>
       </div>
       <div class="out">
         <div>采购退货单数量</div>

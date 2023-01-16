@@ -563,6 +563,9 @@ export default {
       const id = row.id || this.ids;
       customerPoolFindById({ id: id }).then((response) => {
         this.postForm = response.data;
+        this.form.customerId = response.data.customerId;
+        this.customer.customerName = response.data.customer.name;
+        this.form.content = response.data.content;
         this.open = true;
         this.title = "修改公海池客户";
       });

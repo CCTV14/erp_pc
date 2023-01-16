@@ -1,5 +1,7 @@
 <template>
-  <div class="app-container">
+  <div>
+    <router-view></router-view>
+    <div class="app-container" v-show="$route.meta.showRole">
     <el-form
       :model="params"
       ref="queryForm"
@@ -254,7 +256,7 @@
         label="操作"
         fixed="right"
         align="center"
-        width="180"
+        width="250"
         class-name="small-padding fixed-width"
       >
         <template slot-scope="scope">
@@ -263,14 +265,14 @@
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-edit"
+            icon="el-icon-view"
             @click="handleDetail(scope.row)"
             >跟进详情</el-button
           >
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-edit"
+            icon="el-icon-top-right"
             v-if="scope.row.customerFollowUpStatusEnum.Name === 'Following'"
             @click="handleDetail(scope.row)"
             >继续跟进</el-button
@@ -278,7 +280,7 @@
           <el-button
             size="mini"
             type="text"
-            icon="el-icon-edit"
+            icon="el-icon-folder-delete"
             v-if="scope.row.customerFollowUpStatusEnum.Name === 'Following'"
             @click="handleDetail(scope.row)"
             >放弃跟进</el-button
@@ -302,6 +304,7 @@
       :title="title"
       @closeDialog="cancel"
     />
+  </div>
   </div>
 </template>
 
@@ -435,7 +438,7 @@ export default {
           val.customerFollowUpStatusEnum.Name === "Following"
         );
       };
-    },
+    }
   },
   created() {
     this.getList();

@@ -1,128 +1,139 @@
 <template>
-  <div class="app-container">
-    <el-form
-      :model="params"
-      ref="queryForm"
-      size="small"
-      :inline="true"
-      v-show="showSearch"
-      label-width="68px"
-    >
-      <el-form-item label="名称" prop="quickSearchInfoList[1].quickSearchValue">
-        <el-input
-          v-model="params.quickSearchInfoList[1].quickSearchValue"
-          style="width: 240px"
-          placeholder="请输入名称"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="地址" prop="quickSearchInfoList[3].quickSearchValue">
-        <el-input
-          v-model="params.quickSearchInfoList[3].quickSearchValue"
-          style="width: 240px"
-          placeholder="请输入地址"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item
-        label="联系方式"
-        prop="quickSearchInfoList[2].quickSearchValue"
+  <div>
+    <router-view></router-view>
+    <div class="app-container" v-show="$route.meta.showRole">
+      <el-form
+        :model="params"
+        ref="queryForm"
+        size="small"
+        :inline="true"
+        v-show="showSearch"
+        label-width="68px"
       >
-        <el-input
-          v-model="params.quickSearchInfoList[2].quickSearchValue"
-          placeholder="请输入联系方式"
-          style="width: 240px"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="备注" prop="quickSearchInfoList[4].quickSearchValue">
-        <el-input
-          v-model="params.quickSearchInfoList[4].quickSearchValue"
-          style="width: 240px"
-          placeholder="请输入备注"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="余额区间">
-        <div style="display: flex">
+        <el-form-item
+          label="名称"
+          prop="quickSearchInfoList[1].quickSearchValue"
+        >
           <el-input
-            style="width: 108px"
-            type="number"
-            v-model="params.minBalance"
-            placeholder="不限"
+            v-model="params.quickSearchInfoList[1].quickSearchValue"
+            style="width: 240px"
+            placeholder="请输入名称"
             clearable
             @keyup.enter.native="handleQuery"
           />
-          <div class="ml10 mr10">-</div>
+        </el-form-item>
+        <el-form-item
+          label="地址"
+          prop="quickSearchInfoList[3].quickSearchValue"
+        >
           <el-input
-            style="width: 108px"
-            type="number"
-            v-model="params.maxBalance"
-            placeholder="不限"
+            v-model="params.quickSearchInfoList[3].quickSearchValue"
+            style="width: 240px"
+            placeholder="请输入地址"
             clearable
             @keyup.enter.native="handleQuery"
           />
-        </div>
-      </el-form-item>
-      <el-form-item label="冻结状态" prop="frozen">
-        <el-select
-          v-model="params.frozen"
-          style="width: 240px"
-          placeholder="请选择状态"
-          clearable
+        </el-form-item>
+        <el-form-item
+          label="联系方式"
+          prop="quickSearchInfoList[2].quickSearchValue"
         >
-          <el-option label="全部" value=""></el-option>
-          <el-option label="未冻结" :value="false"></el-option>
-          <el-option label="已冻结" :value="true"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="排序方式" prop="sortInfo">
-        <el-select
-          v-model="sortName"
-          style="width: 240px"
-          placeholder="请选择排序方式"
-          clearable
-          @change="selectSortType"
+          <el-input
+            v-model="params.quickSearchInfoList[2].quickSearchValue"
+            placeholder="请输入联系方式"
+            style="width: 240px"
+            clearable
+            @keyup.enter.native="handleQuery"
+          />
+        </el-form-item>
+        <el-form-item
+          label="备注"
+          prop="quickSearchInfoList[4].quickSearchValue"
         >
-          <el-option label="名称正序 [默认]" value=""></el-option>
-          <el-option label="名称倒序" :value="1"></el-option>
-          <el-option label="余额最多" :value="2"></el-option>
-          <el-option label="余额最少" :value="3"></el-option>
-          <el-option label="最早创建" :value="4"></el-option>
-          <el-option label="最近创建" :value="5"></el-option>
-        </el-select>
-      </el-form-item>
-      <el-form-item>
-        <el-button
-          type="primary"
-          icon="el-icon-search"
-          size="mini"
-          @click="handleQuery"
-          >搜索</el-button
-        >
-        <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
-          >重置</el-button
-        >
-      </el-form-item>
-    </el-form>
+          <el-input
+            v-model="params.quickSearchInfoList[4].quickSearchValue"
+            style="width: 240px"
+            placeholder="请输入备注"
+            clearable
+            @keyup.enter.native="handleQuery"
+          />
+        </el-form-item>
+        <el-form-item label="余额区间">
+          <div style="display: flex">
+            <el-input
+              style="width: 108px"
+              type="number"
+              v-model="params.minBalance"
+              placeholder="不限"
+              clearable
+              @keyup.enter.native="handleQuery"
+            />
+            <div class="ml10 mr10">-</div>
+            <el-input
+              style="width: 108px"
+              type="number"
+              v-model="params.maxBalance"
+              placeholder="不限"
+              clearable
+              @keyup.enter.native="handleQuery"
+            />
+          </div>
+        </el-form-item>
+        <el-form-item label="冻结状态" prop="frozen">
+          <el-select
+            v-model="params.frozen"
+            style="width: 240px"
+            placeholder="请选择状态"
+            clearable
+          >
+            <el-option label="全部" value=""></el-option>
+            <el-option label="未冻结" :value="false"></el-option>
+            <el-option label="已冻结" :value="true"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="排序方式" prop="sortInfo">
+          <el-select
+            v-model="sortName"
+            style="width: 240px"
+            placeholder="请选择排序方式"
+            clearable
+            @change="selectSortType"
+          >
+            <el-option label="名称正序 [默认]" value=""></el-option>
+            <el-option label="名称倒序" :value="1"></el-option>
+            <el-option label="余额最多" :value="2"></el-option>
+            <el-option label="余额最少" :value="3"></el-option>
+            <el-option label="最早创建" :value="4"></el-option>
+            <el-option label="最近创建" :value="5"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button
+            type="primary"
+            icon="el-icon-search"
+            size="mini"
+            @click="handleQuery"
+            >搜索</el-button
+          >
+          <el-button icon="el-icon-refresh" size="mini" @click="resetQuery"
+            >重置</el-button
+          >
+        </el-form-item>
+      </el-form>
 
-    <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
-        <el-button
-          type="primary"
-          plain
-          icon="el-icon-plus"
-          size="mini"
-          @click="handleAdd"
-          v-hasPermi="['system:purchase:add']"
-          >新增</el-button
-        >
-      </el-col>
-      <!-- <el-col :span="1.5">
+      <el-row :gutter="10" class="mb8">
+        <el-col :span="1.5">
+          <el-button
+            type="primary"
+            plain
+            icon="el-icon-plus"
+            size="mini"
+            @click="handleAdd"
+            v-hasPermi="['system:purchase:add']"
+            >新增</el-button
+          >
+        </el-col>
+        <!-- <el-col :span="1.5">
         <el-button
           type="success"
           plain
@@ -134,110 +145,121 @@
           >修改</el-button
         >
       </el-col> -->
-      <!-- <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar> -->
-    </el-row>
+        <!-- <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar> -->
+      </el-row>
 
-    <el-table
-      v-loading="loading"
-      :data="tableData"
-      :cell-style="$thinking.getCellFontColor"
-      :default-sort="{ prop: 'balanceAmount', order: 'descending' }"
-    >
-      <el-table-column label="名称" align="center" prop="name" />
-      <el-table-column label="当前余额" align="center" sortable width="120">
-        <template slot-scope="scope">
-          <span>￥{{ scope.row.balanceAmount | thousandSymbol }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="联系方式" align="center" prop="phoneNumber" />
-      <el-table-column label="冻结状态" align="center">
-        <template slot-scope="scope">
-          <span>{{ scope.row.frozen ? "已冻结" : "未冻结" }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="地址" align="center" prop="address" />
-      <el-table-column label="备注" align="center" prop="remark" />
-      <el-table-column label="创建信息" align="center" width="200">
-        <template slot-scope="scope">
-          <span>{{ scope.row.creator.name + " " + scope.row.createTime }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="操作"
-        fixed="right"
-        align="center"
-        width="160"
-        class-name="small-padding fixed-width"
+      <el-table
+        v-loading="loading"
+        :data="tableData"
+        :cell-style="$thinking.getCellFontColor"
+        :default-sort="{ prop: 'balanceAmount', order: 'descending' }"
       >
-        <template slot-scope="scope">
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:dict:edit']"
-            >修改</el-button
-          >
-          <!-- <el-button size="mini" type="text" icon="el-icon-edit" @click="handleDetail(scope.row)"
+        <el-table-column label="名称" align="center" prop="name" width="150" />
+        <el-table-column label="当前余额" align="center" sortable width="120">
+          <template slot-scope="scope">
+            <span>￥{{ scope.row.balanceAmount | thousandSymbol }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="联系方式" align="center" prop="phoneNumber" />
+        <el-table-column label="冻结状态" align="center">
+          <template slot-scope="scope">
+            <span>{{ scope.row.frozen ? "已冻结" : "未冻结" }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column label="地址" align="center" prop="address" />
+        <el-table-column label="备注" align="center" prop="remark" />
+        <el-table-column label="创建信息" align="center" width="200">
+          <template slot-scope="scope">
+            <span>{{
+              scope.row.creator.name + " " + scope.row.createTime
+            }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="操作"
+          fixed="right"
+          align="center"
+          width="160"
+          class-name="small-padding fixed-width"
+        >
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-edit"
+              @click="handleUpdate(scope.row)"
+              v-hasPermi="['system:dict:edit']"
+              >修改</el-button
+            >
+            <!-- <el-button size="mini" type="text" icon="el-icon-edit" @click="handleDetail(scope.row)"
                         v-hasPermi="['system:dict:detail']">查看</el-button> -->
-          <el-button
-            size="mini"
-            type="text"
-            icon="el-icon-edit"
-            @click="handleDetail(scope.row)"
-            >查看详情</el-button
-          >
-        </template>
-      </el-table-column>
-    </el-table>
+            <el-button
+              size="mini"
+              type="text"
+              icon="el-icon-view"
+              @click="handleDetail(scope.row)"
+              >查看详情</el-button
+            >
+          </template>
+        </el-table-column>
+      </el-table>
 
-    <pagination
-      v-show="total > 0"
-      :total="total"
-      :page.sync="params.pageInfo.page"
-      :limit.sync="params.pageInfo.pageSize"
-      @pagination="getList"
-    />
+      <pagination
+        v-show="total > 0"
+        :total="total"
+        :page.sync="params.pageInfo.page"
+        :limit.sync="params.pageInfo.pageSize"
+        @pagination="getList"
+      />
 
-    <!-- 添加或修改参数配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="名称" prop="name">
-          <el-input v-model="form.name" placeholder="请输入名称" />
-        </el-form-item>
-        <el-form-item label="当前余额" v-if="form.id">
-          <span>￥{{ form.balanceAmount }}</span>
-        </el-form-item>
-        <el-form-item label="联系方式" prop="phoneNumber">
-          <el-input v-model="form.phoneNumber" placeholder="请输入联系方式" />
-        </el-form-item>
-        <el-form-item label="地址" prop="address">
-          <el-input v-model="form.address" placeholder="请输入地址"></el-input>
-        </el-form-item>
-        <el-form-item label="创建信息" v-if="form.id">
-          <span>{{ form.creator.name + " " + form.createTime }}</span>
-        </el-form-item>
-        <el-form-item label="冻结状态" v-if="form.id">
-          <el-switch
-            v-model="form.frozen"
-            :active-value="true"
-            :inactive-value="false"
-          >
-          </el-switch>
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input
-            v-model="form.remark"
-            type="textarea"
-            placeholder="请输入内容"
-          ></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel">取 消</el-button>
-      </div>
-    </el-dialog>
+      <!-- 添加或修改参数配置对话框 -->
+      <el-dialog
+        :title="title"
+        :visible.sync="open"
+        width="500px"
+        append-to-body
+      >
+        <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+          <el-form-item label="名称" prop="name">
+            <el-input v-model="form.name" placeholder="请输入名称" />
+          </el-form-item>
+          <el-form-item label="当前余额" v-if="form.id">
+            <span>￥{{ form.balanceAmount | priceFixedTwo }}</span>
+          </el-form-item>
+          <el-form-item label="联系方式" prop="phoneNumber">
+            <el-input v-model="form.phoneNumber" placeholder="请输入联系方式" />
+          </el-form-item>
+          <el-form-item label="地址" prop="address">
+            <el-input
+              v-model="form.address"
+              placeholder="请输入地址"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="创建信息" v-if="form.id">
+            <span>{{ form.creator.name + " " + form.createTime }}</span>
+          </el-form-item>
+          <el-form-item label="冻结状态" v-if="form.id">
+            <el-switch
+              v-model="form.frozen"
+              :active-value="true"
+              :inactive-value="false"
+            >
+            </el-switch>
+          </el-form-item>
+          <el-form-item label="备注" prop="remark">
+            <el-input
+              v-model="form.remark"
+              type="textarea"
+              placeholder="请输入内容"
+            ></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="submitForm">确 定</el-button>
+          <el-button @click="cancel">取 消</el-button>
+        </div>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -424,7 +446,7 @@ export default {
     /** 查看详情按钮操作 */
     handleDetail(row) {
       this.$router.push({
-        name: "supplier-detail",
+        path: "supplier-detail",
         query: { id: row.id },
       });
     },

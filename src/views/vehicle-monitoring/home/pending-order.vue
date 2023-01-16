@@ -211,6 +211,7 @@ export default {
       padding-top: 5px;
       padding-bottom: 10px;
       font-weight: bold;
+      text-align: left !important;
     }
 
     .cell {
